@@ -17,7 +17,7 @@ const HeroSection = () => {
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center justify-center mt-40 px-4">
         {/* Logo/Title */}
-        <div className="text-center  mb-4">
+        <div className="text-center  mt-14">
           <h1 className="text-6xl font-bold mb-3">
             Gen <span className="bg-gradient-to-r from-[hsla(221,83%,53%,1)] to-[hsla(155,100%,31%,1)] text-transparent bg-clip-text">
               Ai
@@ -37,13 +37,27 @@ const HeroSection = () => {
         </button>
 
         {/* Avatar Group */}
-        <div className="flex -space-x-2 mt-[85px] ">
-          {[1, 2, 3, 4].map((index) => (
-            <div
-              key={index}
-              className="w-8 h-8 rounded-full bg-gray-200 border-2 border-white"
-            />
-          ))}
+        <div className="flex -space-x-2 mt-32">
+          <img
+            src="https://images.rawpixel.com/image_png_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIyLTA4L2pvYjEwMzQtZWxlbWVudC0wNi0zOTcucG5n.png"
+            alt="User"
+            className="w-8 h-8 rounded-full border-2 border-white"
+          />
+          <img
+            src="https://images.rawpixel.com/image_png_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIyLTA4L2pvYjEwMzQtZWxlbWVudC0wNS0zODUucG5n.png"
+            alt="User"
+            className="w-8 h-8 rounded-full border-2 border-white"
+          />
+          <img
+            src="https://images.rawpixel.com/image_png_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIyLTA4L2pvYjExMjAtZWxlbWVudC0xOS5wbmc.png"
+            alt="User"
+            className="w-8 h-8 rounded-full border-2 border-white"
+          />
+          <img
+            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRhGJPxvhV4u_WpRUlvawm9YpDkbtL0d8D2FlZ6HgC5JcoeHfqR-FmG0eWyeLfbATOv2EU&usqp=CAU"
+            alt="User"
+            className="w-8 h-8 rounded-full border-2 border-white"
+          />
         </div>
 
         {/* Stats Text */}

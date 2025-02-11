@@ -1,49 +1,37 @@
-import React from 'react';
+import { MdOutlineGroup } from "react-icons/md";
+import { WiTime4 } from "react-icons/wi";
 
-const Leaderboard = () => {
-  const stats = [
-    { number: '5,000', label: 'Courses' },
-    { number: '6,500', label: 'Tests' },
-    { number: '4,000', label: 'Jobs' },
-    { number: '8,300', label: 'Learners' },
-    { number: '3,500', label: 'Employers' },
-  ];
+
+export default function LeaderboardSection() {
   return (
-    <div>
-      <div className="flex justify-center items-center mt-28 px-4 sm:px-0">
-        <div className="flex items-center space-x-8 flex-col sm:flex-row">
-          <div className="max-w-md text-center sm:text-left">
-            <h2 className="text-4xl mb-4">
-              Climb the <span className="font-extrabold">Ranks</span>, Unlock Your <span className="font-extrabold">Future</span>
-            </h2>
-            <p className="mb-11 mt-6">
-              The better your rank, the brighter your career. Top the leaderboard, showcase your skills, and grab exclusive job offers from leading recruiters.
+    <section className="bg-white py-16 mr-20 ml-20 ">
+      <div className=" flex flex-col md:flex-row items-center justify-between border border-gray-200 rounded-lg p-20">
+        {/* Left Text Section */}
+        <div className="md:w-1/2">
+          <h4 className="text-gray-500 uppercase text-sm tracking-wide">JOBS</h4>
+          <h2 className="text-4xl mt-7 font-bold text-gray-900">
+          Climb the <span className="font-extrabold">Ranks</span>, Unlock Your <br/><span className="font-extrabold">Future</span>
+          </h2>
+          <p className="mb-11 mt-6">
+              The better your rank, the brighter your career. Top the<br/> leaderboard, showcase your skills, and grab exclusive job offers<br/> from leading recruiters.
             </p>
-            <button className="bg-blue-600 text-white px-6 py-3 rounded-md font-semibold flex items-center justify-center sm:justify-start">
-              Start learning now! <span className="ml-2">→</span>
-            </button>
-          </div>
-          <img
-            src="/leaderboard.jpg"
-            alt="Descriptive text"
-            className="rounded-lg shadow-lg object-cover w-full sm:w-auto mt-6 sm:mt-0"
-          />
+          <button className="mt-8 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition">
+            Start learning now! →
+          </button>
         </div>
-      </div>
 
-      <hr className="mt-40" />
-      <div className="flex justify-center items-center bg-white mb-14">
-        <div className="flex flex-wrap justify-around w-full py-8 px-10">
-          {stats.map((stat, index) => (
-            <div key={index} className="text-center mb-6 sm:mb-0">
-              <h3 className="text-3xl font-bold text-gray-900 mb-3 mt-10">{stat.number}</h3>
-              <p className="text-gray-500">{stat.label}</p>
-            </div>
-          ))}
+        {/* Course Cards Section */}
+        <div className="md:w-1/2 flex flex-col md:flex-row gap-4 mt-8 md:mt-0">
+
+            <img
+              src="./courses/leaderboard.png"
+              alt="Data Analytics"
+              className=" w-full"
+            />
+           
+
         </div>
       </div>
-    </div>
+    </section>
   );
-};
-
-export default Leaderboard;
+}

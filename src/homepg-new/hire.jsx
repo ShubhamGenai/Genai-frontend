@@ -27,7 +27,7 @@ const HireSection = () => {
         {/* Employers Section */}
         <div className="bg-white text-black p-8 sm:p-16 md:p-32">
           <div className="sm:mr-10 md:mr-36">
-            <h4 className="text-sm font-semibold mb-4">FOR EMPLOYERS</h4>
+            <h4 className="text-sm text-green-600 font-semibold mb-4">FOR EMPLOYERS</h4>
             <h2 className="text-2xl sm:text-3xl md:text-4xl mb-4">
               <span className="font-bold">Hire</span> Top Talent, Smarter and Faster
             </h2>

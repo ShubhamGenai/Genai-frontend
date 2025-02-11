@@ -2,7 +2,7 @@ import { MdOutlineShoppingCart } from "react-icons/md";
 
 export function NavBar() {
   return (
-    <nav className="flex items-center justify-between lg:-mt-1 max-w-7xl mx-auto">
+    <nav className="flex items-center justify-between mt-8 max-w-7xl mx-auto">
       <a href="/" className="flex items-center gap-2">
         <div className="w-8 h-8 bg-blue-600 rounded-full" />
         <span className="font-semibold text-lg">GenAi Learning</span>

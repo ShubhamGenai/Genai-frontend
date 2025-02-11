@@ -5,7 +5,7 @@ import CompanyLogos from './company-logos';
 import LearningSection from './learning-section';
 import LearningJourney from './LearningJourney';
 import TestSection from './test-section';
-import Leaderboard from './leaderboard';
+import LeaderboardSection from './leaderboard';
 import WhyGenAiLearning from './whygenai';
 import HireSection from './hire';
 import TestimonialsSection from './testimonials';
@@ -23,9 +23,8 @@ const HomepgMain1 = () => {
       <Section/>
       <LearningSection/>
       <TestSection/>
+      <LeaderboardSection/>
       <LearningJourney/>
-      
-      <Leaderboard />
       <WhyGenAiLearning/>
       <TestimonialsSection/>
       <HireSection/>

@@ -1,69 +1,88 @@
-// src/App.jsx
-import React from 'react';
-
+import { FaFacebook, FaInstagram, FaLinkedin } from 'react-icons/fa';
+import { HiMail } from 'react-icons/hi';
+import { LuGraduationCap } from "react-icons/lu";
 
 const Footer = () => {
   return (
-    <footer className="bg-white py-8  mt-40">
-      <div className=" mx-auto px-4">
-        <div className="flex flex-col md:flex-row justify-between ml-20 mr-20">
-          <div className="mb-6 md:mb-0">
-            <div className="flex items-center mb-7">
-              <div className="bg-blue-500 text-white rounded-full p-2 mr-2">
-                🎓
+    <footer className="w-full bg-white py-12 px-4">
+      <div className="max-w-7xl mx-auto">
+        {/* Main Content */}
+        <div className="flex flex-col md:flex-row justify-between mb-8">
+          {/* Left Section - Logo and Description */}
+          <div className="max-w-md mb-8 md:mb-0">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-11 h-11 bg-blue-600 rounded-full flex items-center justify-center">
+              <LuGraduationCap className='text-white w-7 h-7'/>
               </div>
-              <h2 className="text-xl font-bold">GenAi Learning</h2>
+              <span className="text-2xl font-semibold">GenAi Learning</span>
             </div>
-            <p className="text-gray-600">
-              Our platform provides comprehensive<br/> resources and tools to<br/> help you prepare for the JEE exam with<br/> confidence.
+            <p className="text-gray-600 text-sm">
+              Transforming education with AI-powered, personalized learning
+              experiences. Explore interactive courses, live mentorship, and
+              skill-building programs designed for students and professionals.
+              Learn smarter, grow faster!
             </p>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+
+          {/* Right Section - Navigation Links */}
+          <div className="grid grid-cols-3 gap-8">
+            {/* Support Column */}
             <div>
-              <h3 className="font-bold mb-2 mt-14">Resources</h3>
-              <ul className="text-gray-600">
-                <li>Learn</li>
-                <li>Tests</li>
-                <li>Jobs</li>
-                <li>Leaderboard</li>
+              <h3 className="font-semibold mb-4">Support</h3>
+              <ul className="space-y-2">
+                <li><a href="#" className="text-gray-600 hover:text-gray-900 text-sm">Pricing</a></li>
+                <li><a href="#" className="text-gray-600 hover:text-gray-900 text-sm">Documentation</a></li>
+                <li><a href="#" className="text-gray-600 hover:text-gray-900 text-sm">Guides</a></li>
               </ul>
             </div>
+
+            {/* Company Column */}
             <div>
-              <h3 className="font-bold mb-2 mt-14">Company</h3>
-              <ul className="text-gray-600">
-                <li>About us</li>
-                <li>Contact us</li>
-                <li>Blog</li>
+              <h3 className="font-semibold mb-4">Company</h3>
+              <ul className="space-y-2">
+                <li><a href="#" className="text-gray-600 hover:text-gray-900 text-sm">About us</a></li>
+                <li><a href="#" className="text-gray-600 hover:text-gray-900 text-sm">Contact us</a></li>
+                <li><a href="#" className="text-gray-600 hover:text-gray-900 text-sm">Blog</a></li>
               </ul>
             </div>
+
+            {/* Legal Column */}
             <div>
-              <h3 className="font-bold mb-2 mt-14">Company</h3>
-              <ul className="text-gray-600">
-                <li>Privacy policy</li>
-                <li>Terms and conditions</li>
-                <li>Refund and returns </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-bold mb-2 mt-14">Support</h3>
-              <ul className="text-gray-600">
-                <li>Pricing</li>
-                <li>Documentation</li>
-                <li>Guides</li>
+              <h3 className="font-semibold mb-4">Legal</h3>
+              <ul className="space-y-2">
+                <li><a href="#" className="text-gray-600 hover:text-gray-900 text-sm">Privacy policy</a></li>
+                <li><a href="#" className="text-gray-600 hover:text-gray-900 text-sm">Terms and conditions</a></li>
+                <li><a href="#" className="text-gray-600 hover:text-gray-900 text-sm">Refund and returns policy</a></li>
               </ul>
             </div>
           </div>
         </div>
-         {/* Copyright Section */}
-         <div className="mt-12 border-t border-gray-200 pt-8 ">
-          <p className="text-gray-600 text-left ml-20">
-            © 2025 GenAi Learning. All rights reserved.
-          </p>
+
+        {/* Social Links */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between -pt-4">
+          <div className="flex space-x-6 mb-4 md:mb-0">
+            <a href="#" className="text-gray-600 hover:text-gray-900 flex items-center gap-2">
+              <FaFacebook className="w-5 h-5" /> Facebook
+            </a>
+            <a href="#" className="text-gray-600 hover:text-gray-900 flex items-center gap-2">
+              <FaInstagram className="w-5 h-5" /> Instagram
+            </a>
+            <a href="#" className="text-gray-600 hover:text-gray-900 flex items-center gap-2">
+              <FaLinkedin className="w-5 h-5" /> LinkedIn
+            </a>
+            <a href="#" className="text-gray-600 hover:text-gray-900 flex items-center gap-2">
+              <HiMail className="w-5 h-5" /> Email
+            </a>
+          </div>
+        </div>
+
+        {/* Copyright */}
+        <div className="text-center text-sm text-gray-600 mt-8">
+          © 2025 GenAi Learning. All rights reserved.
         </div>
       </div>
     </footer>
   );
 };
-
 
 export default Footer;

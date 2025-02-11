@@ -1,6 +1,6 @@
 export default function CompanyLogos() {
   return (
-    <section className="mt-13">
+    <section className="mt-11">
       
       <div className="container md:px-6 pb-5">
         
@@ -51,7 +51,7 @@ export default function CompanyLogos() {
         
         </div>
       </div>
-      <p className="text-1xl text-gray-600 mt-4 tracking-wide uppercase lg:mt-9 font-medium">
+      <p className="text-1xl justify-center items-center flex text-gray-600 mt-4 tracking-wide uppercase lg:mt-10  mb-4 font-medium">
       Scroll to explore 
         </p>
       <div className="flex lg:mt-2 w-full flex-row items-center justify-evenly overflow-x-hidden bg-darkslategray">
@@ -59,7 +59,7 @@ export default function CompanyLogos() {
       {/* White Scroll Indicator */}
       
       <div
-        className="scrolldown mb-10 ml-[15px] h-[50px] w-[30px] rounded-[50px] border-[3px] relative"
+        className="scrolldown mb-24 ml-[15px] h-[50px] w-[30px] rounded-[50px] border-[3px] relative"
         style={{ "--color": "#2B7FFF", borderColor: "var(--color)" }}
       >
         <div className="chevrons -ml-[3px] mt-12 w-[30px] flex flex-col gap-1 items-center pt-2">
