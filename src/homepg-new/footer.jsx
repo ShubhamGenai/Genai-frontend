@@ -4,7 +4,7 @@ import { LuGraduationCap } from "react-icons/lu";
 
 const Footer = () => {
   return (
-    <footer className="w-full bg-white py-12 px-4">
+    <footer className="w-full bg-white py-12 px-26">
       <div className="max-w-7xl mx-auto">
         {/* Main Content */}
         <div className="flex flex-col md:flex-row justify-between mb-8">
