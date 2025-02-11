@@ -2,7 +2,7 @@ export default function CompanyLogos() {
   return (
     <section className="mt-11">
       
-      <div className="container md:px-6 pb-5">
+      <div className="flex md:px-6 pb-5 items-center justify-center">
         
         <div className="flex items-center justify-center gap-8 md:gap-12 flex-wrap">
           <img

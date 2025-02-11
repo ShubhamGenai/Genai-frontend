@@ -41,7 +41,7 @@ const Section = () => {
     <div className="">
       {/* Intro Section */}
       <div className="bg-gray-100  py-12 pt-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-52
+        <div className="max-w-7xl mx-auto ml-14
           text-left">
           <h1 className="text-4xl font-semibold mb-8 text-gray-900">
             One Platform, Many <span className="text-green-500">Possibilities</span>

@@ -7,7 +7,7 @@ const HireSection = () => {
 
         {/* Learners Section */}
         <div className="bg-blue-600 text-white p-8 sm:p-16 md:p-32">
-          <div className="sm:ml-10 md:ml-36">
+          <div className="sm:ml-10 md:ml-32">
             <h4 className="text-sm font-semibold mb-4">FOR LEARNERS</h4>
             <h2 className="text-2xl sm:text-3xl md:text-4xl mb-4">
               <span className="font-bold">Empower</span> Your<br /> Learning Journey
@@ -26,7 +26,7 @@ const HireSection = () => {
 
         {/* Employers Section */}
         <div className="bg-white text-black p-8 sm:p-16 md:p-32">
-          <div className="sm:mr-10 md:mr-36">
+          <div className="sm:mr-10 md:mr-28">
             <h4 className="text-sm text-green-600 font-semibold mb-4">FOR EMPLOYERS</h4>
             <h2 className="text-2xl sm:text-3xl md:text-4xl mb-4">
               <span className="font-bold">Hire</span> Top Talent, Smarter and Faster
@@ -38,7 +38,7 @@ const HireSection = () => {
               dream team today.
             </p>
             <button className="bg-blue-600 border border-white text-white px-4 py-2 sm:px-6 sm:py-3 rounded-md font-semibold flex items-center mt-10">
-              Start Learning <span className="ml-2">→</span>
+              Start Hiring <span className="ml-2">→</span>
             </button>
           </div>
         </div>

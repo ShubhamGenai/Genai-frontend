@@ -4,13 +4,22 @@ import { WiTime4 } from "react-icons/wi";
 
 export default function LearningSection() {
   return (
+    <div>
+      <div className="text-center text-3xl text-gray-500  mt-24">
+      Unlocking your Future with <span className="text-black font-medium">AI</span> -  
+      <span className="font-bold text-black"> Smarter</span>,  
+      <span className="font-bold text-black"> Faster</span>,  
+      <span className="font-bold text-black"> Better</span>
+    </div>
+
+    
     <section className="bg-white py-16 mr-20 ml-20 ">
       <div className=" flex flex-col md:flex-row items-center justify-between border border-gray-200 rounded-lg p-20">
         {/* Left Text Section */}
         <div className="md:w-1/2">
           <h4 className="text-gray-500 uppercase text-sm tracking-wide">Learn</h4>
-          <h2 className="text-4xl mt-7 font-bold text-gray-900">
-            Learn anything, <span className="text-black">Achieve</span><br/> everything
+          <h2 className="text-4xl mt-7  text-gray-900">
+           <span className="font-bold text-black">Learn </span> anything,<span className="text-black font-bold"> Achieve  </span> <br/> everything
           </h2>
           <p className="text-gray-600 mt-8">
             With 1.8+ Crore Students and one of the best selection rates in<br/> India amongst
@@ -81,5 +90,6 @@ export default function LearningSection() {
         </div>
       </div>
     </section>
+    </div>
   );
 }

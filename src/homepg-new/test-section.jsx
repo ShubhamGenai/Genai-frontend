@@ -4,13 +4,13 @@ import { WiTime4 } from "react-icons/wi";
 
 export default function TestSection() {
   return (
-    <section className="bg-white py-16 mr-20 ml-20 ">
+    <section className="bg-white  mr-20 ml-20 ">
       <div className=" flex flex-col md:flex-row items-center justify-between border border-gray-200 rounded-lg p-20">
         {/* Left Text Section */}
         <div className="md:w-1/2">
           <h4 className="text-gray-500 uppercase text-sm tracking-wide">Tests</h4>
-          <h2 className="text-4xl mt-7 font-bold text-gray-900">
-          Test your skills,  <span className="text-black">Ace your </span><br/> goals!
+          <h2 className="text-4xl mt-7  text-gray-900">
+           <span className="font-bold text-black">Test </span>your skills,  <span className="text-black font-bold">Ace </span>your <br/> goals!
           </h2>
           <p className="text-gray-600 mt-8">
             With 1.8+ Crore Students and one of the best selection rates in<br/> India amongst

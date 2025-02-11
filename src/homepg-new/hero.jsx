@@ -15,7 +15,7 @@ const HeroSection = () => {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col items-center justify-center mt-40 px-4">
+      <div className="relative z-10 flex flex-col items-center justify-center mt-24 px-4">
         {/* Logo/Title */}
         <div className="text-center  mt-14">
           <h1 className="text-6xl font-bold mb-3">
@@ -37,7 +37,7 @@ const HeroSection = () => {
         </button>
 
         {/* Avatar Group */}
-        <div className="flex -space-x-2 mt-32">
+        <div className="flex -space-x-2 mt-24">
           <img
             src="https://images.rawpixel.com/image_png_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIyLTA4L2pvYjEwMzQtZWxlbWVudC0wNi0zOTcucG5n.png"
             alt="User"
