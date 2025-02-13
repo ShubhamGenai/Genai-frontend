@@ -1,4 +1,5 @@
 // HeroSection.jsx
+import '@fontsource/inter'; // Import the Inter font
 const HeroSection = () => {
   return (
     <div className="  ">
@@ -18,12 +19,12 @@ const HeroSection = () => {
       <div className="relative z-10 flex flex-col items-center justify-center mt-24 px-4">
         {/* Logo/Title */}
         <div className="text-center  mt-14">
-          <h1 className="text-6xl font-bold mb-3">
-            Gen <span className="bg-gradient-to-r from-[hsla(221,83%,53%,1)] to-[hsla(155,100%,31%,1)] text-transparent bg-clip-text">
-              Ai
-            </span>
+        <h1 className="text-6xl font-bold mb-3 font-sans">
+  Gen <span className="bg-gradient-to-r from-[hsla(221,83%,53%,1)] to-[hsla(155,100%,31%,1)] text-transparent bg-clip-text">
+    Ai
+  </span>
+</h1>
 
-          </h1>
           <p className="text-xl text-gray-600 mt-2 tracking-widest font-medium mb-4" style={{ fontFamily: 'SF Pro Display, sans-serif' }}>
             The future of learning
           </p>
