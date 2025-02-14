@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavBar } from '../../component/baseComponents/navbar';
-import HeroSection from '../../component/baseComponents/hero';
+import HeroSection from '../../component/pageComponents/hero';
 import CompanyLogos from './company-logos';
 import LearningSection from './learning-section';
 import LearningJourney from './LearningJourney';
@@ -9,12 +9,7 @@ import LeaderboardSection from './leaderboard';
 import WhyGenAiLearning from './whygenai';
 import HireSection from './hire';
 import TestimonialsSection from './testimonials';
-<<<<<<< HEAD:src/pages/homepage/main.jsx
 import Footer from '../../component/baseComponents/footer';
-=======
-import Footer from './footer';
-import HomePage from './hompg';
->>>>>>> 763db82b14f3b7fa052cfc7331f53997a26c7827:src/homepg-new/main.jsx
 
 import Section from './category';
 

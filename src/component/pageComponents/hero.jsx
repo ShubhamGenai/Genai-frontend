@@ -1,5 +1,5 @@
 // HeroSection.jsx
-import '@fontsource/inter'; // Import the Inter font
+
 const HeroSection = () => {
   return (
     <div className="  ">
