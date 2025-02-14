@@ -1,4 +1,10 @@
+import { useState } from "react";
+import Popup from "./Popup"
+
 const HeroSection = () => {
+  const [showPopup, setShowPopup] = useState(false);
+
+
   return (
     <div className="relative isolate ">
       {/* Wave background */}
@@ -30,10 +36,12 @@ const HeroSection = () => {
         </div>
 
         {/* Get Started Button */}
-        <button className="bg-blue-600 text-white px-8 py-3 rounded-md hover:bg-blue-700 transition-colors duration-300 mb-12">
+        <button className="bg-blue-600 text-white px-8 py-3 rounded-md hover:bg-blue-700 transition-colors duration-300 mb-12" 
+         onClick={() => setShowPopup(true)}>
           Get Started
         </button>
-
+ {/* Popup Modal */}
+ {showPopup && <Popup onClose={() => setShowPopup(false)} />}             
         {/* Avatar Group */}
         <div className="flex -space-x-2 mt-24">
           {[

@@ -1,6 +1,6 @@
 export default function CompanyLogos() {
   return (
-    <section className="mt-11">
+    <section className="mt-11 ">
       
       <div className="flex md:px-6 pb-5 items-center justify-center">
         

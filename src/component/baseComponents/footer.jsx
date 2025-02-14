@@ -18,10 +18,8 @@ const Footer = () => {
                 <span className="text-xl sm:text-2xl font-semibold">GenAi Learning</span>
               </div>
               <p className="text-gray-600 text-sm">
-                Transforming education with AI-powered, personalized learning
-                experiences. Explore interactive courses, live mentorship, and
-                skill-building programs designed for students and professionals.
-                Learn smarter, grow faster!
+              Our platform provides comprehensive resources and tools to
+              help you prepare for the JEE exam with confidence.
               </p>
             </div>
 
