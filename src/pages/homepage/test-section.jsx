@@ -4,8 +4,9 @@ import { WiTime4 } from "react-icons/wi";
 
 export default function TestSection() {
   return (
-    <section className="bg-white  mr-20 ml-20 ">
-      <div className=" flex flex-col md:flex-row items-center justify-between border border-gray-200 rounded-lg p-20">
+    <div className="w-full">
+     <section className="bg-white py-16 w-full flex justify-center">
+        <div className="max-w-7xl w-full flex flex-col md:flex-row items-center justify-between border border-gray-200 rounded-lg p-20">
         {/* Left Text Section */}
         <div className="md:w-1/2">
           <h4 className="text-gray-500 uppercase text-sm tracking-wide">Tests</h4>
@@ -87,5 +88,6 @@ export default function TestSection() {
         </div>
       </div>
     </section>
+    </div>
   );
 }

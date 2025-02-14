@@ -38,15 +38,14 @@ const Section = () => {
   const currentContent = getTabContent(activeTab);
 
   return (
-    <div className="">
+    <div className="flex bg-gray-100  flex-col items-center justify-center min-h-screen px-4">
       {/* Intro Section */}
-      <div className="bg-gray-100  py-12 pt-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto ml-14
-          text-left">
-          <h1 className="text-4xl font-semibold mb-8 text-gray-900">
-            One Platform, Many <span className="text-green-500">Possibilities</span>
+      <div className="bg-gray-100 w-full py-12 pt-20  px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto text-centerlg:text-left">
+          <h1 className="text-4xl font-semibold  lg:ml-8 mb-8 text-gray-900">
+            One Platform, Many <span className="text-green-500   ">Possibilities</span>
           </h1>
-          <p className="mt-4 text-lg text-gray-600 max-w-3xl mb-1 ">
+          <p className="mt-4 text-lg text-gray-600 max-w-3xl lg:ml-8 mx-auto lg:mx-0">
             The ultimate platform for students, job seekers, and employers. Gain
             skills, land jobs, and find top talent—all in one seamless experience.
           </p>
@@ -54,11 +53,11 @@ const Section = () => {
       </div>
 
       {/* Main Section */}
-      <div className="flex justify-center items-center bg-gray-100  pb-5">
-        <div className="flex space-x-8 mx-36">
+      <div className="flex justify-center items-center bg-gray-100 w-full pb-5">
+        <div className="flex flex-col lg:flex-row items-center lg:space-x-8 max-w-7xl w-full px-4">
           {/* Image Section */}
           <div className="p-3 rounded-2xl">
-            <div className="w-[679.38px] h-[382px] -mt-2 rounded-lg">
+            <div className="w-full max-w-[679.38px] h-auto rounded-lg">
               <img
                 src="classlive.png"
                 alt="Description"
@@ -68,10 +67,10 @@ const Section = () => {
           </div>
 
           {/* Content Section */}
-          <div className="flex flex-col space-y-4 -mt-6">
+          <div className="flex flex-col space-y-4 w-full max-w-[501px] mt-5">
             <div className="p-6">
               {/* Tabs */}
-              <div className="flex rounded-3xl bg-white p-1 w-[451px]">
+              <div className="flex rounded-3xl bg-white p-1 w-full">
                 {tabs.map((tab) => (
                   <button
                     key={tab.id}
@@ -87,9 +86,8 @@ const Section = () => {
                 ))}
               </div>
 
-              {/* Added padding wrapper */}
+              {/* Content Card */}
               <div className="py-6">
-                {/* Content Card */}
                 <div className="bg-white rounded-3xl p-6 pb-14">
                   <h2 className="text-2xl text-gray-600 mb-6">{currentContent.title}</h2>
 
@@ -121,9 +119,9 @@ const Section = () => {
                     </div>
                   </div>
                 </div>
-              </div> {/* End of padding wrapper */}
+              </div>
             </div>
-          </div> {/* End of Content Section */}
+          </div>
         </div>
       </div>
     </div>
