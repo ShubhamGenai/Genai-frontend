@@ -8,6 +8,7 @@ export default defineConfig({
         // If you want to use a system font stack (like Apple's San Francisco), use this:
         // sans: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
       },
+      
     },
   },
   plugins: [],

@@ -16,7 +16,7 @@ import Section from './category';
 const HomepgMain1 = () => {
   return (
     <div className="">
-      <NavBar/>
+      {/* <NavBar/> */}
       <HeroSection/>
 
       <CompanyLogos/>
