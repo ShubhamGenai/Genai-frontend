@@ -1,6 +1,6 @@
 import React from 'react';
-import { NavBar } from './navbar';
-import HeroSection from './hero';
+import { NavBar } from '../../component/baseComponents/navbar';
+import HeroSection from '../../component/baseComponents/hero';
 import CompanyLogos from './company-logos';
 import LearningSection from './learning-section';
 import LearningJourney from './LearningJourney';
@@ -9,7 +9,7 @@ import LeaderboardSection from './leaderboard';
 import WhyGenAiLearning from './whygenai';
 import HireSection from './hire';
 import TestimonialsSection from './testimonials';
-import Footer from './footer';
+import Footer from '../../component/baseComponents/footer';
 
 import Section from './category';
 
@@ -18,6 +18,7 @@ const HomepgMain1 = () => {
     <div className="">
       <NavBar/>
       <HeroSection/>
+
       <CompanyLogos/>
    
       <Section/>
@@ -29,6 +30,7 @@ const HomepgMain1 = () => {
       <TestimonialsSection/>
       <HireSection/>
       <Footer/>
+      
     </div>
   );
 };

@@ -38,11 +38,14 @@ const HeroSection = () => {
 
         {/* Avatar Group */}
         <div className="flex -space-x-2 mt-24">
+          
           <img
             src="https://images.rawpixel.com/image_png_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIyLTA4L2pvYjEwMzQtZWxlbWVudC0wNi0zOTcucG5n.png"
             alt="User"
             className="w-8 h-8 rounded-full border-2 border-white"
           />
+
+          
           <img
             src="https://images.rawpixel.com/image_png_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIyLTA4L2pvYjEwMzQtZWxlbWVudC0wNS0zODUucG5n.png"
             alt="User"
@@ -58,6 +61,7 @@ const HeroSection = () => {
             alt="User"
             className="w-8 h-8 rounded-full border-2 border-white"
           />
+     
         </div>
 
         {/* Stats Text */}
