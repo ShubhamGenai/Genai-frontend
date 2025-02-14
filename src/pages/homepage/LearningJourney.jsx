@@ -53,6 +53,7 @@ export default function Part3() {
             <span className="hidden md:inline text-lg">•</span>
             <span className="px-2">LIFETIME ACCESS</span>      
           </div>
+          
         </div>
       </div>
     </div>
