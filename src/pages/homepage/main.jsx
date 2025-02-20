@@ -10,7 +10,8 @@ import WhyGenAiLearning from './whygenai';
 import HireSection from './hire';
 import TestimonialsSection from './testimonials';
 import Footer from '../../component/baseComponents/footer';
-
+import HomePage from './hompg';
+import StatsSection from './stats';
 import Section from './category';
 
 const HomepgMain1 = () => {
@@ -26,7 +27,9 @@ const HomepgMain1 = () => {
       <TestSection/>
       <LeaderboardSection/>
       <LearningJourney/>
+      <StatsSection/>
       <WhyGenAiLearning/>
+      
       <TestimonialsSection/>
       <HireSection/>
       <Footer/>

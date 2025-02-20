@@ -15,9 +15,9 @@ export default function LearningSection() {
 
 
       <section className="bg-white py-16 w-full flex justify-center">
-        <div className="max-w-7xl w-full flex flex-col md:flex-row items-center justify-between border border-gray-200 rounded-lg p-20">
+        <div className="max-w-7xl w-full flex flex-col md:flex-row items-center justify-between border border-gray-200 rounded-lg p-10">
           {/* Left Text Section */}
-          <div className="md:w-1/2">
+          <div className="md:w-1/2 py-10">
             <h4 className="text-gray-500 uppercase text-sm tracking-wide">Learn</h4>
             <h2 className="text-4xl mt-7 text-gray-900">
               <span className="font-bold text-black">Learn </span> anything,<span className="text-black font-bold"> Achieve  </span> <br/> everything
@@ -31,62 +31,71 @@ export default function LearningSection() {
             </button>
           </div>
 
-          {/* Course Cards Section */}
-          <div className="md:w-1/2 flex flex-col md:flex-row gap-4 mt-8 md:mt-0">
-            {/* Card 1 */}
-            <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-2 h-auto w-[417px]">
-              <img
-                src="./courses/dataanalytics.jpg"
-                alt="Data Analytics"
-                className="rounded-lg w-full"
-              />
-              <h3 className="text-lg font-semibold mt-3">Data Analytics</h3>
-              <p className="text-gray-500 text-sm flex flex-col gap-1 mt-1">
-                <span className="flex items-center gap-1">
-                  <MdOutlineGroup /> 5K+ Learners
-                </span>
-                <span className="flex items-center gap-1">
-                  <WiTime4 /> 2 hours
-                </span>
-              </p>
-            </div>
-
-            {/* Card 2 */}
-            <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-2 h-auto w-[417px]">
-              <img
-                src="./courses/promptengineering.jpg"
-                alt="Prompt Engineering"
-                className="rounded-lg w-full"
-              />
-              <h3 className="text-lg font-semibold mt-3">Prompt Engineering</h3>
-              <p className="text-gray-500 text-sm flex flex-col gap-1 mt-1">
-                <span className="flex items-center gap-1">
-                  <MdOutlineGroup /> 5K+ Learners
-                </span>
-                <span className="flex items-center gap-1">
-                  <WiTime4 /> 2 hours
-                </span>
-              </p>
-            </div>
-
-            {/* Card 3 */}
-            <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-2 h-auto w-[417px]">
-              <img
-                src="./courses/designwithai.jpg"
-                alt="Design with AI"
-                className="rounded-lg w-full"
-              />
-              <h3 className="text-lg font-semibold mt-3">Design with AI</h3>
-              <p className="text-gray-500 text-sm flex flex-col gap-1 mt-1">
-                <span className="flex items-center gap-1">
-                  <MdOutlineGroup /> 5K+ Learners
-                </span>
-                <span className="flex items-center gap-1">
-                  <WiTime4 /> 2 hours
-                </span>
-              </p>
+           {/* Course Cards Section */}
+        <div className="md:w-[670px] flex flex-col md:flex-row gap-4 mt-8 md:mt-0">
+          {/* Card 1 */}
+          <div className="bg-white border border-gray-200 rounded-md shadow-sm  h-auto w-[417px] ">
+            <img
+              src="./courses/cat.png"
+              alt="Data Analytics"
+              className=" w-full"
+            />
+            <div className="p-2">
+            <h3 className="text-lg font-semibold mt-3">Data Analytics</h3>
+            <p className="text-gray-500 text-sm flex flex-col gap-1 mt-1">
+              <span className="flex items-center gap-1">
+                <MdOutlineGroup /> 5K+ Learners
+              </span>
+              <span className="flex items-center gap-1">
+                <WiTime4 /> 2 hours
+              </span>
+            </p>
             </div>
           </div>
+
+          {/* Card 2 */}
+          <div className="bg-white border border-gray-200  rounded-md shadow-sm  h-auto w-[417px] ">
+            <img
+               src="./courses/cat.png"
+              alt="Prompt Engineering"
+              className=" w-full"
+            />
+             <div className="p-2">
+            <h3 className="text-lg font-semibold mt-3">Data Analytics</h3>
+            <p className="text-gray-500 text-sm flex flex-col gap-1 mt-1">
+              <span className="flex items-center gap-1">
+                <MdOutlineGroup /> 5K+ Learners
+              </span>
+              <span className="flex items-center gap-1">
+                <WiTime4 /> 2 hours
+              </span>
+            </p>
+            </div>
+          </div>
+
+          {/* Card 3 */}
+          <div className="bg-white border border-gray-200  rounded-md shadow-sm  h-auto w-[417px]">
+            <img
+                src="./courses/cat.png"
+              alt="Design with AI"
+              className=" w-full"
+            />
+            <div className="p-2">
+            <h3 className="text-lg font-semibold mt-3">Data Analytics</h3>
+            <p className="text-gray-500 text-sm flex flex-col gap-1 mt-1">
+              <span className="flex items-center gap-1">
+                <MdOutlineGroup /> 5K+ Learners
+              </span>
+              <span className="flex items-center gap-1">
+                <WiTime4 /> 2 hours
+              </span>
+            </p>
+            </div>
+          </div>
+
+
+        </div>
+
         </div>
       </section>
     </div>
