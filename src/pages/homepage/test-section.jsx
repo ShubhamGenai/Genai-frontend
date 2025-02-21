@@ -6,7 +6,7 @@ import { LuNotebookText } from "react-icons/lu";
 export default function TestSection() {
   return (
     <div className="w-full">
-     <section className="bg-white py-16 w-full flex justify-center">
+     <section className="bg-white pt-16 w-full flex justify-center">
         <div className="max-w-7xl w-full flex flex-col md:flex-row items-center justify-between border border-gray-200 rounded-lg p-10">
         {/* Left Text Section */}
         <div className="md:w-1/2 py-10">

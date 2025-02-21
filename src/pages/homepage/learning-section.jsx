@@ -4,17 +4,17 @@ import { WiTime4 } from "react-icons/wi";
 export default function LearningSection() {
   return (
     <div className="w-full ">
-     <div className="flex justify-center items-center mt-24 ">
+     {/* <div className="flex justify-center items-center mt-24 ">
   <div className="max-w-7xl w-full text-center text-3xl text-gray-500">
     Unlocking your Future with <span className="text-black font-medium">AI</span> -  
     <span className="font-bold text-black"> Smarter</span>,  
     <span className="font-bold text-black"> Faster</span>,  
     <span className="font-bold text-black"> Better</span>
   </div>
-</div>
+</div> */}
 
 
-      <section className="bg-white py-16 w-full flex justify-center">
+      <section className="bg-white pt-16 w-full flex justify-center">
         <div className="max-w-7xl w-full flex flex-col md:flex-row items-center justify-between border border-gray-200 rounded-lg p-10">
           {/* Left Text Section */}
           <div className="md:w-1/2 py-10">

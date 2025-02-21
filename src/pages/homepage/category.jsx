@@ -40,7 +40,7 @@ const Section = () => {
   return (
     <div className="flex bg-gray-100  flex-col items-center justify-center min-h-screen px-4">
       {/* Intro Section */}
-      <div className="bg-gray-100 w-full py-12 pt-20  px-4 sm:px-6 lg:px-8">
+      <div className="bg-gray-100 w-full  pt-20 pb-4  px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto text-centerlg:text-left">
           <h1 className="text-4xl font-semibold  lg:ml-8 mb-8 text-gray-900">
             One Platform, Many <span className="text-green-500   ">Possibilities</span>
@@ -57,12 +57,14 @@ const Section = () => {
         <div className="flex flex-col lg:flex-row items-center lg:space-x-8 max-w-7xl w-full px-4">
           {/* Image Section */}
           <div className="p-3 rounded-2xl">
+            <div className="bg-white p-2 border-white rounded-3xl">
             <div className="w-full max-w-[679.38px] h-auto rounded-lg">
               <img
                 src="classlive.png"
                 alt="Description"
                 className="w-full h-auto rounded-2xl"
               />
+            </div>
             </div>
           </div>
 

@@ -4,14 +4,14 @@ const HeroSection = () => {
   return (
     <div className="  ">
       {/* Wave background */}
-      <div className="absolute inset-0 lg:mt-[170px] overflow-hidden">
-        <div className="absolute w-full h-full">
-          <img
-            src="Hero.png"
-            alt="Description"
-            className="w-full h-full object-cover"
-          />
-        </div>
+      <div className="absolute inset-0 lg:mt-[100px] overflow-hidden ">
+      <div className=" top-0 left-0 w-screen  overflow-hidden z-0 mr-40 ">
+        <img
+          src="Hero.png"
+          alt="Description"
+          className="w-screen h-screen object-cover transform scale-100"
+        />
+      </div>
 
       </div>
 
@@ -38,7 +38,7 @@ const HeroSection = () => {
         </button>
 
         {/* Avatar Group */}
-        <div className="flex -space-x-2 mt-24">
+        <div className="flex -space-x-2 mt-[70px]">
           <img
             src="https://images.rawpixel.com/image_png_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIyLTA4L2pvYjEwMzQtZWxlbWVudC0wNi0zOTcucG5n.png"
             alt="User"

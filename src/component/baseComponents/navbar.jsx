@@ -1,10 +1,13 @@
 import { MdOutlineShoppingCart } from "react-icons/md";
+import { LuGraduationCap } from "react-icons/lu";
 
 export function NavBar() {
   return (
-    <nav className="flex items-center justify-between mt-8 max-w-7xl mx-auto">
+    <nav className="flex items-center justify-between mt-8 max-w-6xl mx-auto">
       <a href="/" className="flex items-center gap-2">
-        <div className="w-8 h-8 bg-blue-600 rounded-full" />
+      <div className="w-11 h-11 bg-blue-600 rounded-full flex items-center justify-center">
+              <LuGraduationCap className='text-white w-7 h-7'/>
+              </div>
         <span className="font-semibold text-lg">GenAi Learning</span>
       </a>
 
