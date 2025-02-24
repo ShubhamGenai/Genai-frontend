@@ -3,55 +3,46 @@ import { motion } from 'framer-motion';
 import Particles from '../../component/ui/styles/Particles';
 import { Link } from 'react-router-dom';
 
-
-
-
-const SignupPage = () => {
+const LoginPage = () => {
   const [formData, setFormData] = useState({
-    fullName: '',
     email: '',
-    password: '',
-    agreed: false
+    password: ''
   });
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: value
     }));
   };
 
   return (
-    <div className="flex min-h-fit">
-      {/* Left Side - Background Animation */}
+    <div className="flex min-h-screen">
       <div className="hidden lg:flex lg:w-2/3 relative bg-black">
-        {/* <ParticleBackground /> */}
-       
-
-<div style={{ width: '100%', height: '900px', position: 'relative' }} >
-  <Particles
-    particleColors={['#ffffff', '#ffffff']}
-    particleCount={200}
-    particleSpread={10}
-    speed={0.1}
-    particleBaseSize={100}
-    moveParticlesOnHover={true}
-    alphaParticles={false}
-    disableRotation={false}
-  />
-</div>
+        <div style={{ width: '100%', height: '900px', position: 'relative' }}>
+          <Particles
+            particleColors={['#ffffff', '#ffffff']}
+            particleCount={200}
+            particleSpread={10}
+            speed={0.1}
+            particleBaseSize={100}
+            moveParticlesOnHover={true}
+            alphaParticles={false}
+            disableRotation={false}
+          />
+        </div>
         <div className="absolute inset-0 flex flex-col justify-center p-12 text-white z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <div className="text-3xl text- font-bold mb-4">Welcome to</div>
-            <div className="text-5xl text-  font-bold mb-6">Gen<span className="bg-gradient-to-r from-[hsla(221,83%,53%,1)] to-[hsla(155,100%,31%,1)] text-transparent bg-clip-text">
+            <div className="text-3xl font-bold mb-4">Welcome back to</div>
+            <div className="text-5xl font-bold mb-6">Gen<span className="bg-gradient-to-r from-[hsla(221,83%,53%,1)] to-[hsla(155,100%,31%,1)] text-transparent bg-clip-text">
               Ai
             </span> Community</div>
-            <p className="text-xl text- opacity-80">Home to AI enthusiasts worldwide</p>
+            <p className="text-xl opacity-80">Reconnect with AI enthusiasts worldwide</p>
             <button className="text-blue-400 hover:text-blue-600 mt-4 transition-colors">
               Learn more
             </button>
@@ -59,7 +50,6 @@ const SignupPage = () => {
         </div>
       </div>
 
-      {/* Right Side - Sign Up Form */}
       <div className="w-full lg:w-1/2 p-8 sm:p-12 flex items-center justify-center bg-white">
         <div className="w-full max-w-md">
           <motion.div
@@ -68,28 +58,20 @@ const SignupPage = () => {
             transition={{ duration: 0.8 }}
           >
             <Link to="/">
-            <div className="flex  mb-6">
-              <img src="/logo.webp" alt="GenAI Logo" className="w-24 h-12" />
-            </div>
+              <div className="flex mb-6">
+                <img src="/logo.webp" alt="GenAI Logo" className="w-24 h-12" />
+              </div>
             </Link>
-              
-            <h1 className="text-3xl text-blue-600 font-bold mb-2">Join us</h1>
-            <h2 className="text-2xl mb-6">Create a GenAI account</h2>
+
+            <h1 className="text-3xl text-blue-600 font-bold mb-2">Welcome Back</h1>
+            <h2 className="text-2xl mb-6">Log in to your GenAI account</h2>
+
             <p className="text-gray-600 mb-8">
-              Be part of a growing community of AI enthusiasts and developers
+            It's nice to see you again. Ready to Learn?
             </p>
 
+
             <form className="space-y-4">
-              <div>
-                <input
-                  type="text"
-                  name="fullName"
-                  placeholder="Full Name"
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
-                  value={formData.fullName}
-                  onChange={handleChange}
-                />
-              </div>
               <div>
                 <input
                   type="email"
@@ -109,30 +91,18 @@ const SignupPage = () => {
                   value={formData.password}
                   onChange={handleChange}
                 />
-              </div>
-
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  name="agreed"
-                  id="agreed"
-                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                  checked={formData.agreed}
-                  onChange={handleChange}
-                />
-                <label htmlFor="agreed" className="ml-2 text-sm text-gray-600">
-                  I agree to GenAI's{' '}
-                  <a href="#" className="text-blue-600 hover:underline">Terms of Service</a>
-                  {' '}and{' '}
-                  <a href="#" className="text-blue-600 hover:underline">Privacy Policy</a>
-                </label>
+                <div className="text-right mt-2">
+                  <Link to="/forgot-password" className="text-blue-600 hover:underline text-sm">
+                    Forgot Password?
+                  </Link>
+                </div>
               </div>
 
               <button
                 type="submit"
                 className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
-                Sign up
+                Log in
               </button>
 
               <div className="relative my-8">
@@ -147,7 +117,6 @@ const SignupPage = () => {
               <div className="space-y-3">
                 <button className="w-full px-4 py-3 border border-gray-300 rounded-lg flex items-center justify-center space-x-2 hover:bg-gray-50 transition-colors">
                   <img src="/icons/gmail.png" alt="Google" className="w-5 h-5" />
-                  
                   <span>Continue with Google</span>
                 </button>
 
@@ -164,8 +133,8 @@ const SignupPage = () => {
               </div>
 
               <p className="text-center text-sm text-gray-600">
-                Already have an account?{' '}
-                <Link to="/login" className="text-blue-600 hover:underline">Log in</Link>
+                Don't have an account?{' '}
+                <Link to="/signup" className="text-blue-600 hover:underline">Sign up</Link>
               </p>
             </form>
           </motion.div>
@@ -175,4 +144,4 @@ const SignupPage = () => {
   );
 };
 
-export default SignupPage;
+export default LoginPage;
