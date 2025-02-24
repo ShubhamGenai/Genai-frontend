@@ -21,6 +21,8 @@ const LoginLandingPage = () => {
             <p className="text-lg md:text-xl font-light mb-8 max-w-md text-center">
               Join millions of students, practice coding skills, prepare for interviews, and land your dream job.
             </p>
+            <Link to="/login">
+         
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -28,6 +30,7 @@ const LoginLandingPage = () => {
             >
               Login
             </motion.button>
+            </Link>
             <p className="mt-4 text-md font-normal">Don't have an account?</p>
             <p className="text-md font-normal">
               <Link  to="/signup?user=student" className="font-bold hover:text-green-400">Sign up</Link>
