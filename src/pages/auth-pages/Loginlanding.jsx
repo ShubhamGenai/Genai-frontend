@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 
 const LoginLandingPage = () => {
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-green-50 to-white p-0">
+    <div className="min-h-screen w-full flex items-center justify-center  p-0">
       <div className="w-full text-center">
         <div className="grid grid-cols-1 md:grid-cols-2 min-h-screen w-full">
           {/* Employer Section */}
