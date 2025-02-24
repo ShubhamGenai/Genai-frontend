@@ -88,7 +88,7 @@ export function NavBar() {
               to="/login-landing"
               className="hidden sm:block px-4 py-2 border border-blue-600 text-blue-600 rounded-lg font-medium hover:bg-blue-50 text-sm sm:text-base"
             >
-              Sign in
+              Sign Up
             </Link>
           </div>
         </nav>
@@ -106,7 +106,7 @@ export function NavBar() {
   {/* Top Section: Logo & Close Icon */}
   <div className="flex items-center justify-between w-full px-4">
     {/* Logo */}
-    <Link to="/" className="flex items-center gap-2">
+    <Link to="/" className="flex items-center gap-2 ">
       <div className="w-9 h-9 bg-blue-600 rounded-full flex items-center justify-center">
         <LuGraduationCap className="text-white w-5 h-5" />
       </div>
@@ -156,7 +156,7 @@ export function NavBar() {
       className="mt-4 px-4 py-2 border border-blue-600 text-blue-600 rounded-lg font-medium hover:bg-blue-50"
       onClick={() => setIsOpen(false)}
     >
-      Sign in
+      Sign Up
     </Link>
   </div>
 </div>
