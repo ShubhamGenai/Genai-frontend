@@ -5,7 +5,7 @@ import { LuGraduationCap } from "react-icons/lu";
 const Footer = () => {
   return (
     <div className="flex justify-center items-center">
-      <footer className="w-full bg-white py-12 px-26">
+      <footer className="w-full bg-white py-12 px-4 md:px-26">
         <div className="max-w-7xl mx-auto">
           {/* Main Content */}
           <div className="flex flex-col md:flex-row justify-between mb-8">
@@ -18,13 +18,14 @@ const Footer = () => {
                 <span className="text-2xl font-semibold">GenAi Learning</span>
               </div>
               <p className="text-gray-600 text-sm">
-              Our platform provides comprehensive resources and tools to<br/>
- help you prepare for the JEE exam with confidence.              </p>
+                Our platform provides comprehensive resources and tools to<br/>
+                help you prepare for the JEE exam with confidence.
+              </p>
             </div>
 
             {/* Right Section - Navigation Links */}
-            <div className="grid grid-cols-4 gap-2">
-              {/* Support Column */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+              {/* Services Column */}
               <div>
                 <h3 className="font-semibold mb-4">Services</h3>
                 <ul className="space-y-2">
@@ -75,7 +76,7 @@ const Footer = () => {
                 { icon: <HiMail />, link: "#" },
               ].map(({ icon, link }, index) => (
                 <a key={index} href={link} className="flex items-center justify-center w-9 h-9 rounded-full border border-gray-300 bg-gray-100 hover:bg-gray-200 transition">
-                  <div className="w-40 h-40  text-black flex items-center justify-center rounded">
+                  <div className="w-9 h-9 md:w-40 md:h-40 text-black flex items-center justify-center rounded">
                     {icon}
                   </div>
                 </a>

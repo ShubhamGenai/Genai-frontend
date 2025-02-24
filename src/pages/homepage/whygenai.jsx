@@ -12,13 +12,12 @@ const FeatureCard = ({ icon, title, description }) => (
 
 const WhyGenAiLearning = () => {
   return (
-    <div className="flex justify-center items-center  bg-blue-50">
-      <div className="mx-auto px-4 sm:px-6 py-20 sm:py-20 grid grid-cols-1 md:grid-cols-2   sm:ml-20 sm:mr-20 max-w-7xl">
-
-
+    <div className="flex justify-center items-center bg-blue-50">
+      <div className="mx-auto px-4 sm:px-6 py-20 sm:py-20 grid grid-cols-1 md:grid-cols-2 sm:ml-20 sm:mr-20 max-w-7xl">
         <div className="mt-8 sm:mt-36">
           <h2 className="text-2xl sm:text-4xl mb-4">
-            <span className='font-semibold'>Why, </span><span className="text-green-600 font-bold">GenAi Learning?</span>
+            <span className="font-semibold">Why, </span>
+            <span className="text-green-600 font-bold">GenAi Learning?</span>
           </h2>
           <p className="text-gray-600 text-sm sm:text-base mb-6">
             With 1.8+ Crore Students and one of the best selection rates in <br/>India amongst online learning platforms, you can surely rely on<br/> us to excel.
@@ -27,10 +26,7 @@ const WhyGenAiLearning = () => {
             Get started for free <span className="ml-2 font-semibold">→</span>
           </button>
         </div>
-
-
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-7 -ml-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-7 sm:-ml-10">
           <FeatureCard
             icon="./leaderboard/Guidence.png"
             title="Personalized Guidance"
@@ -52,8 +48,6 @@ const WhyGenAiLearning = () => {
             description="We’ve guided over 4,000 learners to success and gained knowledge."
           />
         </div>
-
-
       </div>
     </div>
   );

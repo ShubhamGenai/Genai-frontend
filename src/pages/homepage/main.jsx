@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavBar } from '../../component/baseComponents/navbar';
-import HeroSection from '../../component/pageComponents/landing/hero';
+import HeroSection from './hero';
 import CompanyLogos from './company-logos';
 import LearningSection from './learning-section';
 import LearningJourney from './LearningJourney';

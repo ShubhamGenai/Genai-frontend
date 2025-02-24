@@ -1,7 +1,7 @@
 export default function StatsSection() {
   return (
     <div className="flex justify-center items-center pt-32 pb-32 -ml-10 px-24">
-      <div className="grid grid-cols-5 gap-64  text-center">
+      <div className="flex flex-row flex-nowrap gap-64 text-center overflow-x-auto">
         {[
           { value: "5,000", label: "Courses" },
           { value: "6,500", label: "Tests" },
