@@ -57,7 +57,7 @@ const LoginLandingPage = () => {
             </motion.button>
             <p className="mt-4 text-md font-normal">Don't have an account?</p>
             <p className="text-md font-normal">
-              <Link  to="/create-account?user=student" className="font-bold hover:text-black">Sign up</Link>
+              <Link  to="/create-account?user=student" className="font-bold hover:text-green-400">Sign up</Link>
             </p>
           </motion.div>
         </div>

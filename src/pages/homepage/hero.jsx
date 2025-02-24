@@ -45,6 +45,7 @@ const HeroSection = () => {
             alt="User"
             className="w-6 sm:w-8 h-6 sm:h-8 rounded-full border-2 border-white"
           />
+          
           <img
             src="https://images.rawpixel.com/image_png_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIyLTA4L2pvYjEwMzQtZWxlbWVudC0wNS0zODUucG5n.png"
             alt="User"
