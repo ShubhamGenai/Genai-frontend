@@ -1,5 +1,6 @@
 import { MdOutlineShoppingCart } from "react-icons/md";
 import { LuGraduationCap } from "react-icons/lu";
+import { Link } from "react-router-dom";
 
 export function NavBar() {
   return (
@@ -28,9 +29,12 @@ export function NavBar() {
 
       <div className="flex items-center gap-4 sm:gap-5">
         <MdOutlineShoppingCart className="text-gray-500 w-5 h-5 sm:w-6 sm:h-6" />
+        <Link to="/login-landing">
+     
         <button className="px-3 py-1.5 sm:px-4 sm:py-2 border border-blue-600 text-blue-600 rounded-lg font-medium hover:bg-blue-50 text-sm sm:text-base">
           Sign in
         </button>
+        </Link>
       </div>
     </nav>
   );
