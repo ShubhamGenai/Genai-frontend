@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import {Link} from 'react-router-dom'
 
 const LoginLandingPage = () => {
   return (
@@ -22,7 +23,7 @@ const LoginLandingPage = () => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="px-6 md:px-8 py-2 md:py-3 bg-blue-600 text-white text-lg rounded-lg font-semibold hover:bg-blue-500 transition-colors"
+              className="px-6 md:px-8 py-2 md:py-3 bg-blue-600 text-white text-lg rounded-lg font-light hover:bg-blue-500 transition-colors"
             >
               Login
             </motion.button>
@@ -50,13 +51,13 @@ const LoginLandingPage = () => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="px-6 md:px-8 py-2 md:py-3 bg-white text-blue-600 text-lg rounded-lg font-semibold hover:bg-gray-200 transition-colors"
+              className="px-6 md:px-8 py-2 md:py-3 bg-white text-blue-600 text-lg rounded-lg font-light hover:bg-gray-200 transition-colors"
             >
               Login
             </motion.button>
             <p className="mt-4 text-md font-normal">Don't have an account?</p>
             <p className="text-md font-normal">
-              <a href="#" className="font-bold hover:text-black">Sign up</a>
+              <Link  to="/create-account?user=student" className="font-bold hover:text-black">Sign up</Link>
             </p>
           </motion.div>
         </div>

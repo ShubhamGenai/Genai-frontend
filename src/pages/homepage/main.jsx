@@ -32,7 +32,7 @@ const HomepgMain1 = () => {
       
       <TestimonialsSection/>
       <HireSection/>
-      <Footer/>
+      {/* <Footer/> */}
       
     </div>
   );
