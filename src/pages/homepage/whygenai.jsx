@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const FeatureCard = ({ icon, title, description }) => (
   <div className="bg-white shadow-sm rounded-lg p-5 sm:p-7">
@@ -22,9 +23,12 @@ const WhyGenAiLearning = () => {
           <p className="text-gray-600 text-sm sm:text-base mb-6">
             With 1.8+ Crore Students and one of the best selection rates in <br/>India amongst online learning platforms, you can surely rely on<br/> us to excel.
           </p>
+          <Link to="/login-landing">
+      
           <button className="bg-blue-600 text-white px-4 sm:px-6 py-4 rounded-md font-semibold flex items-center">
             Get started for free <span className="ml-2 font-semibold">→</span>
           </button>
+          </Link>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-7 sm:-ml-10">
           <FeatureCard

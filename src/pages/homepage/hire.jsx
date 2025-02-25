@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const HireSection = () => {
   return (
@@ -18,9 +19,12 @@ const HireSection = () => {
                 academic<br/> and professional growth. Start
                 your success story<br/> today.
               </p>
+              <Link>
+           
               <button className="bg-transparent border border-white text-white px-4 py-2 sm:px-6 sm:py-3 rounded-md font-semibold flex items-center mt-6 sm:mt-10 hover:bg-white/10 transition-colors">
                 Start Learning <span className="ml-2">→</span>
               </button>
+              </Link>
             </div>
           </div>
 
