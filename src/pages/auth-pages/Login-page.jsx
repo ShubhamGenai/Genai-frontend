@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { motion } from 'framer-motion';
 import Particles from '../../component/ui/styles/Particles';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { API_BASE_URL } from '../../constants/ApiConstants';
+import { mainContext } from '../../context/MainContext';
 
 const LoginPage = () => {
+  const { setUser, setToken } = useContext(mainContext);
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -42,10 +44,13 @@ const LoginPage = () => {
     }
 
     try {
-      console.log("Logging in with:", { email, password }); // Debugging
+      
       const response = await axios.post(`${API_BASE_URL}/auth/login`, { email, password });
 
       if (response.data?.token) {
+        setToken(response.data.token);
+        setUser(response.data.user);
+        
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('user', JSON.stringify(response.data.user || {}));
 

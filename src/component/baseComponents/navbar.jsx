@@ -65,7 +65,7 @@ export function NavBar() {
             <Link to="/jobs" className="text-gray-600 hover:text-gray-900">
               Jobs
             </Link>
-            <Link to="/leaderboard" className="text-gray-600 hover:text-gray-900">
+            <Link to="/leader-board" className="text-gray-600 hover:text-gray-900">
               Leaderboard
             </Link>
           </div>
@@ -143,7 +143,7 @@ export function NavBar() {
       Jobs
     </Link>
     <Link
-      to="/leaderboard"
+      to="/leader-board"
       className="text-gray-600 hover:text-gray-900 text-lg"
       onClick={() => setIsOpen(false)}
     >
