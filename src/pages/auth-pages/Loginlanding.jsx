@@ -13,7 +13,7 @@ const LoginLandingPage = () => {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="flex flex-col justify-center items-center bg-blue-600 bg-opacity-5 text-white p-10 md:p-20 w-full h-full"
+            className="flex flex-col justify-center items-center bg-blue-600 bg-opacity-5  shadow-md text-white p-10 md:p-20 w-full h-full"
           >
             <h2 className="text-4xl md:text-6xl font-light mb-6 text-center">
               For <span className="font-semibold">Students</span>
@@ -33,7 +33,7 @@ const LoginLandingPage = () => {
             </Link>
             <p className="mt-4 text-md font-normal">Don't have an account?</p>
             <p className="text-md font-normal">
-              <Link  to="/signup?user=student" className="font-bold hover:text-green-400">Sign up</Link>
+              <Link  to="/signup?role=student" className="font-bold hover:text-green-400">Sign up</Link>
             </p>
           </motion.div>
 

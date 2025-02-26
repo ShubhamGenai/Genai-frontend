@@ -1,5 +1,6 @@
 // HeroSection.jsx
 import '@fontsource/inter'; // Import the Inter font
+import { Link } from 'react-router-dom';
 const HeroSection = () => {
   return (
     <div className="">
@@ -34,9 +35,12 @@ const HeroSection = () => {
         </div>
 
         {/* Get Started Button */}
+        <Link to="/login-landing">
+       
         <button className="bg-blue-600 text-white px-6 sm:px-8 py-2 sm:py-3 rounded-md hover:bg-blue-700 transition-colors duration-300 mb-12">
           Get Started
         </button>
+        </Link>
 
         {/* Avatar Group */}
         <div className="flex -space-x-2 mt-10 sm:mt-[70px]">

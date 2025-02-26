@@ -20,13 +20,7 @@ const TestimonialCard = ({ title, content, name, role, image, style }) => (
 
 const TestimonialsSection = () => {
   return (
-    <div className="flex justify-center items-center py-20 "
-    style={{
-      backgroundImage: "url('./bgs/bg1.png')",
-     
-      backgroundPosition: "center",
-      
-    }}>
+    <div className="flex justify-center items-center py-20 ">
       <div className="max-w-6xl mx-auto px-4 py-12">
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
