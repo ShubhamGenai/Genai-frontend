@@ -44,7 +44,7 @@ const PublicRoutes = () => {
       />
 
       {/* Public Pages */}
-      {/* Change to the correct public component */}
+ 
       <Route path="tests" element={<TestPage />} /> 
       <Route path="learn" element={<LearnMainPage />} /> 
       <Route path="jobs" element={<JobsMainPage />} /> 
