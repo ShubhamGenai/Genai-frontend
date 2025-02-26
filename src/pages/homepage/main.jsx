@@ -1,4 +1,5 @@
 import React from 'react';
+import '@fontsource/inter'; 
 import { NavBar } from '../../component/baseComponents/navbar';
 import HeroSection from './hero';
 import CompanyLogos from './company-logos';
@@ -16,7 +17,7 @@ import Section from './category';
 
 const HomepgMain1 = () => {
   return (
-    <div className="">
+    <div className="font-sans">
       {/* <NavBar/> */}
       <HeroSection/>
 

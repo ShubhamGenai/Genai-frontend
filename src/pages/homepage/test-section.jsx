@@ -6,13 +6,19 @@ export default function TestSection() {
   return (
     <div className="w-full">
       <section className="bg-white pt-16 w-full flex justify-center">
-        <div className="max-w-7xl w-full flex flex-col md:flex-row items-center justify-between border border-gray-200 rounded-lg p-10">
+        <div className="max-w-7xl w-full flex flex-col md:flex-row items-center justify-between border border-gray-200 rounded-lg p-10"
+         style={{
+          backgroundImage: "url('./bgs/bg.png')",
+         
+          backgroundPosition: "center",
+          
+        }}>
           {/* Left Text Section */}
           <div className="md:w-1/2 py-10">
-            <h4 className="text-gray-500 uppercase text-sm tracking-wide">Tests</h4>
+            <h4 className="text-gray-500 uppercase text-sm tracking-wide font-semibold">Tests</h4>
             <h2 className="text-4xl mt-7 text-gray-900">
-              <span className="font-bold text-black">Test </span>your skills,{" "}
-              <span className="text-black font-bold">Ace </span>your <br /> goals!
+              <span className="font-bold text-black">Test </span><span className='font-semibold'>your skills,{" "}</span>
+              <span className="text-black font-bold">Ace </span><span className='font-semibold'>your <br /> goals!</span>
             </h2>
             <p className="text-gray-600 mt-8">
               With 1.8+ Crore Students and one of the best selection rates in

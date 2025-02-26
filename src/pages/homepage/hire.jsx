@@ -4,13 +4,13 @@ const HireSection = () => {
   return (
     <div className="flex items-center w-full pb-16">
       <div className="w-full mx-auto max-w-[1520px]">
-        <div className="grid grid-cols-1 md:grid-cols-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 ">
           {/* Learners Section */}
-          <div className="bg-blue-600 text-white p-6 sm:p-8 md:p-12 lg:p-32">
-            <div className="max-w-md mx-auto md:ml-0">
+          <div className="bg-blue-600 text-white p-6 sm:p-8 md:p-12 lg:p-32 ">
+            <div className="max-w-md mx-auto md:ml-14">
               <h4 className="text-sm font-semibold mb-4 tracking-wider">FOR LEARNERS</h4>
               <h2 className="text-2xl sm:text-3xl lg:text-4xl mb-4 leading-tight">
-                <span className="font-bold">Empower</span> Your<br className="hidden sm:block" /> Learning Journey
+                <span className="font-bold">Empower</span><span className='font-semibold'> your<br className="hidden sm:block" /> learning journey</span>
               </h2>
               <p className="mb-6 text-sm sm:text-base opacity-90">
                 The Mentor: Top mentors, curated courses,
@@ -29,7 +29,7 @@ const HireSection = () => {
             <div className="max-w-md ml-0 md:ml-32 md:mr-0">
               <h4 className="text-sm text-green-600 font-semibold mb-4 tracking-wider">FOR EMPLOYERS</h4>
               <h2 className="text-2xl sm:text-3xl lg:text-4xl mb-4 leading-tight">
-                <span className="font-bold">Hire</span> Top Talent, Smarter<br className="hidden sm:block" />  and Faster
+                <span className="font-bold">Hire</span><span className='font-semibold'> top talent, smarter<br className="hidden sm:block" />  and faster</span>
               </h2>
               <p className="mb-6 text-sm sm:text-base text-gray-700">
                 Discover pre-assessed candidates tailored

@@ -42,8 +42,8 @@ const Section = () => {
       {/* Intro Section */}
       <div className="bg-gray-100 w-full pt-20 pb-4 px-2 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto text-center lg:text-left">
-          <h1 className="text-2xl sm:text-4xl font-semibold lg:ml-8 mb-4 sm:mb-8 text-gray-900">
-            One Platform, Many <span className="text-green-500">Possibilities</span>
+          <h1 className="text-2xl sm:text-4xl lg:ml-8 mb-4 sm:mb-8 text-gray-900">
+          <span className='font-semibold'>One Platform, Many </span><span className="text-green-500 font-bold">Possibilities</span>
           </h1>
           <p className="mt-2 sm:mt-4 text-base sm:text-lg text-gray-600 max-w-full sm:max-w-3xl lg:ml-8 mx-auto lg:mx-0">
             The ultimate platform for students, job seekers, and employers. Gain skills, land jobs, and find top talent—all in one seamless experience.

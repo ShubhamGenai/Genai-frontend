@@ -2,10 +2,11 @@
 import React from 'react';
 
 
-const TestimonialCard = ({ title, content, name, role, image }) => (
-  <div className="bg-white shadow-md rounded-lg p-6">
-    <h3 className="font-bold text-lg mb-2">{title}</h3>
+const TestimonialCard = ({ title, content, name, role, image, style }) => (
+  <div className="bg-white border border-gray-300 rounded-lg p-6" style={style}>
+    <h3 className="font-semibold text-lg mb-2">{title}</h3>
     <p className="text-gray-600 mb-4">{content}</p>
+    <hr className='mb-4 text-gray-300'/>
     <div className="flex items-center">
       <img src={image} alt={name} className="w-10 h-10 rounded-full mr-3" />
       <div>
@@ -16,9 +17,16 @@ const TestimonialCard = ({ title, content, name, role, image }) => (
   </div>
 );
 
+
 const TestimonialsSection = () => {
   return (
-    <div className="flex justify-center items-center py-20 bg-gray-50">
+    <div className="flex justify-center items-center py-20 "
+    style={{
+      backgroundImage: "url('./bgs/bg1.png')",
+     
+      backgroundPosition: "center",
+      
+    }}>
       <div className="max-w-6xl mx-auto px-4 py-12">
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
@@ -30,7 +38,7 @@ const TestimonialsSection = () => {
           </div>
           <p className="text-sm text-gray-500">5000+ HAPPY GEN AI LEARNING USERS</p>
           <h2 className="text-4xl  mt-3 mb-16">
-            <span className='font-bold'>Trusted</span> by Learners, <span className="font-bold">Loved</span> by Employers
+            <span className='font-bold'>Trusted</span><span className='font-semibold'> by Learners, </span><span className="font-bold">Loved</span><span className='font-semibold'> by Employers</span>
           </h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -40,6 +48,8 @@ const TestimonialsSection = () => {
             name="Shikha Soni"
             role="UI/UX Designer"
             image="https://images.rawpixel.com/image_png_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIyLTA4L2pvYjEwMzQtZWxlbWVudC0wNS0zODUucG5n.png"
+            className="h-64"
+           
           />
           <TestimonialCard
             title="Exam Success Made Easy"
@@ -47,6 +57,7 @@ const TestimonialsSection = () => {
             name="Aman Jain"
             role="Front-end Developer"
             image="https://images.rawpixel.com/image_png_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIyLTA4L2pvYjEwMzQtZWxlbWVudC0wNi0zOTcucG5n.png"
+            style={{ height: '300px' }}
           />
           <TestimonialCard
             title="Hiring Made Effortless"

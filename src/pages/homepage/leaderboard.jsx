@@ -5,12 +5,18 @@ export default function LeaderboardSection() {
   return (
     <div className="w-full">
       <section className="bg-white py-16 w-full flex justify-center ">
-        <div className="max-w-7xl w-full flex flex-col md:flex-row items-center justify-between border border-gray-200 rounded-lg p-10">
+        <div className="max-w-7xl w-full flex flex-col md:flex-row items-center justify-between border border-gray-200 rounded-lg p-10"
+         style={{
+          backgroundImage: "url('./bgs/bg.png')",
+         
+          backgroundPosition: "center",
+          
+        }}>
           {/* Left Text Section */}
           <div className="w-full md:w-1/2 py-10">
-            <h4 className="text-gray-500 uppercase text-sm tracking-wide">JOBS</h4>
+            <h4 className="text-gray-500 uppercase text-sm tracking-wide font-semibold">JOBS</h4>
             <h2 className="text-4xl mt-7 font-bold text-gray-900">
-              Climb the <span className="font-extrabold">Ranks</span>, Unlock<br /> Your <span className="font-extrabold">Future</span>
+            <span className='font-semibold'> Climb the </span><span className="font-extrabold">Ranks</span>, <span className='font-semibold'>Unlock<br /> Your </span><span className="font-extrabold">Future</span>
             </h2>
             <p className="mb-11 mt-6">
               The better your rank, the brighter your career. Top the<br /> leaderboard, showcase your skills, and grab exclusive job offers<br /> from leading recruiters.

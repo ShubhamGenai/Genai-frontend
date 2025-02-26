@@ -1,25 +1,37 @@
 import { useEffect, useState } from 'react';
-import { MdOutlineGroup } from "react-icons/md";
-import { WiTime4 } from "react-icons/wi";
+import LearningSection from './learning-section';
+import TestSection from './test-section';
+import LeaderboardSection from './leaderboard';
+
 
 export default function HomePage() {
   const [scrollPosition, setScrollPosition] = useState(0);
-  const [sectionRef, setSectionRef] = useState(null);
-  const [isInView, setIsInView] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
       setScrollPosition(window.scrollY);
-      
-      if (sectionRef) {
-        const rect = sectionRef.getBoundingClientRect();
-        setIsInView(rect.top <= window.innerHeight && rect.bottom >= 0);
-      }
     };
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [sectionRef]);
+  }, []);
+
+  // Z-index logic: Each card gets a higher z-index when activated
+  const getZIndex = (threshold) => (scrollPosition > threshold ? 30 : 10);
+  
+  // TranslateY logic: Negative offsets to move cards up
+  const getTranslateY = (threshold, offset = 0) => {
+    const start = threshold - 300;
+    if (scrollPosition > threshold) return '0%'; // Fully visible
+    if (scrollPosition > start) {
+      const progress = (scrollPosition - start) / 300;
+      return `${-offset * progress}%`; // Apply negative offset based on scroll
+    }
+    return '50%'; // Initial half-covered state
+  };
+
+  // Common class for all sections
+  const sectionClass = "sticky top-1/2 bg-white w-[80%] max-w-4xl p-16 border rounded-lg shadow-lg transition-transform duration-300";
 
   return (
     <div>
@@ -31,71 +43,43 @@ export default function HomePage() {
       </div>
 
       {/* Sections Container */}
-      <div 
-        ref={setSectionRef} 
-        className="relative h-[200vh] overflow-hidden"
-      >
+      <div className="relative h-[300vh]">
         {/* Learn Section */}
-        <section className="bg-white mx-20 sticky top-0">
-          <div className="flex flex-col md:flex-row items-center justify-between border border-gray-200 rounded-lg p-20">
-            {/* Learn Section Content */}
-            <div className="md:w-1/2">
-              <h4 className="text-gray-500 uppercase text-sm tracking-wide">Learn</h4>
-              <h2 className="text-4xl mt-7 text-gray-900">
-                <span className="font-bold text-black">Learn </span> anything,
-                <span className="text-black font-bold"> Achieve </span> <br /> everything
-              </h2>
-              <p className="text-gray-600 mt-8">
-                With 1.8+ Crore Students and one of the best selection rates in<br /> India amongst
-                online learning platforms, you can surely rely on <br />us to excel.
-              </p>
-              <button className="mt-8 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition">
-                Start learning now! →
-              </button>
-            </div>
-
-            {/* Learn Section Cards */}
-            <div className="md:w-1/2 flex flex-col md:flex-row gap-4 mt-8 md:mt-0">
-              {/* Your existing learn section cards */}
-            </div>
-          </div>
+        <section
+          className={sectionClass}
+          style={{
+            left: '50%',
+            transform: `translateX(-50%) translateY(-50%) translateY(${getTranslateY(300, 50)})`,
+            zIndex: getZIndex(300),
+          }}
+        >
+          <LearningSection />
         </section>
 
         {/* Test Section */}
-        <section 
-          className="bg-white mx-20 sticky top-0"
+        <section
+          className={sectionClass}
           style={{
-            transform: isInView ? `translateY(${Math.min(Math.max(scrollPosition % window.innerHeight - 300, -window.innerHeight), 0)}px)` : 'none',
-            zIndex: isInView && scrollPosition % window.innerHeight > 300 ? 20 : 10,
-            transition: 'transform 0.3s ease-out'
+            left: '50%',
+            transform: `translateX(-50%) translateY(-50%) translateY(${getTranslateY(600, 50)})`,
+            zIndex: getZIndex(600),
           }}
         >
-          <div className="flex flex-col md:flex-row items-center justify-between border border-gray-200 rounded-lg p-20">
-            {/* Test Section Content */}
-            <div className="md:w-1/2">
-              <h4 className="text-gray-500 uppercase text-sm tracking-wide">Tests</h4>
-              <h2 className="text-4xl mt-7 text-gray-900">
-                <span className="font-bold text-black">Test </span>your skills,
-                <span className="text-black font-bold"> Ace </span>your <br /> goals!
-              </h2>
-              <p className="text-gray-600 mt-8">
-                With 1.8+ Crore Students and one of the best selection rates in<br /> India amongst
-                online learning platforms, you can surely rely on <br />us to excel.
-              </p>
-              <button className="mt-8 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition">
-                Start testing now! →
-              </button>
-            </div>
+          <TestSection />
+        </section>
 
-            {/* Test Section Cards */}
-            <div className="md:w-1/2 flex flex-col md:flex-row gap-4 mt-8 md:mt-0">
-              {/* Your existing test section cards */}
-            </div>
-          </div>
+        {/* Dash Section */}
+        <section
+          className={sectionClass}
+          style={{
+            left: '50%',
+            transform: `translateX(-50%) translateY(-50%) translateY(${getTranslateY(900, 50)})`,
+            zIndex: getZIndex(900),
+          }}
+        >
+          <LeaderboardSection />
         </section>
       </div>
-
-      {/* Rest of your content */}
     </div>
   );
 }

@@ -12,7 +12,7 @@ export default function Part3() {
             <div className="w-full md:w-1/2 mb-8 md:mb-0 px-4 md:px-8 lg:px-12">
               <div className="flex items-center gap-3 mb-4">
                 <h2 className="text-2xl md:text-4xl">
-                  Unlock<span className="font-bold"> Exclusive Benefits </span> with<br />
+                <span className='font-semibold'>Unlock</span><span className="font-bold"> Exclusive Benefits </span> <span className='font-semibold'>with<br /></span>
                   <span className="font-bold">Elite Subscription</span>
                 </h2>
               </div>

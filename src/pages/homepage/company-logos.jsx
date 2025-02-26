@@ -56,7 +56,7 @@ export default function CompanyLogos() {
           className="scrolldown mb-24 ml-[15px] h-[40px] sm:h-[50px] w-[25px] sm:w-[30px] rounded-[50px] border-[2px] relative"
           style={{ "--color": "#2B7FFF", borderColor: "var(--color)" }}
         >
-          <div className="chevrons -ml-[2px] mt-8 sm:mt-12 w-full flex flex-col gap-1 items-center pt-2">
+          <div className="chevrons  mt-8 sm:mt-12 w-full flex flex-col gap-1 items-center pt-2">
             <div
               className="chevrondown -mt-1.5 inline-block h-2.5 sm:h-3 w-2.5 sm:w-3 rotate-45"
               style={{ borderRight: "2px solid var(--color)", borderBottom: "2px solid var(--color)" }}
