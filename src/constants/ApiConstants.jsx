@@ -1,6 +1,6 @@
 // API base URL
-// export const API_BASE_URL = 'https://genai-backend-ten.vercel.app/api/';
-export const API_BASE_URL = 'http://localhost:8080/api';
+export const API_BASE_URL = 'https://genai-backend-eight.vercel.app/';
+// export const API_BASE_URL = 'http://localhost:8080/api';
 
 
 // API endpoints for admin
