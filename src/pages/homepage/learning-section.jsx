@@ -9,7 +9,7 @@ export default function LearningSection() {
        
       >
          <div
-    className="max-w-7xl w-full flex flex-col md:flex-row items-center justify-between border border-gray-200 rounded-lg p-10 mt-5 ml-5"
+    className="max-w-7xl w-full flex flex-col md:flex-row items-center justify-between border border-gray-200 rounded-lg p-10 mt-5 "
     style={{
       backgroundImage: "url('./bgs/bg.png')",
      

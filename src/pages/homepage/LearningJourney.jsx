@@ -59,6 +59,9 @@ export default function Part3() {
             <span className="px-2">PLACE HOLDER</span>
             <span className="hidden md:inline text-lg">•</span>
             <span className="px-2">PLACE HOLDER</span>
+            <span className="hidden md:inline text-lg">•</span>
+            <span className="px-2">PLACE HOLDER</span>
+             
           </div>
         </div>
       </div>

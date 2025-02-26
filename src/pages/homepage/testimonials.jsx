@@ -20,7 +20,12 @@ const TestimonialCard = ({ title, content, name, role, image, style }) => (
 
 const TestimonialsSection = () => {
   return (
-    <div className="flex justify-center items-center py-20 ">
+    <div className="flex justify-center items-center py-20 "
+    style={{
+      backgroundImage: "url('./bgs/bg1.png')",
+     
+      backgroundPosition: "center",
+    }}>
       <div className="max-w-6xl mx-auto px-4 py-12">
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
@@ -35,7 +40,8 @@ const TestimonialsSection = () => {
             <span className='font-bold'>Trusted</span><span className='font-semibold'> by Learners, </span><span className="font-bold">Loved</span><span className='font-semibold'> by Employers</span>
           </h2>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8"
+       >
           <TestimonialCard
             title="Upskilled and Certified"
             content="As a working professional, I wanted to upskill but struggled with time management. GenAi’s personalized learning paths allowed me to learn at my own pace, and the community support was amazing. I’m now certified in data analytics and have already started applying for roles."

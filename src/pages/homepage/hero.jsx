@@ -27,7 +27,7 @@ const HeroSection = () => {
           </h1>
 
           <p
-            className="text-lg sm:text-xl text-gray-600 mt-2 tracking-widest font-semibold mb-4"
+            className="text-lg sm:text-xl text-gray-600 mt-2 opacity-80 tracking-widest font-semibold mb-4"
             style={{ fontFamily: 'SF Pro Display, sans-serif' }}
           >
             The future of learning
