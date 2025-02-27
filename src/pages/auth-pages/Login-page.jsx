@@ -9,6 +9,7 @@ import { mainContext } from '../../context/MainContext';
 
 const LoginPage = () => {
   const { setUser, setToken } = useContext(mainContext);
+  const [googleLoading,setGoogleLoading]= useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: ''
