@@ -6,6 +6,7 @@ import LoginLandingPage from "../pages/auth-pages/Loginlanding";
 import SignupPage from "../pages/auth-pages/Signup-page";
 import LoginPage from "../pages/auth-pages/Login-page";
 import TestPage from "../pages/student/test/TestPage";
+import CoursesMain from "../pages/coursespage/main";
 import JobsMainPage from "../pages/student/jobs/JobsMain";
 import LearnMainPage from "../pages/student/learn/LearnMain";
 import LeaderBoardPage from "../pages/student/leaderBoard/LeaderBoard";
@@ -46,7 +47,8 @@ const PublicRoutes = () => {
       {/* Public Pages */}
  
       <Route path="tests" element={<TestPage />} /> 
-      <Route path="learn" element={<LearnMainPage />} /> 
+      
+      <Route path="learn" element={<CoursesMain  />} /> 
       <Route path="jobs" element={<JobsMainPage />} /> 
       <Route path="leader-board" element={<LeaderBoardPage />} /> 
 
