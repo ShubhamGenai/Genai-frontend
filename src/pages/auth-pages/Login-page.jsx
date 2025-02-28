@@ -9,6 +9,7 @@ import { mainContext } from '../../context/MainContext';
 
 const LoginPage = () => {
   const { setUser, setToken } = useContext(mainContext);
+  const [googleLoading,setGoogleLoading]= useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -69,6 +70,21 @@ const LoginPage = () => {
     }
   };
 
+
+
+  // Handle Google login
+  const handleGoogleLogin = () => {
+    setGoogleLoading(true);
+    try {
+      // Redirect to backend Google OAuth route
+      window.location.href = `${API_BASE_URL}/auth/google`;
+    } catch (error) {
+      toast.error('Google Login Error:', error);
+      toast('An error occurred during Google login');
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
 
 
   return (
@@ -170,7 +186,7 @@ const LoginPage = () => {
       <button
         type="button"
         className="w-full px-3 py-2 border border-gray-300 rounded flex items-center justify-center space-x-2 hover:bg-gray-50 transition text-sm"
-      >
+        onClick={handleGoogleLogin}  >
         <img src="/icons/chrome.png" alt="Google" className="w-4 h-4" />
         <span>Continue with Google</span>
       </button>

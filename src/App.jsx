@@ -6,7 +6,7 @@ import AppRoutes from "./routes/AppRoutes";
 
 function App() {
   return (
-    <Router> {/* Router should be the outermost wrapper */}
+    <Router> 
       <ToastContainer position="top-right" autoClose={2000} hideProgressBar={false} closeOnClick draggable />
       <Layout>
         <AppRoutes />

@@ -10,6 +10,7 @@ import CoursesMain from "../pages/coursespage/main";
 import JobsMainPage from "../pages/student/jobs/JobsMain";
 import LearnMainPage from "../pages/student/learn/LearnMain";
 import LeaderBoardPage from "../pages/student/leaderBoard/LeaderBoard";
+import AuthCallback from "../hooks/AuthCallback";
 
 // Authentication route components
 const authComponents = {
@@ -51,6 +52,7 @@ const PublicRoutes = () => {
       <Route path="learn" element={<CoursesMain  />} /> 
       <Route path="jobs" element={<JobsMainPage />} /> 
       <Route path="leader-board" element={<LeaderBoardPage />} /> 
+      <Route path="auth/callback" element={<AuthCallback/>} />
 
 
       {/* Authentication Pages - Redirect logged-in users */}
