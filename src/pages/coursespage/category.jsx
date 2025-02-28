@@ -1,5 +1,7 @@
 // Category.jsx
 import React, { useState } from "react";
+ 
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function Category() {
   const [selectedCategory, setSelectedCategory] = useState("Data Analyst");
@@ -40,7 +42,7 @@ export default function Category() {
       duration: "2 hours",
       rating: 4.8,
       ratingCount: "2.7k",
-      image: "https://via.placeholder.com/400x250?text=Course+Image",
+      image: "./courses/cat.png",
     },
     {
       id: 2,
@@ -50,7 +52,7 @@ export default function Category() {
       duration: "2 hours",
       rating: 4.8,
       ratingCount: "2.7k",
-      image: "https://via.placeholder.com/400x250?text=Course+Image",
+      image: "./courses/cat.png",
     },
     {
       id: 3,
@@ -60,7 +62,7 @@ export default function Category() {
       duration: "2 hours",
       rating: 4.8,
       ratingCount: "2.7k",
-      image: "https://via.placeholder.com/400x250?text=Course+Image",
+      image: "./courses/cat.png",
     },
     {
       id: 4,
@@ -70,7 +72,7 @@ export default function Category() {
       duration: "2 hours",
       rating: 4.8,
       ratingCount: "2.7k",
-      image: "https://via.placeholder.com/400x250?text=Course+Image",
+      image: "./courses/cat.png",
     },
     {
       id: 5,
@@ -80,7 +82,7 @@ export default function Category() {
       duration: "2 hours",
       rating: 4.8,
       ratingCount: "2.7k",
-      image: "https://via.placeholder.com/400x250?text=Course+Image",
+      image: "./courses/cat.png",
     },
     {
       id: 6,
@@ -90,47 +92,45 @@ export default function Category() {
       duration: "2 hours",
       rating: 4.8,
       ratingCount: "2.7k",
-      image: "https://via.placeholder.com/400x250?text=Course+Image",
+      image: "./courses/cat.png",
     },
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-700">
+    <div className="min-h-screen    md:px-[92px]">
       {/* Top Section: Title and Category Tabs */}
-      <div className="mx-auto w-full max-w-7xl px-4 py-6">
-        <h1 className="text-2xl font-bold mb-4">Explore Courses &amp; Start Learning</h1>
-        
-      </div>
+      
 
       <section className="bg-white">
-      <div className="max-w-7xl mx-auto px-4 md:px-8 py-8">
+      <div className=" mx-auto px-4  py-8">
         {/* Heading */}
-        <h1 className="text-3xl font-bold text-blue-900 mb-6">
+        <h1 className="text-3xl font-bold text-black mb-6">
           Explore Courses & Start Learning
         </h1>
 
         {/* Categories and Buttons Container */}
         <div className="flex items-center justify-between">
           {/* Categories and All Categories Link */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-8 border-b border-gray-200 border-blacks">
             {categories.map((category) => (
               <button
                 key={category}
-                className={`text-blue-900 text-lg hover:underline ${
-                  activeCategory === category ? 'border-b-2 border-blue-900' : ''
+                className={`text-black text-md  hover:underline  ${
+                  activeCategory === category ? 'border-b-2 text-[#2563EB] border-[#2563EB] ' : ' '
                 }`}
                 onClick={() => setActiveCategory(category)}
               >
                 {category}
               </button>
             ))}
-            <button
-              className="text-blue-900 text-lg"
+           
+          </div>
+          <button
+              className="text-[#2563EB] text-md font-semibold -ml-[370px]"
               onClick={handleAllCategoriesClick}
             >
               All Categories →
             </button>
-          </div>
 
           {/* Filter and Sort Buttons */}
           <div className="flex space-x-2">
@@ -150,7 +150,7 @@ export default function Category() {
         </div>
 
         {/* Horizontal Line */}
-        <div className="border-t border-gray-200 mt-4"></div>
+        
       </div>
     </section>
 
@@ -159,7 +159,7 @@ export default function Category() {
       {/* Main Content: Sidebar + Courses Grid */}
       <div className="mx-auto w-full max-w-7xl px-4 grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Sidebar */}
-        <aside className="hidden lg:block lg:col-span-3 bg-white rounded-md p-4 shadow">
+        <aside className="hidden lg:block lg:col-span-3 bg-white rounded-md p-4  mb-16  border border-gray-200">
           {/* Categories */}
           <div className="mb-6">
             <div
@@ -175,22 +175,7 @@ export default function Category() {
                   <input type="checkbox" className="h-4 w-4" />
                   <span>Data Analyst</span>
                 </label>
-                <label className="flex items-center space-x-2 text-sm">
-                  <input type="checkbox" className="h-4 w-4" />
-                  <span>Web Development</span>
-                </label>
-                <label className="flex items-center space-x-2 text-sm">
-                  <input type="checkbox" className="h-4 w-4" />
-                  <span>AI</span>
-                </label>
-                <label className="flex items-center space-x-2 text-sm">
-                  <input type="checkbox" className="h-4 w-4" />
-                  <span>Management</span>
-                </label>
-                <label className="flex items-center space-x-2 text-sm">
-                  <input type="checkbox" className="h-4 w-4" />
-                  <span>Marketing</span>
-                </label>
+               
               </div>
             )}
           </div>
@@ -210,14 +195,7 @@ export default function Category() {
                   <input type="checkbox" className="h-4 w-4" />
                   <span>4.5 &amp; up</span>
                 </label>
-                <label className="flex items-center space-x-2">
-                  <input type="checkbox" className="h-4 w-4" />
-                  <span>4.0 &amp; up</span>
-                </label>
-                <label className="flex items-center space-x-2">
-                  <input type="checkbox" className="h-4 w-4" />
-                  <span>3.5 &amp; up</span>
-                </label>
+                
               </div>
             )}
           </div>
@@ -237,14 +215,7 @@ export default function Category() {
                   <input type="checkbox" className="h-4 w-4" />
                   <span>0-2 hours</span>
                 </label>
-                <label className="flex items-center space-x-2">
-                  <input type="checkbox" className="h-4 w-4" />
-                  <span>3-6 hours</span>
-                </label>
-                <label className="flex items-center space-x-2">
-                  <input type="checkbox" className="h-4 w-4" />
-                  <span>7-14 hours</span>
-                </label>
+                 
               </div>
             )}
           </div>
@@ -252,17 +223,17 @@ export default function Category() {
 
         {/* Courses Grid */}
         <div className="col-span-12 lg:col-span-9">
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
             {courses.map((course) => (
               <div
                 key={course.id}
-                className="bg-white rounded-md shadow overflow-hidden hover:shadow-lg transition-shadow"
+                className="bg-white rounded-md border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow"
               >
                 <div className="relative">
                   <img
                     src={course.image}
                     alt={course.title}
-                    className="w-full h-40 object-cover"
+                    className="w-full h-40 p-2 rounded-md object-cover"
                   />
                   {/* Label (Free/Premium) */}
                   <span
@@ -299,20 +270,27 @@ export default function Category() {
           </div>
 
           {/* Pagination */}
-          <div className="flex justify-center items-center gap-2 mt-8">
-            <button className="px-3 py-1 border border-gray-300 rounded hover:bg-gray-100">
-              1
-            </button>
-            <button className="px-3 py-1 border border-gray-300 rounded hover:bg-gray-100">
-              2
-            </button>
-            <button className="px-3 py-1 border border-gray-300 rounded hover:bg-gray-100">
-              3
-            </button>
-            <button className="px-3 py-1 border border-gray-300 rounded hover:bg-gray-100">
-              Next
-            </button>
-          </div>
+
+          <div className="flex items-center justify-center mt-8">
+  {/* Page Numbers with Increased Right Margin */}
+  <div className="flex space-x-4 text-gray-500 text-lg mr-6">
+    <span>1</span>
+    <span>2</span>
+    <span>3</span>
+  </div>
+
+  {/* Previous Button (Outlined) */}
+  <button className="w-8 h-8 flex items-center justify-center border-2 border-blue-500 rounded-full text-blue-500 hover:bg-blue-100 transition">
+    <ChevronLeft size={20} />
+  </button>
+
+  {/* Next Button (Filled) */}
+  <button className="w-8 h-8 flex items-center justify-center bg-blue-500 rounded-full text-white hover:bg-blue-600 transition ml-4">
+    <ChevronRight size={20} />
+  </button>
+</div>
+
+
         </div>
       </div>
     </div>
