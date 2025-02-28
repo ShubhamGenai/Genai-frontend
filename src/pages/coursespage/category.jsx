@@ -237,7 +237,7 @@ export default function Category() {
                   />
                   {/* Label (Free/Premium) */}
                   <span
-                    className={`absolute top-2 right-2 px-2 py-1 text-xs font-semibold rounded 
+                    className={`absolute top-4 right-4 px-2 py-1 text-xs font-semibold rounded 
                       ${
                         course.label === "Free"
                           ? "bg-green-100 text-green-700"
