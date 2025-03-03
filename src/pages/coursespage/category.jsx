@@ -2,6 +2,7 @@
 import React, { useState } from "react";
  
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function Category() {
   const [selectedCategory, setSelectedCategory] = useState("Data Analyst");
@@ -229,6 +230,8 @@ export default function Category() {
                 key={course.id}
                 className="bg-white rounded-md border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow"
               >
+                <Link to="/course-details">
+            
                 <div className="relative">
                   <img
                     src={course.image}
@@ -247,6 +250,7 @@ export default function Category() {
                     {course.label}
                   </span>
                 </div>
+                </Link>
                 <div className="p-4">
                   <h3 className="font-semibold text-sm mb-2">{course.title}</h3>
                   <div className="text-xs text-gray-500 mb-2">
