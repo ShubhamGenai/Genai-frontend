@@ -169,61 +169,52 @@ export function NavBar() {
         )}
 
         {/* Navigation Links */}
-        <div className="flex flex-col  w-full mt-6 gap-4">
-          <Link
-            to="/learn"
-            className="text-gray-600 px-8  hover:text-gray-900 text-lg"
-            onClick={() => setIsOpen(false)}
-          >
-            Learn
-          </Link>
-          <Link
-            to="/tests"
-            className="text-gray-600 px-8  hover:text-gray-900 text-lg"
-            onClick={() => setIsOpen(false)}
-          >
-            Tests
-          </Link>
-          <Link
-            to="/jobs"
-            className="text-gray-600 px-8  hover:text-gray-900 text-lg"
-            onClick={() => setIsOpen(false)}
-          >
-            Jobs
-          </Link>
-          <Link
-            to="/leader-board"
-            className="text-gray-600 px-8  hover:text-gray-900 text-lg"
-            onClick={() => setIsOpen(false)}
-          >
-            Leaderboard
-          </Link>
+        <div className="flex flex-col w-full mt-6 gap-4">
+  {/* Navigation Links */}
+  {[
+    { to: "/learn", label: "Learn" },
+    { to: "/tests", label: "Tests" },
+    { to: "/jobs", label: "Jobs" },
+    { to: "/leader-board", label: "Leaderboard" },
+  ].map((item, index) => (
+    <Link
+      key={index}
+      to={item.to}
+      className="text-gray-600 px-8 py- text-lg font-medium transition-all duration-300 hover:text-blue-600 hover:scale-105"
+      onClick={() => setIsOpen(false)}
+    >
+      {item.label}
+    </Link>
+  ))}
 
-          {/* Conditional Sign-up Button or Profile Options */}
-          {user.role ? (
-            <div className="w-full px-4 mt-4 flex flex-col gap-2">
-              {profileMenuItems.map((item, index) => (
-                <Link
-                  key={index}
-                  to={item.link}
-                  className={`flex items-center gap-2 px-4 py-2 ${item.className || 'text-gray-700'} hover:bg-gray-100 rounded`}
-                  onClick={() => setIsOpen(false)}
-                >
-                  {item.icon}
-                  <span>{item.label}</span>
-                </Link>
-              ))}
-            </div>
-          ) : (
-            <Link
-              to="/login-landing"
-              className="mt-4 px-4 py-2 border border-blue-600 text-blue-600 rounded-lg font-medium hover:bg-blue-50"
-              onClick={() => setIsOpen(false)}
-            >
-              Sign Up
-            </Link>
-          )}
-        </div>
+  {/* Conditional Profile Options or Sign-Up Button */}
+  {user.role ? (
+    <div className="w-full px-4 mt-4 flex flex-col gap-2">
+      {profileMenuItems.map((item, index) => (
+        <Link
+          key={index}
+          to={item.link}
+          className={`flex items-center gap-2 px-4 py-2 ${item.className || "text-gray-700"} hover:bg-gray-100 rounded transition-all duration-300 hover:scale-105`}
+          onClick={handleSignout}
+        >
+          {item.icon}
+          <span>{item.label}</span>
+        </Link>
+      ))}
+    </div>
+  ) : (
+    <Link to="/login-landing" onClick={() => setIsOpen(false)} className="self-center mt-6">
+      <button
+        className="px-8 py-3 border border-blue-600 text-blue-600 rounded-lg font-medium relative overflow-hidden transition-all duration-300 
+        hover:text-white before:absolute before:inset-0 before:bg-blue-600 before:scale-0 before:transition-transform before:duration-300 hover:before:scale-100 
+        shadow-md hover:shadow-lg hover:scale-105"
+      >
+        <span className="relative z-10">Sign Up</span>
+      </button>
+    </Link>
+  )}
+</div>
+
       </div>
     </>
   );
