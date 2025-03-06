@@ -20,6 +20,8 @@ uniform float uAmplitude;
 uniform float uDistance;
 uniform vec2 uMouse;
 
+
+
 #define PI 3.1415926538
 
 const int u_line_count = 40;

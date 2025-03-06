@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import LearningSection from './learning-section';
 import TestSection from './test-section';
 import LeaderboardSection from './leaderboard';
@@ -6,6 +6,7 @@ import LeaderboardSection from './leaderboard';
 
 export default function HomePage() {
   const [scrollPosition, setScrollPosition] = useState(0);
+
 
   useEffect(() => {
     const handleScroll = () => {
