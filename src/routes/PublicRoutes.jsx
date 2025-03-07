@@ -12,6 +12,8 @@ import LearnMainPage from "../pages/student/learn/LearnMain";
 import LeaderBoardPage from "../pages/student/leaderBoard/LeaderBoard";
 import AuthCallback from "../hooks/AuthCallback";
 import { CourseDetails } from "../pages/coursespage/course-details-page/course-details-main";
+import EmployerRegistration from "../pages/auth-pages/employer-auth/Employer-Signup";
+import EmployerSignIn from "../pages/auth-pages/employer-auth/Employer-signin";
 
 
 // Authentication route components
@@ -19,6 +21,8 @@ const authComponents = {
   "/login-landing": <LoginLandingPage />,
   "/login": <LoginPage />,
   "/signup": <SignupPage />,
+  "/employer-signup": <EmployerRegistration/>,
+  "/employer-signin": <EmployerSignIn/>
 };
 
 const PublicRoutes = () => {

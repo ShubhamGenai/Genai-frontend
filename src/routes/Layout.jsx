@@ -15,8 +15,8 @@ const Layout = ({ children }) => {
   const { user } = useContext(mainContext);
   const location = useLocation();
 
-  const hideNavAndFooterRoutes = ["/signup", "/login"];
-  const hideOnlyFooterRoutes = ["/login-landing"];
+  const hideNavAndFooterRoutes = ["/signup", "/login","/employer-signup","/employer-signin"];
+  const hideOnlyFooterRoutes = ["/login-landing",];
 
   const hideNavAndFooter = hideNavAndFooterRoutes.includes(location.pathname);
   const hideFooter = hideOnlyFooterRoutes.includes(location.pathname);

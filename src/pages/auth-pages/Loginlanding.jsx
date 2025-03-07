@@ -61,7 +61,7 @@ const LoginLandingPage = () => {
             <p className="text-md font-normal">
               <a href="#" className="font-bold hover:text-green-600">Contact sales</a>
               {' '}or{' '}
-              <a href="#" className="font-bold hover:text-green-600">Get free trial</a>
+              <Link to="/employer-signup?role=employer" className="font-bold hover:text-green-600">Get free trial</Link>
             </p>
           </motion.div>
 
