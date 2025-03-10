@@ -50,6 +50,7 @@ const LoginLandingPage = () => {
             <p className="text-lg md:text-xl font-light text-gray-500 mb-8 max-w-md">
               We help companies identify and hire the best developers with the right skills.
             </p>
+            <Link to="/employer-signin">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -57,6 +58,7 @@ const LoginLandingPage = () => {
             >
               Login
             </motion.button>
+            </Link>
             <p className="mt-4 text-md font-normal">Don't have an account?</p>
             <p className="text-md font-normal">
               <a href="#" className="font-bold hover:text-green-600">Contact sales</a>

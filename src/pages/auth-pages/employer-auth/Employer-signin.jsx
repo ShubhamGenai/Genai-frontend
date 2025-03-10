@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-
+import {motion} from 'framer-motion'
 const EmployerSignIn = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -57,6 +57,12 @@ const EmployerSignIn = () => {
             <span className="ml-2 text-xl font-bold text-blue-800">GenAI Talent</span>
           </div>
         </div>
+           <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8 }}
+                  className=" px-8 text-white z-10"
+                >
         
         <h1 className="text-3xl md:text-4xl font-bold text-blue-900 mb-4">
           Welcome back
@@ -140,6 +146,7 @@ const EmployerSignIn = () => {
             </p>
           </div>
         </form>
+        </motion.div>
       </div>
       
       {/* Right Panel */}
@@ -153,7 +160,12 @@ const EmployerSignIn = () => {
           <div className="absolute bottom-40 left-10 w-64 h-64 rounded-full bg-blue-300 opacity-10"></div>
           <div className="absolute top-1/3 left-1/4 w-72 h-72 rounded-full bg-white opacity-5"></div>
         </div>
-        
+         <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.6 }}
+                   
+                  >
         <div className="relative h-full flex flex-col justify-center items-center px-8 py-12 text-white">
           <div className="max-w-md">
             <h2 className="text-4xl font-bold mb-6">Transform Your Hiring Process</h2>
@@ -214,6 +226,7 @@ const EmployerSignIn = () => {
             </div>
           </div>
         </div>
+        </motion.div>
       </div>
     </div>
   );

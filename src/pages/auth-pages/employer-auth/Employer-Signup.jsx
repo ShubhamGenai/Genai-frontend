@@ -1,61 +1,83 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
+import {motion } from 'framer-motion';
+import axios from "axios";
+import {EMPLOYERENDPOINTS} from "../../../constants/ApiConstants"
 
 const EmployerRegistration = () => {
+    const [searchParams] = useSearchParams();
+    const role = searchParams.get("role");
+ const [step, setStep] = useState(1);
   const [email, setEmail] = useState('');
+  const [companyName, setCompanyName] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [step, setStep] = useState(1); // Step 1: Email verification, Step 2: Set password
   const [emailError, setEmailError] = useState('');
+
   const [passwordError, setPasswordError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  // Validate organization email format (must contain @ and a domain)
-  const validateEmail = (email) => {
-    const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    
-    if (!regex.test(email)) {
-      return "Please enter a valid email address";
-    }
-    
-    // Check if it's likely a personal email domain
-    const personalDomains = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'aol.com', 'icloud.com'];
-    const domain = email.split('@')[1];
-    
-    if (personalDomains.includes(domain)) {
-      return "Please use your organization email";
-    }
-    
-    return "";
-  };
+  // Function to verify email
 
-  const handleEmailSubmit = (e) => {
+
+  const handleEmailSubmit = async (e) => {
     e.preventDefault();
-    const error = validateEmail(email);
-    setEmailError(error);
-    
-    if (!error) {
-      // In a real app, you would verify the email exists first
+    console.log(email);
+  
+    setEmailError("");
+    setLoading(true);
+  
+    try {
+      const response = await axios.post(
+        EMPLOYERENDPOINTS.VERIFY_EMPLOYER,
+        { email },
+        { headers: { "Content-Type": "application/json" } }
+      );
+  
+      setLoading(false);
+      
       setStep(2);
+    } catch (error) {
+      setLoading(false);
+      setEmailError(
+        error.response?.data?.message || "Something went wrong. Try again."
+      );
     }
   };
 
-  const handlePasswordSubmit = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
-    
+    setPasswordError("");
+  
+    // Validate password length
     if (password.length < 8) {
-      setPasswordError("Password must be at least 8 characters");
+      setPasswordError("Password must be at least 8 characters.");
       return;
     }
-    
+  
+    // Check if passwords match
     if (password !== confirmPassword) {
-      setPasswordError("Passwords do not match");
+      setPasswordError("Passwords do not match.");
       return;
     }
-    
-    // In a real app, you would submit the form to your backend here
-    alert("Registration successful!");
+  
+    setLoading(true);
+  
+    try {
+      const response = await axios.post(EMPLOYERENDPOINTS.COMPLETE_REGISTRATION, {
+        email,
+        password,
+        companyName,
+      });
+  
+      setLoading(false);
+      alert("Registration successful! Check your email for confirmation.");
+    } catch (error) {
+      setLoading(false);
+      setPasswordError(error.response?.data?.message || "Something went wrong. Try again.");
+    }
   };
-
+  
   return (
     <div className="min-h-screen flex bg-gray-50">
       {/* Left Panel */}
@@ -68,7 +90,12 @@ const EmployerRegistration = () => {
             <span className="ml-2 text-xl font-bold text-blue-800">GenAI Talent</span>
           </div>
         </div>
-        
+        <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8 }}
+                  className=" px-8 text-white z-10"
+                >
         <h1 className="text-3xl md:text-4xl font-bold text-blue-900 mb-4">
           {step === 1 ? "Join GenAI Talent" : "Set Your Password"}
         </h1>
@@ -80,100 +107,152 @@ const EmployerRegistration = () => {
         </p>
         
         {step === 1 ? (
-          <form onSubmit={handleEmailSubmit}>
-            <div className="mb-4">
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                Organization Email
-              </label>
-              <input
-                type="email"
-                id="email"
-                className={`w-full px-4 py-3 border ${emailError ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                placeholder="yourname@company.com"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  setEmailError('');
-                }}
-                required
-              />
-              {emailError && <p className="mt-1 text-sm text-red-600">{emailError}</p>}
-            </div>
-            
-            <button
-              type="submit"
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-md transition duration-300"
-            >
-              Continue
-            </button>
-            
-            <div className="mt-6 text-center">
-              <p className="text-sm text-gray-600">
-                Already have an account?{" "}
-                <Link to="/employer-signin" className="text-blue-600 hover:underline font-medium">
-                  Sign in
-                </Link>
-              </p>
-            </div>
-          </form>
+   <form
+   onSubmit={handleEmailSubmit}
+   className="max-w-lg mx-auto bg-white/80 backdrop-blur-lg p-8 rounded-2xl shadow-xl border border-gray-200"
+ >
+   <h2 className="text-2xl font-bold text-gray-800 mb-6 ">
+     Enter Your Email
+   </h2>
+ 
+   <div className="mb-6">
+     <label
+       htmlFor="email"
+       className="block text-sm font-semibold text-gray-700 mb-2"
+     >
+       Organization Email
+     </label>
+     <input
+       type="email"
+       id="email"
+       className={`w-full px-5 py-3 border ${
+         emailError ? "border-red-500" : "border-gray-300"
+       } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-gray-100/70`}
+       placeholder="Enter your work email"
+       value={email}
+       onChange={(e) => {
+         setEmail(e.target.value);
+         setEmailError("");
+       }}
+       required
+     />
+     {emailError && <p className="mt-1 text-sm text-red-600">{emailError}</p>}
+   </div>
+ 
+   <button
+  type="submit"
+  className={`w-full bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white font-semibold py-3 rounded-lg transition-all duration-300 transform ${
+    loading ? "opacity-50 cursor-not-allowed" : "hover:scale-[1.02]"
+  } shadow-md`}
+  disabled={loading} // Disable button when loading
+>
+  {loading && (
+    <svg
+      className="animate-spin h-5 w-5 mr-3 border-t-2 border-white rounded-full inline-block"
+      viewBox="0 0 24 24"
+    ></svg>
+  )}
+  {loading ? "Processing..." : "Verify & Continue"}
+</button>
+
+   <div className="mt-6 text-center">
+     <p className="text-sm text-gray-600">
+       Already have an account?{" "}
+       <Link
+         to="/employer-signin"
+         className="text-blue-600 hover:text-blue-800 font-medium transition-all"
+       >
+         Sign in
+       </Link>
+     </p>
+   </div>
+ </form>
+ 
+     
+      
+          
         ) : (
-          <form onSubmit={handlePasswordSubmit}>
-            <div className="mb-4">
-              <div className="flex items-center justify-between">
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                  Password
-                </label>
-              </div>
-              <input
-                type="password"
-                id="password"
-                className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Create a password"
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  setPasswordError('');
-                }}
-                required
-              />
-            </div>
-            
-            <div className="mb-6">
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                Confirm Password
-              </label>
-              <input
-                type="password"
-                id="confirmPassword"
-                className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Confirm your password"
-                value={confirmPassword}
-                onChange={(e) => {
-                  setConfirmPassword(e.target.value);
-                  setPasswordError('');
-                }}
-                required
-              />
-              {passwordError && <p className="mt-1 text-sm text-red-600">{passwordError}</p>}
-            </div>
-            
-            <button
-              type="submit"
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-md transition duration-300"
-            >
-              Create Account
-            </button>
-            
-            <button
-              type="button"
-              className="w-full mt-3 bg-white hover:bg-gray-100 text-blue-600 border border-blue-600 font-medium py-3 px-4 rounded-md transition duration-300"
-              onClick={() => setStep(1)}
-            >
-              Back
-            </button>
-          </form>
+          <form onSubmit={handleRegister} className="max-w-lg mx-auto bg-white p-8 rounded-2xl shadow-lg border border-gray-200">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">Create an Account</h2>
+        
+          {/* Company Name */}
+          <div className="mb-4">
+            <label htmlFor="companyName" className="block text-sm font-medium text-gray-700 mb-1">
+              Company Name
+            </label>
+            <input
+              type="text"
+              id="companyName"
+              className="w-full px-4 py-3 border border-gray-300 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter your company name"
+              value={companyName}
+              onChange={(e) => setCompanyName(e.target.value)}
+              required
+            />
+          </div>
+        
+          {/* Password */}
+          <div className="mb-4">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+              Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              className="w-full px-4 py-3 border border-gray-300 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Create a strong password"
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setPasswordError('');
+              }}
+              required
+            />
+          </div>
+        
+          {/* Confirm Password */}
+          <div className="mb-6">
+            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+              Confirm Password
+            </label>
+            <input
+              type="password"
+              id="confirmPassword"
+              className="w-full px-4 py-3 border border-gray-300 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Re-enter your password"
+              value={confirmPassword}
+              onChange={(e) => {
+                setConfirmPassword(e.target.value);
+                setPasswordError('');
+              }}
+              required
+            />
+            {passwordError && <p className="mt-1 text-sm text-red-600">{passwordError}</p>}
+          </div>
+        
+          {/* Submit Button */}
+          <button
+            type="submit"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-md transition duration-300"
+          >
+            Create Account
+          </button>
+        
+          {/* Back Button */}
+          <button
+            type="button"
+            className="w-full mt-3 bg-white hover:bg-gray-100 text-blue-600 border border-blue-600 font-medium py-3 px-4 rounded-md transition duration-300"
+            onClick={() => setStep(1)}
+          >
+            Back
+          </button>
+        </form>
+        
+        
         )}
+        </motion.div>
       </div>
+      
       
       {/* Right Panel */}
       <div className="hidden md:block md:w-1/2 bg-gradient-to-br from-blue-600 to-blue-900 relative overflow-hidden">
@@ -185,6 +264,12 @@ const EmployerRegistration = () => {
           <div className="absolute bottom-40 left-10 w-64 h-64 rounded-full bg-blue-300 opacity-10"></div>
           <div className="absolute top-1/3 left-1/4 w-72 h-72 rounded-full bg-white opacity-5"></div>
         </div>
+          <motion.div
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.6 }}
+                           
+                          >
         
         <div className="relative h-full flex flex-col justify-center items-center px-8 py-12 text-white">
           <div className="max-w-md">
@@ -249,8 +334,10 @@ const EmployerRegistration = () => {
             </div>
           </div>
         </div>
+        </motion.div>
       </div>
     </div>
+    
   );
 };
 
