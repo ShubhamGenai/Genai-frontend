@@ -6,6 +6,7 @@ export const API_BASE_URL = 'https://genai-backend-eight.vercel.app/api';
 export const EMPLOYERENDPOINTS = {
 VERIFY_EMPLOYER : `${API_BASE_URL}/employer/verify-employer`,
 COMPLETE_REGISTRATION :`${API_BASE_URL}/employer/employer-register`,
+EMPLOYER_SIGNIN :`${API_BASE_URL}/employer/employer-signin`,
 }
 
 

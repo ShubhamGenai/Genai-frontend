@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams, useNavigate} from 'react-router-dom';
 import {motion } from 'framer-motion';
 import axios from "axios";
+import { toast } from "react-toastify"; 
 import {EMPLOYERENDPOINTS} from "../../../constants/ApiConstants"
 
 const EmployerRegistration = () => {
@@ -18,7 +19,7 @@ const EmployerRegistration = () => {
   const [loading, setLoading] = useState(false);
 
   // Function to verify email
-
+const navigate = useNavigate();
 
   const handleEmailSubmit = async (e) => {
     e.preventDefault();
@@ -70,13 +71,24 @@ const EmployerRegistration = () => {
         companyName,
       });
   
+     
       setLoading(false);
-      alert("Registration successful! Check your email for confirmation.");
+  
+      toast.success("Registration successful! Redirecting to login...",{autoClose:1000});
+  
+      setTimeout(() => {
+        navigate("/employer-signin"); // Navigate to login after a delay
+      }, 2000);
+      
     } catch (error) {
       setLoading(false);
+      
+    console.error("❌ Backend Error:", error.response?.data?.message || error.message);
       setPasswordError(error.response?.data?.message || "Something went wrong. Try again.");
+  
+      toast.error(error.response?.data?.message || "Registration failed. Try again.");
     }
-  };
+  }
   
   return (
     <div className="min-h-screen flex bg-gray-50">
@@ -232,11 +244,19 @@ const EmployerRegistration = () => {
         
           {/* Submit Button */}
           <button
-            type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-md transition duration-300"
-          >
-            Create Account
-          </button>
+  type="submit"
+  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-md transition duration-300 flex items-center justify-center"
+  disabled={loading} // Disable button when loading
+>
+  {loading && (
+    <svg
+      className="animate-spin h-5 w-5 mr-2 border-2 border-white border-t-transparent rounded-full"
+      viewBox="0 0 24 24"
+    ></svg>
+  )}
+  Create Account
+</button>
+
         
           {/* Back Button */}
           <button

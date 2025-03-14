@@ -1,50 +1,73 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useContext, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import {motion} from 'framer-motion'
+import axios from 'axios';
+import { EMPLOYERENDPOINTS } from '../../../constants/ApiConstants';
+import { toast } from "react-toastify"; 
+import { mainContext } from '../../../context/MainContext';
+
 const EmployerSignIn = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
-  const [emailError, setEmailError] = useState('');
-  const [passwordError, setPasswordError] = useState('');
-  
-  const validateEmail = (email) => {
-    const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    return regex.test(email);
-  };
-  
-  const handleSignIn = (e) => {
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const { setUser, setToken } = useContext(mainContext);
+
+  const navigate = useNavigate(); // ✅ Initialize navigate
+
+  const handleSignIn = async (e) => {
     e.preventDefault();
-    let isValid = true;
-    
-    // Validate email
+    setLoading(true);
+    setError(""); // Clear previous errors
+  
+    // ✅ Validate inputs before sending request
     if (!email) {
-      setEmailError('Email is required');
-      isValid = false;
-    } else if (!validateEmail(email)) {
-      setEmailError('Please enter a valid email address');
-      isValid = false;
-    } else {
-      setEmailError('');
+      setEmailError("Email is required.");
+      setLoading(false);
+      return toast.error("Email is required.");
     }
-    
-    // Validate password
+  
     if (!password) {
-      setPasswordError('Password is required');
-      isValid = false;
-    } else if (password.length < 8) {
-      setPasswordError('Password must be at least 8 characters');
-      isValid = false;
-    } else {
-      setPasswordError('');
+      setPasswordError("Password is required.");
+      setLoading(false);
+      return toast.error("Password is required.");
     }
-    
-    if (isValid) {
-      // In a real app, you would handle authentication here
-      alert('Sign in successful!');
+  
+  
+  
+    try {
+      const response = await axios.post(EMPLOYERENDPOINTS.EMPLOYER_SIGNIN, {
+        email,
+        password,
+      });
+  
+      setLoading(false);
+  
+      if (response.data?.token) {
+        setToken(response.data.token);
+        setUser(response.data.user);
+        
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('user', JSON.stringify(response.data.user || {}));
+
+        toast.success('Login successful!');
+        navigate('/'); // Ensure you have `useNavigate`
+      } else {
+        toast.error(response.data.message || 'Login failed.');
+      }
+    } catch (error) {
+      setLoading(false);
+      console.error("Login error:", error.response?.data || error.message);
+      const errorMessage = error.response?.data?.message || "Something went wrong.";
+      setError(errorMessage);
+      toast.error(errorMessage);
     }
   };
-  
+
   return (
     <div className="min-h-screen flex bg-gray-50">
       {/* Left Panel */}
@@ -73,79 +96,79 @@ const EmployerSignIn = () => {
         </p>
         
         <form onSubmit={handleSignIn}>
-          <div className="mb-4">
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-              Organization Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              className={`w-full px-4 py-3 border ${emailError ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
-              placeholder="yourname@company.com"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                setEmailError('');
-              }}
-              required
-            />
-            {emailError && <p className="mt-1 text-sm text-red-600">{emailError}</p>}
-          </div>
-          
-          <div className="mb-4">
-            <div className="flex items-center justify-between">
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                Password
-              </label>
-              <a href="#" className="text-sm text-blue-600 hover:underline">
-                Forgot password?
-              </a>
-            </div>
-            <input
-              type="password"
-              id="password"
-              className={`w-full px-4 py-3 border ${passwordError ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                setPasswordError('');
-              }}
-              required
-            />
-            {passwordError && <p className="mt-1 text-sm text-red-600">{passwordError}</p>}
-          </div>
-          
-          <div className="flex items-center mb-6">
-            <input
-              id="rememberMe"
-              type="checkbox"
-              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-              checked={rememberMe}
-              onChange={() => setRememberMe(!rememberMe)}
-            />
-            <label htmlFor="rememberMe" className="ml-2 block text-sm text-gray-700">
-              Remember me
-            </label>
-          </div>
-        
-          <button
-            type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-md transition duration-300"
-          >
-            Sign In
-          </button>
-       
-          
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
-              Don't have an account?{" "}
-              <Link to="/employer-signup?role=employer" className="text-blue-600 hover:underline font-medium">
-                Register now
-              </Link>
-            </p>
-          </div>
-        </form>
+  <div className="mb-4">
+    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+      Organization Email
+    </label>
+    <input
+      type="email"
+      id="email"
+      className={`w-full px-4 py-3 border ${emailError ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black`}
+      placeholder="yourname@company.com"
+      value={email}
+      onChange={(e) => {
+        setEmail(e.target.value);
+        setEmailError('');
+      }}
+      required
+    />
+    {emailError && <p className="mt-1 text-sm text-red-600">{emailError}</p>}
+  </div>
+
+  <div className="mb-4">
+    <div className="flex items-center justify-between">
+      <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+        Password
+      </label>
+      <a href="#" className="text-sm text-blue-600 hover:underline">
+        Forgot password?
+      </a>
+    </div>
+    <input
+      type="password"
+      id="password"
+      className={`w-full px-4 py-3 border ${passwordError ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black`}
+      placeholder="Enter your password"
+      value={password}
+      onChange={(e) => {
+        setPassword(e.target.value);
+        setPasswordError('');
+      }}
+      required
+    />
+    {passwordError && <p className="mt-1 text-sm text-red-600">{passwordError}</p>}
+  </div>
+
+  <div className="flex items-center mb-6">
+    <input
+      id="rememberMe"
+      type="checkbox"
+      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+      checked={rememberMe}
+      onChange={() => setRememberMe(!rememberMe)}
+    />
+    <label htmlFor="rememberMe" className="ml-2 block text-sm text-gray-700">
+      Remember me
+    </label>
+  </div>
+
+  <button
+    type="submit"
+    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-md transition duration-300"
+  >
+    Sign In
+  </button>
+
+  <div className="mt-6 text-center">
+    <p className="text-sm text-gray-600">
+      Don't have an account?{" "}
+      <Link to="/employer-signup?role=employer" className="text-blue-600 hover:underline font-medium">
+        Register now
+      </Link>
+    </p>
+  </div>
+</form>
+
         </motion.div>
       </div>
       
