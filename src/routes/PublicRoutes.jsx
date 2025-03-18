@@ -31,7 +31,7 @@ const PublicRoutes = () => {
 
   // Role-based redirection paths
   const roleRedirects = {
-    admin: "/admin/home",
+    admin: "/admin",
     contentmanager: "/contentmanager/home",
     employer: "/employer/home",
     student: "/", // Explicitly keep students on homepage
