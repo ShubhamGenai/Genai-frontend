@@ -14,6 +14,7 @@ import AuthCallback from "../hooks/AuthCallback";
 import { CourseDetails } from "../pages/coursespage/course-details-page/course-details-main";
 import EmployerRegistration from "../pages/auth-pages/employer-auth/Employer-Signup";
 import EmployerSignIn from "../pages/auth-pages/employer-auth/Employer-signin";
+import AdminLogin from "../pages/auth-pages/admin-auth/AdminLogin";
 
 
 // Authentication route components
@@ -22,7 +23,8 @@ const authComponents = {
   "/login": <LoginPage />,
   "/signup": <SignupPage />,
   "/employer-signup": <EmployerRegistration/>,
-  "/employer-signin": <EmployerSignIn/>
+  "/employer-signin": <EmployerSignIn/>,
+  "/admin": <AdminLogin/>
 };
 
 const PublicRoutes = () => {
@@ -60,6 +62,7 @@ const PublicRoutes = () => {
       <Route path="leader-board" element={<LeaderBoardPage />} /> 
       <Route path="course-details" element={<CourseDetails />} /> 
       <Route path="auth/callback" element={<AuthCallback/>} />
+      <Route path="admin" element={<AdminLogin/>} />
 
 
       {/* Authentication Pages - Redirect logged-in users */}
