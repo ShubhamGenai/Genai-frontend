@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { jobData, trendingJobsData, categories, filters, sortOptions } from './Data';
 import Header from './JobHearder';
 import JobCategories from './JobCategories';
-import JobExplorer from './jobExplorer';
 import TrendingJobs from './TrendingJobs';
 import StatsSection from './Stats';
 import FaqSection from './Faq';
+import JobExplorer from './JobExplorers';
 
 const JobsPage = () => {
 

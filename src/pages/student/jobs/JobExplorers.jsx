@@ -3,7 +3,7 @@ import FilterSidebar from "./JobSidebar";
 import JobCard from "./JobCard";
 import Pagination from "./Pagination";
 
-const JobExplorer = ({ jobs, filters, sortOptions }) => {
+const JobExplorers = ({ jobs, filters, sortOptions }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState("Most Relevant");
   const [showSortOptions, setShowSortOptions] = useState(false);
@@ -93,4 +93,4 @@ const JobExplorer = ({ jobs, filters, sortOptions }) => {
   );
 };
 
-export default JobExplorer;
+export default JobExplorers;
