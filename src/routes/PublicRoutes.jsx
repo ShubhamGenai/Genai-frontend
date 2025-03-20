@@ -7,14 +7,15 @@ import SignupPage from "../pages/auth-pages/Signup-page";
 import LoginPage from "../pages/auth-pages/Login-page";
 import TestPage from "../pages/student/test/TestPage";
 import CoursesMain from "../pages/coursespage/main";
-import JobsMainPage from "../pages/student/jobs/JobsMain";
-import LearnMainPage from "../pages/student/learn/LearnMain";
 import LeaderBoardPage from "../pages/student/leaderBoard/LeaderBoard";
 import AuthCallback from "../hooks/AuthCallback";
 import { CourseDetails } from "../pages/coursespage/course-details-page/course-details-main";
 import EmployerRegistration from "../pages/auth-pages/employer-auth/Employer-Signup";
 import EmployerSignIn from "../pages/auth-pages/employer-auth/Employer-signin";
 import AdminLogin from "../pages/auth-pages/admin-auth/AdminLogin";
+import JobsPage from "../pages/student/jobs/JobsMain";
+import JobDetails from "../pages/student/jobs/JobDetails";
+
 
 
 // Authentication route components
@@ -58,9 +59,16 @@ const PublicRoutes = () => {
       <Route path="tests" element={<TestPage />} /> 
       
       <Route path="learn" element={<CoursesMain  />} /> 
-      <Route path="jobs" element={<JobsMainPage />} /> 
-      <Route path="leader-board" element={<LeaderBoardPage />} /> 
       <Route path="course-details" element={<CourseDetails />} /> 
+
+
+      <Route path="jobs" element={<JobsPage />} /> 
+      <Route path="job-details" element={<JobDetails/>} /> 
+
+
+
+      <Route path="leader-board" element={<LeaderBoardPage />} /> 
+      
       <Route path="auth/callback" element={<AuthCallback/>} />
       <Route path="admin" element={<AdminLogin/>} />
 

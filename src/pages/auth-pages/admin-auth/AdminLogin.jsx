@@ -44,7 +44,7 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="flex h-screen p-6">
+    <div className="flex h-screen p-16">
          
          <motion.div
       initial={{ opacity: 0, y: 50 }}
