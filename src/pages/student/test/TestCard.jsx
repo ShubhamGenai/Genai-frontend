@@ -28,7 +28,7 @@ const TestCard = ({ test }) => {
         </div>
         <span className="text-xs text-gray-500 ml-1">({test.reviews})</span>
       </div>
-      <Link to={`/test/${test.id}`}>
+      <Link to="/test-details">
         <button className="w-2x1 bg-gray-600 text-white text-sm py-1 px-3 rounded hover:bg-gray-700 transition">
           Get Test
         </button>
