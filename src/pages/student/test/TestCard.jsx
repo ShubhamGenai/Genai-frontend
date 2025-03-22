@@ -1,5 +1,6 @@
 import React from 'react';
 import StarRating from './StarRating';
+import { Link } from 'react-router-dom';
 
 
 
@@ -20,9 +21,13 @@ const TestCard = ({ test }) => {
         <StarRating rating={test.rating} />
         <span className="text-xs text-gray-500 ml-1">({test.reviews})</span>
       </div>
+      <Link to="/test-details">
+    
       <button className="w-full bg-blue-500 text-white text-sm py-1 rounded hover:bg-blue-600 transition">
         Take Test
       </button>
+
+      </Link>
     </div>
   );
 };

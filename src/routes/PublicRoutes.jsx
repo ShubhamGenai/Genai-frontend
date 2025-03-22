@@ -15,6 +15,7 @@ import EmployerSignIn from "../pages/auth-pages/employer-auth/Employer-signin";
 import AdminLogin from "../pages/auth-pages/admin-auth/AdminLogin";
 import JobsPage from "../pages/student/jobs/JobsMain";
 import JobDetails from "../pages/student/jobs/JobDetails";
+import TestDetailsPage from "../pages/student/test/testDetails/TestDetails";
 
 
 
@@ -57,6 +58,7 @@ const PublicRoutes = () => {
       {/* Public Pages */}
  
       <Route path="tests" element={<TestPage />} /> 
+      <Route path="test-details" element={<TestDetailsPage />} /> 
       
       <Route path="learn" element={<CoursesMain  />} /> 
       <Route path="course-details" element={<CourseDetails />} /> 
