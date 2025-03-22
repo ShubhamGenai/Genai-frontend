@@ -16,6 +16,7 @@ import AdminLogin from "../pages/auth-pages/admin-auth/AdminLogin";
 import JobsPage from "../pages/student/jobs/JobsMain";
 import JobDetails from "../pages/student/jobs/JobDetails";
 import TestDetailsPage from "../pages/student/test/testDetails/TestDetails";
+import TestPlayer from "../pages/student/test/testDetails/Test-Player";
 
 
 
@@ -59,6 +60,8 @@ const PublicRoutes = () => {
  
       <Route path="tests" element={<TestPage />} /> 
       <Route path="test-details" element={<TestDetailsPage />} /> 
+      <Route path="test-player" element={<TestPlayer/>} /> 
+      
       
       <Route path="learn" element={<CoursesMain  />} /> 
       <Route path="course-details" element={<CourseDetails />} /> 

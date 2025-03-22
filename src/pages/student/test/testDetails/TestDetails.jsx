@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Clock, FileText, Award, BarChart2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const TestDetailsPage = () => {
   const [isSticky, setIsSticky] = useState(false);
@@ -156,6 +157,7 @@ const relatedTests = [
               <button className="hidden md:block bg-gray-800 text-white text-sm px-3 py-1 rounded border border-gray-600 hover:bg-gray-900">
                 Buy Now
               </button>
+
             </div>
           </div>
         </div>
@@ -272,6 +274,12 @@ const relatedTests = [
               <button className="w-full bg-white text-gray-800 border border-gray-300 py-2 rounded hover:bg-gray-50">
                 Buy Now
               </button>
+
+              <Link to="/test-player">
+              <button className="w-full bg-white text-gray-800 border border-gray-300 py-2 rounded hover:bg-gray-50 mt-2">
+              Take-Test
+              </button>
+              </Link>
             </div>
           </div>
         </div>
