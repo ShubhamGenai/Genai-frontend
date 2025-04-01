@@ -1,7 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { motion } from "framer-motion";
+import { ADMINENDPOINTS } from "../../../constants/ApiConstants";
+import { toast } from "react-toastify";
+import { mainContext } from "../../../context/MainContext";
+
 
 const featureData = [
     { title: "Personalized Learning", description: "AI-driven recommendations tailored to your learning style.", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS_fPg3P9Td2-RXamc-Z5BM4GHc9_W45Z3oRZrfb-vQkyhcSEUTm-xVOifvzEAGKvWY6Fg&usqp=CAU" },
@@ -15,6 +19,7 @@ const AdminLogin = () => {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [featureIndex, setFeatureIndex] = useState(0);
+  const { setUser, setToken } = useContext(mainContext);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -28,14 +33,23 @@ const AdminLogin = () => {
     setErrorMessage("");
 
     try {
-      const response = await axios.post("https://your-backend.com/api/admin/login", data);
-      if (response.data.success) {
-        alert("Login successful");
-        localStorage.setItem("adminToken", response.data.token);
-        window.location.href = "/dashboard";
-      } else {
-        setErrorMessage(response.data.message || "Login failed");
-      }
+      const response = await axios.post(ADMINENDPOINTS.ADMIN_SIGNIN, data);
+
+      console.log(response.data.token,response.data.user);
+      setLoading(false);
+       if (response.data.token) {
+        setToken(response.data.token);
+        setUser(response.data.user);
+        
+              
+              localStorage.setItem('token', response.data.token);
+              localStorage.setItem('user', JSON.stringify(response.data.user || {}));
+      
+              toast.success('Login successful!');
+              navigate('/'); // Ensure you have `useNavigate`
+            } else {
+              toast.error(response.data.message || 'Login failed.');
+            }
     } catch (error) {
       setErrorMessage(error.response?.data?.message || "Server error");
     } finally {

@@ -27,6 +27,10 @@ EMPLOYER_SIGNIN :`${API_BASE_URL}/employer/employer-signin`,
 
 // API endpoints for admin
 export const ADMINENDPOINTS = {
+
+ADMIN_SIGNIN: `${API_BASE_URL}/auth/admin-signin`,
+
+
   GETUSERS: `${API_BASE_URL}admin/getUsers`,
   GETTEST: `${API_BASE_URL}admin/getTest`,
   ADDSUBJECT:`${API_BASE_URL}admin/addSubject`,
@@ -43,16 +47,13 @@ export const ADMINENDPOINTS = {
    GETCOURSE:`${API_BASE_URL}admin/getCourse`,
    DELETECOURSE:`${API_BASE_URL}admin/deleteCourse`,
    UPDATECOURSE:`${API_BASE_URL}admin/updateCourse`,
-
    ADDJOBS:`${API_BASE_URL}admin/addJobs`,
    GETJOBS:`${API_BASE_URL}admin/getJobs`,
    GETAllJOBS:`${API_BASE_URL}admin/getAllJobs`,
-
    ADDCATEGORY:`${API_BASE_URL}admin/addCategory`,
    ADDEXAMTYPE:`${API_BASE_URL}admin/addExamType`,
    GETCATEGORIES:`${API_BASE_URL}admin/getCategory`,
    GETEXAMTYPES:`${API_BASE_URL}admin/getExamType`,
-
    DELETECATEGORY:`${API_BASE_URL}admin/deleteCategory`,
    DELETEEXAMTYPE:`${API_BASE_URL}admin/deleteExamType`,
  
