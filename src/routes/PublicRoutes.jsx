@@ -72,7 +72,7 @@ const PublicRoutes = () => {
 
 
 
-      <Route path="leader-board" element={<LeaderBoardPage />} /> 
+      <Route path="leaderboard" element={<LeaderBoardPage />} /> 
       
       <Route path="auth/callback" element={<AuthCallback/>} />
       <Route path="admin" element={<AdminLogin/>} />

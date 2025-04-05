@@ -15,7 +15,7 @@ const Hero = () => {
 
   return (
     <div>
-      <section className="bg-gray-200 -mt-20 py-20 md:py-24">
+      <section className="bg-gray-200 -mt-10 py-20 md:py-24">
         <div className="container mx-auto px-6 md:px-[54px]">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Left Column: Text, Input, and Button */}
