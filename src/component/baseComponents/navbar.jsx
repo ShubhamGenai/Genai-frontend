@@ -129,7 +129,7 @@ export function NavBar() {
                   )}
                   <div className="text-left">
                     <div className="text-xs text-gray-500">Welcome!</div>
-                    <div className="text-xs font-medium">{user.name || 'Sumit Nema'}</div>
+                    <div className="text-xs font-semibold">{user.name || 'Sumit Nema'}</div>
                   </div>
                 </button>
 
@@ -149,7 +149,7 @@ export function NavBar() {
               </div>
             ) : (
               <div className="hidden md:flex items-center gap-2">
-                <Link to="/login" className="px-3 p-2 py-1.5 text-black  rounded-lg font-medium hover:bg-blue-50 text-md">
+                <Link to="/login" className="px-3 p-2 py-1.5 text-gray-500   rounded-lg font-medium hover:bg-blue-50 hover:text-gray-800 text-md">
                   Sign In
                 </Link>
                 <Link to="/login-landing" className="px-4 p-2 py-2 border border-blue-600 text-blue-600 rounded-lg font-medium hover:bg-blue-50 text-md">
@@ -166,99 +166,129 @@ export function NavBar() {
 
       {/* Mobile Menu */}
       <div
-        className={`fixed top-0 right-0 h-full w-64 bg-white shadow-lg transform mobile-menu ${
+        className={`fixed top-0 right-0 h-full w-72 bg-gradient-to-b from-white to-blue-50 shadow-lg transform mobile-menu ${
           isOpen ? "translate-x-0" : "translate-x-full"
-        } transition-transform duration-300 sm:hidden flex flex-col items-center pt-6 z-50`}
+        } transition-transform duration-300 sm:hidden flex flex-col z-50`}
       >
         {/* Top Section: Logo & Close Icon */}
-        <div className="flex items-center justify-between w-full px-4">
+        <div className="flex items-center justify-between w-full px-6 py-4 border-b border-gray-100">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 ">
+          <Link to="/" className="flex items-center gap-2">
             <div className="w-9 h-9 bg-blue-600 rounded-full flex items-center justify-center">
               <LuGraduationCap className="text-white w-5 h-5" />
             </div>
-            <span className="font-semibold text-lg">GenAi</span>
+            <span className="font-semibold text-xl bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">GenAi</span>
           </Link>
 
           {/* Close Button */}
-          <button onClick={() => setIsOpen(false)} className="text-gray-600">
-            <MdClose className="w-7 h-7" />
+          <button onClick={() => setIsOpen(false)} className="text-gray-500 hover:text-gray-700 transition-colors">
+            <MdClose className="w-6 h-6" />
           </button>
+        </div>
+
+        {/* Mobile Search Bar */}
+        <div className="px-4 py-3 border-b border-gray-100">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search course here"
+              className="w-full px-4 py-2 pr-10 bg-white/70 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-blue-500"
+            />
+            <div className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-50 p-1.5 rounded-md">
+              <MdSearch className="text-blue-600 w-4 h-4" />
+            </div>
+          </div>
         </div>
 
         {/* Mobile User Profile Section */}
         {user.role && (
-          <div className="mt-6 w-full px-4 py-3 border-b border-gray-100">
+          <div className="px-6 py-4 border-b border-gray-100 bg-white/60">
             <div className="flex items-center gap-3">
               {user.profileImage ? (
                 <img 
                   src={user.profileImage} 
                   alt={user.name || "User"} 
-                  className="w-10 h-10 rounded-full object-cover border border-gray-200"
+                  className="w-12 h-12 rounded-full object-cover border-2 border-blue-100 shadow-sm"
                 />
               ) : (
-                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center shadow-sm">
                   <MdAccountCircle className="w-8 h-8 text-blue-600" />
                 </div>
               )}
-              <div className="overflow-hidden">
-                <p className="font-medium text-gray-800">{user.name || 'User'}</p>
-                <p className="text-xs text-gray-500 truncate">{user.email || ''}</p>
+              <div>
+                <p className="font-semibold text-gray-800">{user.name || 'User'}</p>
+                <p className="text-sm text-gray-500 truncate">{user.email || ''}</p>
               </div>
             </div>
           </div>
         )}
 
         {/* Navigation Links */}
-        <div className="flex flex-col w-full mt-6 gap-4">
-          {[
-            { to: "/learn", label: "Learn" },
-            { to: "/tests", label: "Tests" },
-            { to: "/jobs", label: "Jobs" },
-            { to: "/leader-board", label: "Leaderboard" },
-          ].map((item, index) => {
-            const isActive = location.pathname === item.to;
-            return (
-              <Link
-                key={index}
-                to={item.to}
-                className={`px-8 py-2 text-lg font-medium transition-all duration-300 relative group
-                  ${isActive ? 'text-blue-600' : 'text-gray-800 hover:text-gray-900'}`}
-                onClick={() => setIsOpen(false)}
-              >
-                {item.label}
-                <span className={`absolute bottom-0 left-8 right-8 h-0.5 bg-blue-600 transform origin-left transition-transform duration-300 ease-out
-                  ${isActive ? 'scale-x-100' : 'scale-x-0'} group-hover:scale-x-100`}>
-                </span>
-              </Link>
-            );
-          })}
-
-          {/* Conditional Profile Options or Sign-Up Button */}
-          {user.role ? (
-            <div className="w-full px-4 mt-4 flex flex-col gap-2">
-              {profileMenuItems.map((item, index) => (
+        <div className="flex-1 overflow-y-auto py-4">
+          <div className="flex flex-col gap-2 px-3">
+            {[
+              { to: "/learn", label: "Learn", icon: "🎓" },
+              { to: "/tests", label: "Tests", icon: "📝" },
+              { to: "/jobs", label: "Jobs", icon: "💼" },
+              { to: "/leader-board", label: "Leaderboard", icon: "🏆" },
+            ].map((item, index) => {
+              const isActive = location.pathname === item.to;
+              return (
                 <Link
                   key={index}
-                  to={item.link}
-                  className={`flex items-center gap-2 px-4 py-2 ${item.className || "text-gray-700"} hover:bg-gray-100 rounded transition-all duration-300 hover:scale-105`}
-                  onClick={handleSignout}
+                  to={item.to}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group
+                    ${isActive 
+                      ? 'bg-blue-50 text-blue-600 font-semibold' 
+                      : 'text-gray-600 hover:bg-blue-50/50 hover:text-blue-600'}`}
+                  onClick={() => setIsOpen(false)}
                 >
-                  {item.icon}
-                  <span>{item.label}</span>
+                  <span className="text-xl">{item.icon}</span>
+                  <span className="text-[15px]">{item.label}</span>
+                  {isActive && (
+                    <div className="ml-auto w-1.5 h-1.5 rounded-full bg-blue-600"></div>
+                  )}
                 </Link>
-              ))}
+              );
+            })}
+          </div>
+
+          {/* Profile Menu Items */}
+          {user.role ? (
+            <div className="mt-6 px-3">
+              <div className="text-xs font-medium text-gray-400 px-4 mb-2">ACCOUNT SETTINGS</div>
+              <div className="flex flex-col gap-1">
+                {profileMenuItems.map((item, index) => (
+                  <Link
+                    key={index}
+                    to={item.link}
+                    className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-300
+                      ${item.label === 'Logout' ? 'text-red-600 hover:bg-red-50 mt-2' : 'text-gray-600 hover:bg-gray-50'}`}
+                    onClick={item.onClick || (() => setIsOpen(false))}
+                  >
+                    {item.icon}
+                    <span className="text-sm">{item.label}</span>
+                  </Link>
+                ))}
+              </div>
             </div>
           ) : (
-            <Link to="/login-landing" onClick={() => setIsOpen(false)} className="self-center mt-6">
-              <button
-                className="px-8 py-3 border border-blue-600 text-blue-600 rounded-lg font-medium relative overflow-hidden transition-all duration-300 
-                hover:text-white before:absolute before:inset-0 before:bg-blue-600 before:scale-0 before:transition-transform before:duration-300 hover:before:scale-100 
-                shadow-md hover:shadow-lg hover:scale-105"
+            <div className="px-6 mt-6">
+              <Link 
+                to="/login" 
+                className="block text-center mb-3 px-4 py-2 text-gray-600 hover:text-gray-800 font-medium"
+                onClick={() => setIsOpen(false)}
               >
-                <span className="relative z-10">Sign Up</span>
-              </button>
-            </Link>
+                Sign In
+              </Link>
+              <Link 
+                to="/login-landing" 
+                className="block text-center px-4 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                onClick={() => setIsOpen(false)}
+              >
+                Sign Up
+              </Link>
+            </div>
           )}
         </div>
       </div>
