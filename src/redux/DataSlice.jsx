@@ -1,15 +1,32 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import { USERENDPOINTS } from "../constants/ApiConstants";
 
-// ✅ GET Courses
-export const fetchCourses = createAsyncThunk("data/fetchCourses", async () => {
-  const response = await axios.get("http://localhost:5000/api/courses");
-  return response.data;
-});
+
 
 // ✅ GET Tests
 export const fetchTests = createAsyncThunk("data/fetchTests", async () => {
-  const response = await axios.get("http://localhost:5000/api/tests");
+  const response = await axios.get(USERENDPOINTS.GETTESTS);
+  return response.data;
+});
+
+export const fetchTestById = createAsyncThunk(
+  "data/fetchTestById",
+  async (id) => {
+    const response = await axios.get(`${USERENDPOINTS.GETTESTSBYID}/${id}`);
+    return response.data;
+  }
+);
+
+// ✅ GET Tests category
+export const fetchTestsCategories = createAsyncThunk("data/fetchTestsCategories", async () => {
+  const response = await axios.get(USERENDPOINTS.GETTEST_CATEGORIES);
+  return response.data;
+});
+
+// ✅ GET Courses
+export const fetchCourses = createAsyncThunk("data/fetchCourses", async () => {
+  const response = await axios.get(USERENDPOINTS.GETCOURSES);
   return response.data;
 });
 
@@ -30,6 +47,8 @@ const dataSlice = createSlice({
   initialState: {
     courses: [],
     tests: [],
+    categories:[],
+    testDetails: null,
     status: "idle", // "idle" | "loading" | "succeeded" | "failed"
     error: null,
   },
@@ -60,6 +79,34 @@ const dataSlice = createSlice({
         state.status = "failed";
         state.error = action.error.message;
       })
+
+
+      .addCase(fetchTestById.pending, (state) => {
+        state.status = "loading";
+      
+      })
+      .addCase(fetchTestById.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.testDetails = action.payload;
+      })
+      .addCase(fetchTestById.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message;
+      })
+
+     // ✅ Handle Tests Fetch categories
+      .addCase(fetchTestsCategories.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(fetchTestsCategories.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.categories = action.payload;
+      })
+      .addCase(fetchTestsCategories.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message;
+      })
+
       // ✅ Handle Adding Course
       .addCase(addCourse.fulfilled, (state, action) => {
         state.courses.push(action.payload);
@@ -68,6 +115,9 @@ const dataSlice = createSlice({
       .addCase(addTest.fulfilled, (state, action) => {
         state.tests.push(action.payload);
       });
+
+
+   
   },
 });
 

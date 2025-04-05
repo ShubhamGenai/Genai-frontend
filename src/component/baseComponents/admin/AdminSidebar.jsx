@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, Users, Briefcase, FileText, Settings, 
@@ -10,6 +10,7 @@ import {
   Calendar, Mail, CreditCard, LucidePackage, Server,
   LogOut, User, Activity, Clock, Cpu
 } from 'lucide-react';
+import { mainContext } from '../../../context/MainContext';
 
 const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -20,6 +21,7 @@ const Sidebar = () => {
     content: false,
     settings: false
   });
+    const {  signOut } = useContext(mainContext);
 
   // Mock user data - replace with actual auth context in your app
   const user = {
@@ -29,6 +31,10 @@ const Sidebar = () => {
     avatar: "https://via.placeholder.com/40"
   };
 
+  const handleSignout = () => {
+    signOut();
+    navigate("/");  // ✅ useNavigate replaces Navigate component
+  };
 
 
   const toggleMenu = (menu) => {
@@ -247,8 +253,9 @@ const Sidebar = () => {
       {/* Logout Section */}
       <div className="p-4 border-t border-blue-800">
         <Link 
-          to="/logout" 
+        
           className="flex items-center py-2 px-4 hover:bg-blue-800 rounded-md transition-colors text-indigo-200 hover:text-white"
+          onClick={handleSignout}
         >
           <LogOut size={18} />
           {!collapsed && <span className="ml-3">Logout</span>}

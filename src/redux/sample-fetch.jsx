@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchCourses, fetchTests } from "../redux/DataSlice";
+import { fetchCourses, fetchTests } from "./DataSlice";
 
 const HomePage = () => {
   const dispatch = useDispatch();

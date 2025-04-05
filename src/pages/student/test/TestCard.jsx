@@ -6,8 +6,8 @@ const TestCard = ({ test }) => {
     <div className="bg-white rounded shadow p-4 hover:shadow-md transition-shadow">
       <h3 className="font-medium text-gray-800 mb-2">{test.title}</h3>
       <div className="flex justify-between text-xs text-gray-500 mb-2">
-        <span>{test.questions} Questions</span>
-        <span>{test.duration}</span>
+        <span>{test.quizzes.length} Questions</span>
+        <span>{test.duration}hr</span>
       </div>
       <div className="flex items-center mb-3">
         <div className="flex">
@@ -15,7 +15,7 @@ const TestCard = ({ test }) => {
             <svg
               key={star}
               className={`w-4 h-4 ${
-                star <= Math.floor(test.rating) 
+                star <= Math.floor(test.averageRating) 
                   ? "text-yellow-400" 
                   : "text-gray-300"
               }`}
@@ -26,9 +26,9 @@ const TestCard = ({ test }) => {
             </svg>
           ))}
         </div>
-        <span className="text-xs text-gray-500 ml-1">({test.reviews})</span>
+        <span className="text-xs text-gray-500 ml-1">({test.ratings.length})</span>
       </div>
-      <Link to="/test-details">
+      <Link to={`/test-details?id=${test._id}`}>
         <button className="w-2x1 bg-gray-600 text-white text-sm py-1 px-3 rounded hover:bg-gray-700 transition">
           Get Test
         </button>

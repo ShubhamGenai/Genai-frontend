@@ -1,10 +1,10 @@
 import { useState, useEffect, useContext } from "react";
 import {
   MdOutlineShoppingCart, MdMenu, MdClose, MdAccountCircle, MdLogout,
-  MdSettings, MdDashboard, MdHelpOutline, MdBookmark, MdNotifications
+  MdSettings, MdDashboard, MdHelpOutline, MdBookmark, MdNotifications, MdSearch
 } from "react-icons/md";
 import { LuGraduationCap } from "react-icons/lu";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { mainContext } from '../../context/MainContext';
 
 export function NavBar() {
@@ -12,7 +12,8 @@ export function NavBar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const { user, signOut } = useContext(mainContext);
-  const navigate = useNavigate();  // ✅ Corrected Navigation Hook
+  const navigate = useNavigate();
+  const location = useLocation();  // Add this to track current route
 
   // Add shadow when scrolling
   useEffect(() => {
@@ -57,44 +58,79 @@ export function NavBar() {
   return (
     <>
       {/* Fixed Header */}
-      <header className={`fixed top-0 w-full bg-white z-50 transition-shadow ${isScrolled ? "shadow-md" : "shadow-none"}`}>
-        <nav className="flex items-center justify-between max-w-6xl mx-auto px-4 sm:px-6 py-3">
+      <header className={`fixed top-0 w-full bg-white p-1.5 z-50 transition-shadow ${isScrolled ? "shadow-md" : "shadow-none"}`}>
+        <nav className="flex items-center justify-between max-w-7xl mx-auto px-6 py-2">
           {/* Logo Section */}
           <Link to="/" className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
-              <LuGraduationCap className="text-white w-6 h-6" />
+            <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+              <LuGraduationCap className="text-white w-5 h-5" />
             </div>
-            <span className="font-semibold text-lg">GenAi Learning</span>
+            <span className="font-semibold text-2xl ">GenAi Learning</span>
           </Link>
 
+          {/* Search Bar */}
+          <div className="hidden md:flex flex-1 max-w-sm mx-2">
+            <div className="relative w-full">
+              <input
+                type="text"
+                placeholder="Search course here"
+                className="w-full px-5 py-3 pr-12 bg-white border border-gray-200 rounded-lg text-[15px] font-medium focus:outline-none focus:border-blue-500"
+              />
+              <div className="absolute right-2.5 top-1/2 transform -translate-y-1/2 bg-blue-50 p-2 rounded-md">
+                <MdSearch className="text-blue-600 w-6 h-6" />
+              </div>
+            </div>
+          </div>
+
           {/* Desktop Navigation Links */}
-          <div className="hidden sm:flex flex-1 justify-center items-center gap-6 lg:gap-12">
-            {["Learn", "Tests", "Jobs", "Leaderboard"].map((item) => (
-              <Link key={item} to={`/${item.toLowerCase()}`} className="text-gray-600 hover:text-gray-900">
-                {item}
-              </Link>
-            ))}
+          <div className="hidden md:flex items-center gap-10">
+            {["Learn", "Tests", "Jobs", "Leaderboard"].map((item) => {
+              const path = `/${item.toLowerCase()}`;
+              const isActive = location.pathname === path;
+              return (
+                <Link 
+                  key={item} 
+                  to={path} 
+                  className={`text-[15px] relative group ${
+                    isActive 
+                      ? 'text-blue-600 font-bold' 
+                      : 'text-gray-500 hover:text-gray-900 font-light'
+                  }`}
+                >
+                  {item}
+                  <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 transform origin-left transition-transform duration-300 ease-out
+                    ${isActive ? 'scale-x-100' : 'scale-x-0'} group-hover:scale-x-100`}>
+                  </span>
+                </Link>
+              );
+            })}
           </div>
 
           {/* Right Side Icons & Profile */}
-          <div className="flex items-center gap-4 sm:gap-5">
-            <MdOutlineShoppingCart className="text-gray-500 w-5 h-5 sm:w-6 sm:h-6 cursor-pointer" />
+          <div className="flex items-center gap-3">
+            <MdOutlineShoppingCart className="text-gray-500 w-5 h-5 cursor-pointer" />
+            {user.role && (
+              <MdNotifications className="text-gray-500 w-5 h-5 cursor-pointer" />
+            )}
 
             {/* Mobile Menu Toggle */}
-            <button onClick={() => setIsOpen(!isOpen)} className="menu-btn sm:hidden">
-              {isOpen ? <MdClose className="w-6 h-6 text-gray-700" /> : <MdMenu className="w-6 h-6 text-gray-700" />}
+            <button onClick={() => setIsOpen(!isOpen)} className="menu-btn md:hidden">
+              {isOpen ? <MdClose className="w-5 h-5 text-gray-700" /> : <MdMenu className="w-5 h-5 text-gray-700" />}
             </button>
 
-            {/* User Profile */}
+            {/* User Profile or Auth Buttons */}
             {user.role ? (
-              <div className="hidden sm:block relative">
-                <button className="profile-btn flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100" onClick={() => setIsProfileOpen(!isProfileOpen)}>
+              <div className="hidden md:block relative">
+                <button className="profile-btn flex items-center gap-2 px-2 py-1 rounded-lg hover:bg-gray-100" onClick={() => setIsProfileOpen(!isProfileOpen)}>
                   {user.profileImage ? (
-                    <img src={user.profileImage} alt="User" className="w-8 h-8 rounded-full object-cover border border-gray-200" />
+                    <img src={user.profileImage} alt="User" className="w-7 h-7 rounded-full object-cover border border-gray-200" />
                   ) : (
-                    <MdAccountCircle className="w-6 h-6 text-blue-600" />
+                    <MdAccountCircle className="w-7 h-7 text-gray-400" />
                   )}
-                  <span className="text-sm font-medium">{user.name?.split(' ')[0] || 'User'}</span>
+                  <div className="text-left">
+                    <div className="text-xs text-gray-500">Welcome!</div>
+                    <div className="text-xs font-medium">{user.name || 'Sumit Nema'}</div>
+                  </div>
                 </button>
 
                 {/* Profile Dropdown */}
@@ -112,16 +148,21 @@ export function NavBar() {
                 )}
               </div>
             ) : (
-              <Link to="/login-landing" className="hidden sm:block px-4 py-2 border border-blue-600 text-blue-600 rounded-lg font-medium hover:bg-blue-50 text-sm sm:text-base">
-                Sign Up
-              </Link>
+              <div className="hidden md:flex items-center gap-2">
+                <Link to="/login" className="px-3 p-2 py-1.5 text-black  rounded-lg font-medium hover:bg-blue-50 text-md">
+                  Sign In
+                </Link>
+                <Link to="/login-landing" className="px-4 p-2 py-2 border border-blue-600 text-blue-600 rounded-lg font-medium hover:bg-blue-50 text-md">
+                  Sign Up
+                </Link>
+              </div>
             )}
           </div>
         </nav>
       </header>
 
-      {/* Spacer for Fixed Header */}
-      <div className="h-16"></div>
+      {/* Adjust spacer height */}
+      <div className="h-12"></div>
 
       {/* Mobile Menu */}
       <div
@@ -170,51 +211,56 @@ export function NavBar() {
 
         {/* Navigation Links */}
         <div className="flex flex-col w-full mt-6 gap-4">
-  {/* Navigation Links */}
-  {[
-    { to: "/learn", label: "Learn" },
-    { to: "/tests", label: "Tests" },
-    { to: "/jobs", label: "Jobs" },
-    { to: "/leader-board", label: "Leaderboard" },
-  ].map((item, index) => (
-    <Link
-      key={index}
-      to={item.to}
-      className="text-gray-600 px-8 py- text-lg font-medium transition-all duration-300 hover:text-blue-600 hover:scale-105"
-      onClick={() => setIsOpen(false)}
-    >
-      {item.label}
-    </Link>
-  ))}
+          {[
+            { to: "/learn", label: "Learn" },
+            { to: "/tests", label: "Tests" },
+            { to: "/jobs", label: "Jobs" },
+            { to: "/leader-board", label: "Leaderboard" },
+          ].map((item, index) => {
+            const isActive = location.pathname === item.to;
+            return (
+              <Link
+                key={index}
+                to={item.to}
+                className={`px-8 py-2 text-lg font-medium transition-all duration-300 relative group
+                  ${isActive ? 'text-blue-600' : 'text-gray-800 hover:text-gray-900'}`}
+                onClick={() => setIsOpen(false)}
+              >
+                {item.label}
+                <span className={`absolute bottom-0 left-8 right-8 h-0.5 bg-blue-600 transform origin-left transition-transform duration-300 ease-out
+                  ${isActive ? 'scale-x-100' : 'scale-x-0'} group-hover:scale-x-100`}>
+                </span>
+              </Link>
+            );
+          })}
 
-  {/* Conditional Profile Options or Sign-Up Button */}
-  {user.role ? (
-    <div className="w-full px-4 mt-4 flex flex-col gap-2">
-      {profileMenuItems.map((item, index) => (
-        <Link
-          key={index}
-          to={item.link}
-          className={`flex items-center gap-2 px-4 py-2 ${item.className || "text-gray-700"} hover:bg-gray-100 rounded transition-all duration-300 hover:scale-105`}
-          onClick={handleSignout}
-        >
-          {item.icon}
-          <span>{item.label}</span>
-        </Link>
-      ))}
-    </div>
-  ) : (
-    <Link to="/login-landing" onClick={() => setIsOpen(false)} className="self-center mt-6">
-      <button
-        className="px-8 py-3 border border-blue-600 text-blue-600 rounded-lg font-medium relative overflow-hidden transition-all duration-300 
-        hover:text-white before:absolute before:inset-0 before:bg-blue-600 before:scale-0 before:transition-transform before:duration-300 hover:before:scale-100 
-        shadow-md hover:shadow-lg hover:scale-105"
-      >
-        <span className="relative z-10">Sign Up</span>
-      </button>
-    </Link>
-  )}
-</div>
-
+          {/* Conditional Profile Options or Sign-Up Button */}
+          {user.role ? (
+            <div className="w-full px-4 mt-4 flex flex-col gap-2">
+              {profileMenuItems.map((item, index) => (
+                <Link
+                  key={index}
+                  to={item.link}
+                  className={`flex items-center gap-2 px-4 py-2 ${item.className || "text-gray-700"} hover:bg-gray-100 rounded transition-all duration-300 hover:scale-105`}
+                  onClick={handleSignout}
+                >
+                  {item.icon}
+                  <span>{item.label}</span>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <Link to="/login-landing" onClick={() => setIsOpen(false)} className="self-center mt-6">
+              <button
+                className="px-8 py-3 border border-blue-600 text-blue-600 rounded-lg font-medium relative overflow-hidden transition-all duration-300 
+                hover:text-white before:absolute before:inset-0 before:bg-blue-600 before:scale-0 before:transition-transform before:duration-300 hover:before:scale-100 
+                shadow-md hover:shadow-lg hover:scale-105"
+              >
+                <span className="relative z-10">Sign Up</span>
+              </button>
+            </Link>
+          )}
+        </div>
       </div>
     </>
   );

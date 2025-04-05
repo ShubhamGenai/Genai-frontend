@@ -1,40 +1,68 @@
 import React, { useState, useEffect } from 'react';
 import { Clock, FileText, Award, BarChart2 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchTestById } from '../../../../redux/DataSlice';
 
 const TestDetailsPage = () => {
   const [isSticky, setIsSticky] = useState(false);
 
+  const dispatch = useDispatch();
+  const query = new URLSearchParams(useLocation().search);
+  const id = query.get("id");
+
+
+  
+  const { testDetails, loading, error } = useSelector(
+    (state) => state.data
+  );
+
+  const testData = testDetails ||{};
+
+  useEffect(() => {
+    if (id) {
+      dispatch(fetchTestById(id));
+    }
+  }, [dispatch, id]);
+
+  if (loading) return <div className="flex items-center justify-center h-screen">
+  <div className="w-12 h-12 border-4 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
+</div>;
+  if (error) return <div className="text-red-500">Error: {error}</div>;
+
   // Demo data
-  const testData = {
-    title: "CSS Advance level Test One",
-    company: "Company Name Product Limited",
-    duration: "60 minutes",
-    questions: 40,
-    hasCertificate: true,
-    level: "Intermediate to Advanced",
-    rating: 4.8,
-    reviews: 2356,
-    price: 620,
-    originalPrice: 1250,
-    discount: "50% OFF",
-    benefits: [
-      "Real-world CSS challenges",
-      "Instant results & score breakdown",
-      "Certificate upon passing",
-      "One free retake if failed"
-    ],
-    skills: [
-      "CSS Animation",
-      "CSS Effects",
-      "CSS Text Styling",
-      "CSS Centering",
-      "CSS vertical-align",
-      "CSS object-fit"
-    ],
-    description: "This comprehensive front-end test course is designed for students beginning to work as professionals wanting to enhance their skills. By the end of this course, you will be able to analyze data, visualize insights, and make data-driven decisions using industry-standard tools.",
-    totalTests: 300
-  };
+  // const testData = {
+  //   title: "CSS Advance level Test One",
+  //   company: "Company Name Product Limited",
+  //   duration: "60 minutes",
+  //   questions: 40,
+  //   hasCertificate: true,
+  //   level: "Intermediate to Advanced",
+  //   rating: 4.8,
+  //   reviews: 2356,
+  //   price: 620,
+  //   originalPrice: 1250,
+  //   discount: "50% OFF",
+  //   benefits: [
+  //     "Real-world CSS challenges",
+  //     "Instant results & score breakdown",
+  //     "Certificate upon passing",
+  //     "One free retake if failed"
+  //   ],
+  //   skills: [
+  //     "CSS Animation",
+  //     "CSS Effects",
+  //     "CSS Text Styling",
+  //     "CSS Centering",
+  //     "CSS vertical-align",
+  //     "CSS object-fit"
+  //   ],
+  //   description: "This comprehensive front-end test course is designed for students beginning to work as professionals wanting to enhance their skills. By the end of this course, you will be able to analyze data, visualize insights, and make data-driven decisions using industry-standard tools.",
+  //   totalTests: 300
+  // };
+
+
+
 
 const relatedTests = [
     {
@@ -193,7 +221,7 @@ const relatedTests = [
                 </div>
                 <div className="flex items-center text-sm text-gray-700">
                   <span className="font-semibold mr-2">{testData.rating}</span>
-                  <span>({testData.reviews.toLocaleString()})</span>
+                  {/* <span>({testData.reviews.toLocaleString()})</span> */}
                 </div>
               </div>
             </div>
@@ -201,25 +229,25 @@ const relatedTests = [
             <div className="mb-8">
               <h2 className="text-lg font-semibold mb-3">What You'll Get</h2>
               <ul className="space-y-2">
-                {testData.benefits.map((benefit, index) => (
+                {/* {testData.benefits.map((benefit, index) => (
                   <li key={index} className="flex items-start">
                     <div className="mt-1 mr-2 w-4 h-4 rounded-full bg-gray-200 flex items-center justify-center">
                       <span className="text-xs">✓</span>
                     </div>
                     <span className="text-sm">{benefit}</span>
                   </li>
-                ))}
+                ))} */}
               </ul>
             </div>
             
             <div className="mb-8">
               <h2 className="text-lg font-semibold mb-3">Key Skills</h2>
               <div className="flex flex-wrap gap-2">
-                {testData.skills.map((skill, index) => (
+                {/* {testData.skills.map((skill, index) => (
                   <span key={index} className="px-3 py-1 bg-gray-100 text-gray-800 text-xs rounded-full">
                     {skill}
                   </span>
-                ))}
+                ))} */}
               </div>
             </div>
             

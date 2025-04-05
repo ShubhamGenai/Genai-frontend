@@ -7,20 +7,34 @@ import Pagination from './Pagination';
 import TrendingTests from './TrendingTest';
 import Stats from './Stats';
 import FaqSection from '../jobs/Faq';
-import { allCategories, allTests, trendingTests, statsData, faqData } from './TestData';
+import {  trendingTests, statsData, faqData } from './TestData';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchTests, fetchTestsCategories } from '../../../redux/DataSlice';
 
 
 const TestPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedCategory, setSelectedCategory] = useState('CSS');
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortBy, setSortBy] = useState('mostPopular');
+  const [sortBy, setSortBy] = useState('');
   const [filters, setFilters] = useState({
     ratings: [],
     duration: [],
     level: [],
     price: []
   });
+
+  const dispatch = useDispatch();
+  const { categories,tests, status, error } = useSelector((state) => state.data);
+  const allTests = tests || [];
+  const allCategories = categories || []
+
+  useEffect(() => {
+  dispatch(fetchTestsCategories());
+    dispatch(fetchTests()); // Fetch tests
+  }, [dispatch]);
+
+ 
   
   // Filtered tests based on current filters
   const [filteredTests, setFilteredTests] = useState([]);
@@ -96,6 +110,12 @@ const TestPage = () => {
     setSearchQuery(query);
     setCurrentPage(1);
   };
+
+  if (status === "loading") return <div className="flex items-center justify-center h-screen">
+  <div className="w-12 h-12 border-4 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
+</div>
+;
+  if (status === "failed") return <p>Error: {error}</p>;
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">

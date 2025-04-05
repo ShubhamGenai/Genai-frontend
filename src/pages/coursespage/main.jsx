@@ -7,7 +7,7 @@ import TrendingCourses from './trending';
 const CoursesMain = () => {
   return (
     <div className="font-sans">
-      <NavBar/>
+      {/* <NavBar/> */}
       <Hero/>
       <Category/>
       <TrendingCourses/>

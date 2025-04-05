@@ -1,10 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { Link } from 'react-router-dom';
+import { mainContext } from '../../../context/MainContext';
 
 const EmployerNavbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const profileRef = useRef(null);
+    const { user, signOut } = useContext(mainContext);
   
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -34,14 +36,21 @@ const EmployerNavbar = () => {
     };
   }, []);
 
+
+  const handleSignout = () => {
+    signOut();
+    navigate("/");  // ✅ useNavigate replaces Navigate component
+  };
+
+
   return (
     <header className="bg-gradient-to-r from-blue-700 to-blue-900 text-white shadow-lg">
       <div className="container mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
         {/* Logo */}
         <Link to="/" className="flex items-center space-x-2 group transition duration-300">
-          <svg className="h-8 w-8 text-white group-hover:text-blue-200 transition-colors duration-300" viewBox="0 0 24 24" fill="currentColor">
+          {/* <svg className="h-8 w-8 text-white group-hover:text-blue-200 transition-colors duration-300" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-          </svg>
+          </svg> */}
           <span className="text-xl font-bold tracking-wide text-white group-hover:text-blue-200 transition-colors duration-300">GenAi</span>
         </Link>
 
@@ -104,7 +113,7 @@ const EmployerNavbar = () => {
                 <div className="border-t border-gray-100 mt-1"></div>
                 <button
                   className="flex w-full items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50"
-                  onClick={() => alert('Logged out')}
+                  onClick={handleSignout}
                 >
                   <svg className="mr-3 h-5 w-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
