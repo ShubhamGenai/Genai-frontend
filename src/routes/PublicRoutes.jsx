@@ -17,6 +17,7 @@ import JobsPage from "../pages/student/jobs/JobsMain";
 import JobDetails from "../pages/student/jobs/JobDetails";
 import TestDetailsPage from "../pages/student/test/testDetails/TestDetails";
 import TestPlayer from "../pages/student/test/testDetails/Test-Player";
+import LearnMainPage from "../pages/student/learn/LearnMain";
 
 
 
@@ -64,6 +65,8 @@ const PublicRoutes = () => {
       
       
       <Route path="learn" element={<CoursesMain  />} /> 
+
+      {/* <Route path="learn" element={<LearnMainPage  />} />  */}
       <Route path="course-details" element={<CourseDetails />} /> 
 
 

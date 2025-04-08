@@ -11,60 +11,115 @@ const TestDetailsPage = () => {
   const query = new URLSearchParams(useLocation().search);
   const id = query.get("id");
 
+  const { testDetails, loading, error } = useSelector((state) => state.data);
 
-  
-  const { testDetails, loading, error } = useSelector(
-    (state) => state.data
-  );
+  // Format test data with proper structure
+  const formatTestData = (data) => {
+    if (!data) return {
+      title: '',
+      company: '',
+      duration: '0 minutes',
+      questions: 0,
+      hasCertificate: false,
+      level: '',
+      rating: 0,
+      reviews: 0,
+      price: 0,
+      originalPrice: 0,
+      discount: '0% OFF',
+      benefits: [],
+      skills: [],
+      description: '',
+      totalTests: 0,
+    };
+    
+    // Safely access nested price object
+    const price = data.price || {};
+    const discountedPrice = price.discounted || 0;
+    const actualPrice = price.actual || 0;
+    
+    return {
+      title: data.title || '',
+      company: data.company || '',
+      duration: `${data.duration || 0} minutes`,
+      questions: data.numberOfQuestions || 0,
+      hasCertificate: data.certificate !== undefined ? data.certificate : true,
+      level: data.level || '',
+      rating: data.averageRating || 0,
+      reviews: data.totalReviews || 0,
+      price: discountedPrice,
+      originalPrice: actualPrice,
+      discount: `${Math.round((1 - (discountedPrice / (actualPrice || 1))) * 100)}% OFF`,
+      benefits: Array.isArray(data.features) ? data.features : [],
+      skills: Array.isArray(data.skills) ? data.skills : [],
+      description: data.description || '',
+      totalTests: 350,
+    };
+  };
 
-  const testData = testDetails ||{};
+  const testData = formatTestData(testDetails);
 
   useEffect(() => {
-    if (id) {
-      dispatch(fetchTestById(id));
+    if (!id) {
+      return;
     }
+    dispatch(fetchTestById(id));
   }, [dispatch, id]);
 
-  if (loading) return <div className="flex items-center justify-center h-screen">
-  <div className="w-12 h-12 border-4 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
-</div>;
-  if (error) return <div className="text-red-500">Error: {error}</div>;
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      setIsSticky(scrollPosition > 100);
+    };
 
-  // Demo data
-  // const testData = {
-  //   title: "CSS Advance level Test One",
-  //   company: "Company Name Product Limited",
-  //   duration: "60 minutes",
-  //   questions: 40,
-  //   hasCertificate: true,
-  //   level: "Intermediate to Advanced",
-  //   rating: 4.8,
-  //   reviews: 2356,
-  //   price: 620,
-  //   originalPrice: 1250,
-  //   discount: "50% OFF",
-  //   benefits: [
-  //     "Real-world CSS challenges",
-  //     "Instant results & score breakdown",
-  //     "Certificate upon passing",
-  //     "One free retake if failed"
-  //   ],
-  //   skills: [
-  //     "CSS Animation",
-  //     "CSS Effects",
-  //     "CSS Text Styling",
-  //     "CSS Centering",
-  //     "CSS vertical-align",
-  //     "CSS object-fit"
-  //   ],
-  //   description: "This comprehensive front-end test course is designed for students beginning to work as professionals wanting to enhance their skills. By the end of this course, you will be able to analyze data, visualize insights, and make data-driven decisions using industry-standard tools.",
-  //   totalTests: 300
-  // };
+    // Add event listener
+    window.addEventListener('scroll', handleScroll, { passive: true });
 
+    // Initial check
+    handleScroll();
 
+    // Cleanup
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
+  if (!id) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+        <div className="text-red-500 text-center">
+          <p className="text-xl font-semibold mb-2">Invalid Test ID</p>
+          <p className="text-gray-600">Please select a valid test to view details.</p>
+        </div>
+      </div>
+    );
+  }
 
-const relatedTests = [
+  if (loading) return (
+    <div className="flex items-center justify-center min-h-screen bg-gray-50">
+      <div className="w-12 h-12 border-4 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
+    </div>
+  );
+  
+  if (error) return (
+    <div className="flex items-center justify-center min-h-screen bg-gray-50">
+      <div className="text-red-500 text-center">
+        <p className="text-xl font-semibold mb-2">Error Loading Test Details</p>
+        <p className="text-gray-600">{error}</p>
+      </div>
+    </div>
+  );
+
+  if (!testDetails) return (
+    <div className="flex items-center justify-center min-h-screen bg-gray-50">
+      <div className="text-gray-500 text-center">
+        <p className="text-xl font-semibold mb-2">No Test Details Found</p>
+        <p className="text-gray-600">The requested test could not be found.</p>
+      </div>
+    </div>
+  );
+
+  const relatedTests = [
     {
       id: 1,
       title: "CSS Advanced level Test One",
@@ -75,7 +130,7 @@ const relatedTests = [
     },
     {
       id: 2,
-      title: "CSS Advanced level Test One",
+      title: "CSS Advanced level Test Two",
       questions: 40,
       duration: "60 Minutes",
       rating: 4.8,
@@ -83,7 +138,7 @@ const relatedTests = [
     },
     {
       id: 3,
-      title: "CSS Advanced level Test One",
+      title: "CSS Advanced level Test Three",
       questions: 30,
       duration: "45 Minutes",
       rating: 4.7,
@@ -91,27 +146,11 @@ const relatedTests = [
     },
     {
       id: 4,
-      title: "CSS Advanced level Test One",
+      title: "CSS Advanced level Test Four",
       questions: 35,
       duration: "55 Minutes",
       rating: 4.8,
       reviews: 750
-    },
-    {
-      id: 5,
-      title: "CSS Advanced level Test One",
-      questions: 25,
-      duration: "40 Minutes",
-      rating: 4.8,
-      reviews: 730
-    },
-    {
-      id: 6,
-      title: "CSS Advanced level Test One",
-      questions: 30,
-      duration: "50 Minutes",
-      rating: 4.7,
-      reviews: 720
     }
   ];
 
@@ -127,186 +166,181 @@ const relatedTests = [
     );
   };
 
-
-  // Handle scroll effect
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsSticky(window.scrollY > 100);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
-
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 py-10">
+    
       {/* Sticky header that appears on scroll */}
       {isSticky && (
-        <div className="fixed top-15 p-4 left-0 w-full bg-gray-700 text-white z-50 shadow-md transition-all duration-300">
-          <div className="max-w-6xl mx-auto flex items-center justify-between px-4 py-2">
-            <div className="flex items-center">
-              <h2 className="text-lg font-medium mr-6">{testData.title}</h2>
-              <div className="hidden md:flex items-center space-x-4">
-                <div className="flex items-center text-xs">
-                  <Clock size={14} className="mr-1" />
-                  <span>{testData.duration}</span>
-                </div>
-                <div className="flex items-center text-xs">
-                  <FileText size={14} className="mr-1" />
-                  <span>{testData.questions} Questions</span>
-                </div>
-                {testData.hasCertificate && (
-                  <div className="flex items-center text-xs">
-                    <Award size={14} className="mr-1" />
-                    <span>Certificate</span>
+        <div className="fixed top-0 left-0 w-full bg-gray-500 text-white z-50 shadow-sm transition-all duration-300">
+          <div className="max-w-7xl mx-auto py-3 px-4 sm:py-4 sm:px-6">
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+              {/* Left side - Title and details */}
+              <div className="flex-1">
+                <h2 className="text-lg sm:text-xl font-bold mb-1 sm:mb-2 line-clamp-1">{testData.title}</h2>
+                <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-200">
+                  <div className="flex items-center">
+                    <Clock size={14} className="mr-1 sm:mr-2" />
+                    <span>{testData.duration}</span>
                   </div>
-                )}
-                <div className="flex items-center text-xs">
-                  <BarChart2 size={14} className="mr-1" />
-                  <span>{testData.level}</span>
-                </div>
-                <div className="flex items-center text-xs">
-                  <span className="font-medium mr-1">{testData.rating}</span>
-                  <span>({testData.reviews})</span>
+                  <div className="flex items-center">
+                    <FileText size={14} className="mr-1 sm:mr-2" />
+                    <span>{testData.questions} Questions</span>
+                  </div>
+                  {testData.hasCertificate && (
+                    <div className="flex items-center">
+                      <Award size={14} className="mr-1 sm:mr-2" />
+                      <span>Certificate</span>
+                    </div>
+                  )}
+                  <div className="hidden sm:flex items-center">
+                    <BarChart2 size={14} className="mr-1 sm:mr-2" />
+                    <span>{testData.level}</span>
+                  </div>
+                  <div className="hidden sm:flex items-center">
+                    <StarRating rating={testData.rating} />
+                    <span className="ml-1 sm:ml-2">({testData.reviews})</span>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="flex items-center space-x-3">
-              <div className="flex items-baseline mr-2">
-                <span className="font-medium">₹{testData.price}</span>
-                <span className="text-gray-300 text-xs line-through ml-1">₹{testData.originalPrice}</span>
-                <span className="bg-gray-500 text-white text-xs px-1.5 py-0.5 ml-2 rounded">{testData.discount}</span>
-              </div>
-              <button className="bg-white text-gray-800 text-sm px-3 py-1 rounded hover:bg-gray-100">
-                Add To Cart
-              </button>
-              <button className="hidden md:block bg-gray-800 text-white text-sm px-3 py-1 rounded border border-gray-600 hover:bg-gray-900">
-                Buy Now
-              </button>
 
+              {/* Right side - Price and buttons */}
+              <div className="flex flex-col items-end">
+                <div className="flex items-baseline mb-2 sm:mb-3 gap-2 sm:gap-4">
+                  <span className="text-xl sm:text-2xl font-bold text-white">₹{testData.price}</span>
+                  <span className="text-gray-300 text-xs sm:text-sm line-through">₹{testData.originalPrice}</span>
+                  <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-sm font-medium">{testData.discount}</span>
+                </div>
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <button className="bg-white text-gray-800 border border-gray-300 text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-md hover:bg-gray-50 transition-colors">
+                    Add To Cart
+                  </button>
+                  <button className="bg-gray-800 text-white text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-md hover:bg-gray-700 transition-colors">
+                    Buy Now
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       )}
       
       {/* Main content */}
-      <div className="max-w-6xl mx-auto p-6">
+      <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Left section - Test details */}
           <div className="flex-1">
-            <div className="mb-8">
-              <h1 className="text-xl font-semibold">{testData.title}</h1>
-              <p className="text-gray-600 text-sm">{testData.company}</p>
+            <div className="mb-6">
+              <h1 className="text-2xl font-semibold mb-1">{testData.title}</h1>
+              <p className="text-gray-600">{testData.company}</p>
               
-              <div className="flex flex-wrap gap-4 mt-4">
-                <div className="flex items-center text-sm text-gray-700">
-                  <Clock size={16} className="mr-2" />
+              <div className="flex flex-wrap gap-6 mt-4">
+                <div className="flex items-center text-gray-600">
+                  <Clock size={18} className="mr-2" />
                   <span>{testData.duration}</span>
                 </div>
-                <div className="flex items-center text-sm text-gray-700">
-                  <FileText size={16} className="mr-2" />
+                <div className="flex items-center text-gray-600">
+                  <FileText size={18} className="mr-2" />
                   <span>{testData.questions} Questions</span>
                 </div>
                 {testData.hasCertificate && (
-                  <div className="flex items-center text-sm text-gray-700">
-                    <Award size={16} className="mr-2" />
+                  <div className="flex items-center text-gray-600">
+                    <Award size={18} className="mr-2" />
                     <span>Certificate</span>
                   </div>
                 )}
-                <div className="flex items-center text-sm text-gray-700">
-                  <BarChart2 size={16} className="mr-2" />
+                <div className="flex items-center text-gray-600">
+                  <BarChart2 size={18} className="mr-2" />
                   <span>{testData.level}</span>
                 </div>
-                <div className="flex items-center text-sm text-gray-700">
+                <div className="flex items-center">
                   <span className="font-semibold mr-2">{testData.rating}</span>
-                  {/* <span>({testData.reviews.toLocaleString()})</span> */}
+                  <span className="text-gray-600">({testData.reviews})</span>
                 </div>
               </div>
             </div>
             
             <div className="mb-8">
-              <h2 className="text-lg font-semibold mb-3">What You'll Get</h2>
-              <ul className="space-y-2">
-                {/* {testData.benefits.map((benefit, index) => (
+              <h2 className="text-lg font-semibold mb-4">What You'll Get</h2>
+              <ul className="space-y-3">
+                {testData.benefits.map((benefit, index) => (
                   <li key={index} className="flex items-start">
-                    <div className="mt-1 mr-2 w-4 h-4 rounded-full bg-gray-200 flex items-center justify-center">
-                      <span className="text-xs">✓</span>
+                    <div className="mt-1 mr-3 w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center">
+                      <span className="text-gray-600">✓</span>
                     </div>
-                    <span className="text-sm">{benefit}</span>
+                    <span className="text-gray-600">{benefit}</span>
                   </li>
-                ))} */}
+                ))}
               </ul>
             </div>
             
             <div className="mb-8">
-              <h2 className="text-lg font-semibold mb-3">Key Skills</h2>
+              <h2 className="text-lg font-semibold mb-4">Key Skills</h2>
               <div className="flex flex-wrap gap-2">
-                {/* {testData.skills.map((skill, index) => (
-                  <span key={index} className="px-3 py-1 bg-gray-100 text-gray-800 text-xs rounded-full">
+                {testData.skills.map((skill, index) => (
+                  <span key={index} className="px-4 py-1.5 bg-gray-100 text-gray-800 rounded-full">
                     {skill}
                   </span>
-                ))} */}
+                ))}
               </div>
             </div>
             
-            <div className="mb-8">
+            <div className="mb-10">
               <h2 className="text-lg font-semibold mb-3">About this test</h2>
-              <p className="text-sm text-gray-700">{testData.description}</p>
+              <p className="text-gray-600 leading-relaxed">{testData.description}</p>
             </div>
-          <div>
-            <h2 className="text-lg font-semibold mb-4 flex justify-between">
-              <span>More CSS Tests</span>
-              <span className="text-sm text-gray-600">{testData.totalTests} Tests</span>
-            </h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {relatedTests.map((test) => (
-                <div key={test.id} className="border rounded p-4 bg-white">
-                  <h3 className="font-medium mb-1">{test.title}</h3>
-                  <div className="flex gap-4 text-xs text-gray-600 mb-2">
-                    <span>{test.questions} Questions</span>
-                    <span>{test.duration}</span>
+
+            <div>
+              <h2 className="text-lg font-semibold mb-6 flex justify-between items-center">
+                <span>More CSS Tests</span>
+                <span className="text-sm text-gray-600">{testData.totalTests} Tests</span>
+              </h2>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {relatedTests.map((test) => (
+                  <div key={test.id} className="border rounded-lg p-4 bg-white hover:shadow-md transition-shadow">
+                    <h3 className="font-medium mb-2">{test.title}</h3>
+                    <div className="flex gap-4 text-sm text-gray-600 mb-3">
+                      <span>{test.questions} Questions</span>
+                      <span>{test.duration}</span>
+                    </div>
+                    <div className="flex items-center mb-4">
+                      <StarRating rating={test.rating} />
+                      <span className="text-sm text-gray-600 ml-2">
+                        {test.rating} ({test.reviews})
+                      </span>
+                    </div>
+                    <button className="w-full bg-gray-800 text-white py-2 rounded-md hover:bg-gray-700 transition-colors">
+                      Get Test
+                    </button>
                   </div>
-                  <div className="flex items-center mb-3">
-                    <StarRating rating={test.rating} />
-                    <span className="text-xs text-gray-600 ml-1">
-                      {test.rating} ({test.reviews})
-                    </span>
-                  </div>
-                  <button className="bg-gray-800 text-white text-sm px-4 py-1 rounded hover:bg-gray-700">
-                    Get Test
-                  </button>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
-        </div>
           
           {/* Right section - Pricing */}
-          <div className="lg:w-72">
-            <div className={`bg-white border rounded p-4 sticky top-24 transition-opacity duration-300 ${isSticky ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
-              <div className="flex items-center justify-between mb-4">
+          <div className="lg:w-80">
+            <div className={`bg-white border rounded-lg p-5 sticky top-24 transition-all duration-300 ${isSticky ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+              <div className="flex items-center justify-between mb-5">
                 <div className="flex items-baseline">
-                  <span className="text-lg font-semibold">₹{testData.price}</span>
-                  <span className="text-gray-400 text-sm line-through ml-2">₹{testData.originalPrice}.00</span>
+                  <span className="text-2xl font-semibold">₹{testData.price}</span>
+                  <span className="text-gray-400 text-sm line-through ml-2">₹{testData.originalPrice}</span>
                 </div>
-                <span className="bg-gray-200 text-gray-800 text-xs px-2 py-1 rounded">{testData.discount}</span>
+                <span className="bg-gray-100 text-gray-800 text-sm px-3 py-1 rounded-md">{testData.discount}</span>
               </div>
               
-              <button className="w-full bg-gray-800 text-white py-2 rounded mb-3 hover:bg-gray-700">
+              <button className="w-full bg-gray-800 text-white py-3 rounded-md mb-3 hover:bg-gray-700 transition-colors font-medium">
                 Add to Cart
               </button>
               
-              <button className="w-full bg-white text-gray-800 border border-gray-300 py-2 rounded hover:bg-gray-50">
+              <button className="w-full bg-white text-gray-800 border border-gray-300 py-3 rounded-md hover:bg-gray-50 transition-colors font-medium">
                 Buy Now
               </button>
 
-              <Link to="/test-player">
-              <button className="w-full bg-white text-gray-800 border border-gray-300 py-2 rounded hover:bg-gray-50 mt-2">
-              Take-Test
-              </button>
+              <Link to={`/test-player?id=${id}`}>
+                <button className="w-full bg-white text-gray-800 border border-gray-300 py-3 rounded-md hover:bg-gray-50 transition-colors font-medium mt-3">
+                  Take Test
+                </button>
               </Link>
             </div>
           </div>

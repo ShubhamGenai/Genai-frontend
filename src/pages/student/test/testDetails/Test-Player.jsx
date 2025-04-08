@@ -1,250 +1,163 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const TestPlayer = () => {
+  const navigate = useNavigate();
   const [currentQuestion, setCurrentQuestion] = useState(1);
   const [selectedOptions, setSelectedOptions] = useState({});
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [timer, setTimer] = useState({ hours: 0, minutes: 0, seconds: 0 });
-  const [answeredCount, setAnsweredCount] = useState(0);
-  const totalQuestions = 8;
-  
-  // Enter fullscreen mode automatically when component mounts
-  useEffect(() => {
-    const enterFullscreen = async () => {
-      try {
-        const elem = document.documentElement;
-        if (elem.requestFullscreen) {
-          await elem.requestFullscreen();
-          setIsFullscreen(true);
-        } else if (elem.webkitRequestFullscreen) { /* Safari */
-          await elem.webkitRequestFullscreen();
-          setIsFullscreen(true);
-        } else if (elem.msRequestFullscreen) { /* IE11 */
-          await elem.msRequestFullscreen();
-          setIsFullscreen(true);
-        }
-      } catch (err) {
-        console.error("Error attempting to enable fullscreen:", err);
-      }
-    };
-    
-    // enterFullscreen(); // Commented out for development, uncomment for production
-    
-    // Clean up function to exit fullscreen when component unmounts
-    return () => {
-      if (document.fullscreenElement && document.exitFullscreen) {
-        document.exitFullscreen().catch(err => console.error(err));
-      }
-    };
-  }, []);
+  const [timer, setTimer] = useState({ minutes: 45, seconds: 0 });
+  const [markedQuestions, setMarkedQuestions] = useState({});
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [showExitConfirmation, setShowExitConfirmation] = useState(false);
+  const [stats, setStats] = useState({
+    answered: 0,
+    notAnswered: 20,
+    marked: 0,
+    markedAndAnswered: 0
+  });
 
-  // Timer functionality
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTimer(prevTimer => {
-        let { hours, minutes, seconds } = prevTimer;
-        seconds++;
-        
-        if (seconds >= 60) {
-          seconds = 0;
-          minutes++;
-        }
-        
-        if (minutes >= 60) {
-          minutes = 0;
-          hours++;
-        }
-        
-        return { hours, minutes, seconds };
-      });
-    }, 1000);
-    
-    return () => clearInterval(interval);
-  }, []);
-
-  // Update answered count when selectedOptions changes
-  useEffect(() => {
-    const count = Object.keys(selectedOptions).length;
-    setAnsweredCount(count);
-  }, [selectedOptions]);
-
-  // Toggle fullscreen function
-  const toggleFullscreen = async () => {
-    if (!isFullscreen) {
-      try {
-        const elem = document.documentElement;
-        if (elem.requestFullscreen) {
-          await elem.requestFullscreen();
-        } else if (elem.webkitRequestFullscreen) { /* Safari */
-          await elem.webkitRequestFullscreen();
-        } else if (elem.msRequestFullscreen) { /* IE11 */
-          await elem.msRequestFullscreen();
-        }
-        setIsFullscreen(true);
-      } catch (err) {
-        console.error("Error attempting to enable fullscreen:", err);
-      }
-    } else {
-      if (document.exitFullscreen) {
-        await document.exitFullscreen();
-        setIsFullscreen(false);
-      }
-    }
-  };
-  
-  // Demo questions with complete content
-  const questions = [
-    {
-      id: 1,
-      title: 'CSS Animation',
-      content: {
-        question: 'Which of the following are true about CSS property "Object-fit"?',
+  // Demo test data matching MongoDB Schema
+  const testData = {
+    title: "CSS Fundamentals Test",
+    questions: [
+      {
+        questionText: "Which of the following are true about CSS property 'Object-fit'?",
         options: [
-          {
-            text: '"object-fit: contain;" does not preserve the aspect ratio of the image; it stretches the image to cover the entire width and height of the container.',
-            id: 'option1'
-          },
-          {
-            text: '"object-fit: contain;" preserves the aspect ratio of the image and makes sure no clipping happens to the whole image.',
-            id: 'option2'
-          },
-          {
-            text: '"object-fit: cover;" avoids the image getting squeezed, but it could end up clipping the image.',
-            id: 'option3'
-          },
-          {
-            text: '"object-fit: cover;" avoids clipping the image by sacrificing the aspect ratio.',
-            id: 'option4'
-          }
+          "'object-fit: contain;' does not preserve the aspect ratio of the image; it stretches the image to cover the entire width and height of the container.",
+          "'object-fit: contain;' preserves the aspect ratio of the image and makes sure no clipping happens to the whole image.",
+          "'object-fit: cover;' avoids the image getting squeezed, but it could end up clipping the image.",
+          "'object-fit: cover;' avoids clipping the image by sacrificing the aspect ratio."
         ],
+        answer: "2,3", // Indices of correct answers (0-based)
         allowMultiple: true
-      }
-    },
-    {
-      id: 2,
-      title: 'CSS object-fit',
-      content: {
-        question: 'What is the default value of the object-fit property?',
+      },
+      {
+        questionText: "What is the default value of the object-fit property?",
         options: [
-          { text: 'fill', id: 'option1' },
-          { text: 'contain', id: 'option2' },
-          { text: 'cover', id: 'option3' },
-          { text: 'none', id: 'option4' }
+          "fill",
+          "contain",
+          "cover",
+          "none"
         ],
+        answer: "0", // Index of correct answer (0-based)
         allowMultiple: false
-      }
-    },
-    {
-      id: 3,
-      title: 'CSS Ellipsis',
-      content: {
-        question: 'Which CSS properties are required to create a text ellipsis for a single line of text?',
+      },
+      {
+        questionText: "Which CSS properties are required to create a text ellipsis for a single line of text?",
         options: [
-          { text: 'white-space: nowrap; overflow: hidden; text-overflow: ellipsis;', id: 'option1' },
-          { text: 'display: block; overflow: hidden; text-overflow: ellipsis;', id: 'option2' },
-          { text: 'white-space: normal; overflow: hidden; text-overflow: ellipsis;', id: 'option3' },
-          { text: 'display: inline-block; white-space: nowrap; text-overflow: ellipsis;', id: 'option4' }
+          "white-space: nowrap; overflow: hidden; text-overflow: ellipsis;",
+          "display: block; overflow: hidden; text-overflow: ellipsis;",
+          "white-space: normal; overflow: hidden; text-overflow: ellipsis;",
+          "display: inline-block; white-space: nowrap; text-overflow: ellipsis;"
         ],
+        answer: "0",
         allowMultiple: false
-      }
-    },
-    {
-      id: 4,
-      title: 'CSS Text Coloring',
-      content: {
-        question: 'Which CSS property is used to set the color of text?',
+      },
+      {
+        questionText: "Which of the following are valid ways to apply CSS styles?",
         options: [
-          { text: 'text-color', id: 'option1' },
-          { text: 'color', id: 'option2' },
-          { text: 'font-color', id: 'option3' },
-          { text: 'text-style', id: 'option4' }
+          "Inline styles using the style attribute",
+          "Internal styles using the <style> tag",
+          "External stylesheet linked with <link> tag",
+          "Using the @import rule in CSS"
         ],
-        allowMultiple: false
-      }
-    },
-    {
-      id: 5,
-      title: 'CSS Selection',
-      content: {
-        question: 'Which pseudo-element is used to style the selected text by a user?',
-        options: [
-          { text: '::selection', id: 'option1' },
-          { text: '::select', id: 'option2' },
-          { text: ':selected', id: 'option3' },
-          { text: ':highlight', id: 'option4' }
-        ],
-        allowMultiple: false
-      }
-    },
-    {
-      id: 6,
-      title: 'CSS Input Placeholder',
-      content: {
-        question: 'Which pseudo-element allows styling the placeholder text in an input field?',
-        options: [
-          { text: ':placeholder', id: 'option1' },
-          { text: '::input-placeholder', id: 'option2' },
-          { text: '::placeholder', id: 'option3' },
-          { text: ':input-text', id: 'option4' }
-        ],
-        allowMultiple: false
-      }
-    },
-    {
-      id: 7,
-      title: 'CSS Centering',
-      content: {
-        question: 'Which of the following methods can center an element horizontally and vertically?',
-        options: [
-          { text: 'display: flex; justify-content: center; align-items: center;', id: 'option1' },
-          { text: 'margin: 0 auto; vertical-align: middle;', id: 'option2' },
-          { text: 'position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);', id: 'option3' },
-          { text: 'text-align: center; line-height: 100vh;', id: 'option4' }
-        ],
+        answer: "0,1,2,3",
         allowMultiple: true
-      }
-    },
-    {
-      id: 8,
-      title: 'CSS vertical-align',
-      content: {
-        question: 'When does the vertical-align property work?',
+      },
+      {
+        questionText: "What is the correct syntax for media queries?",
         options: [
-          { text: 'It works on all block-level elements', id: 'option1' },
-          { text: 'It works on inline and table-cell elements', id: 'option2' },
-          { text: 'It only works on flex container children', id: 'option3' },
-          { text: 'It works on all elements with position: relative', id: 'option4' }
+          "@media screen and (min-width: 480px) {...}",
+          "@screen-size (min-width: 480px) {...}",
+          "@media (screen) and (min-width: 480px) {...}",
+          "@viewport (min-width: 480px) {...}"
         ],
+        answer: "0",
+        allowMultiple: false
+      },
+      {
+        questionText: "Which CSS Grid properties are used to define the number and size of rows in a grid?",
+        options: [
+          "grid-template-rows",
+          "grid-row-template",
+          "grid-rows",
+          "template-rows"
+        ],
+        answer: "0",
+        allowMultiple: false
+      },
+      {
+        questionText: "Which of the following are valid ways to declare CSS variables?",
+        options: [
+          "--main-color: #ff0000;",
+          "@variable main-color: #ff0000;",
+          "$main-color: #ff0000;",
+          "var(main-color): #ff0000;"
+        ],
+        answer: "0",
+        allowMultiple: false
+      },
+      {
+        questionText: "Which CSS properties can be animated?",
+        options: [
+          "width, height, and transform",
+          "display and visibility",
+          "float and clear",
+          "position and z-index"
+        ],
+        answer: "0",
         allowMultiple: false
       }
-    },
-  ];
-
-  const handleOptionChange = (questionId, optionId) => {
-    const currentQuestion = questions.find(q => q.id === questionId);
-    
-    if (currentQuestion.content.allowMultiple) {
-      setSelectedOptions(prev => ({
-        ...prev,
-        [questionId]: {
-          ...prev[questionId],
-          [optionId]: !prev[questionId]?.[optionId]
-        }
-      }));
-    } else {
-      setSelectedOptions(prev => ({
-        ...prev,
-        [questionId]: { [optionId]: true }
-      }));
-    }
+    ]
   };
 
+  // Function to get current question data
+  const getCurrentQuestion = () => {
+    return testData.questions[currentQuestion - 1];
+  };
+
+  // Handle option selection
+  const handleOptionSelect = (questionId, optionId) => {
+    const question = getCurrentQuestion();
+    
+    setSelectedOptions(prev => {
+      const newOptions = { ...prev };
+      
+      if (!newOptions[questionId]) {
+        newOptions[questionId] = {};
+      }
+      
+      if (question.allowMultiple) {
+        newOptions[questionId] = {
+          ...newOptions[questionId],
+          [optionId]: !newOptions[questionId][optionId]
+        };
+      } else {
+        // For radio buttons, only one option can be selected
+        newOptions[questionId] = { [optionId]: true };
+      }
+      
+      // Update stats
+      const answeredQuestions = Object.keys(newOptions).length;
+      setStats(prev => ({
+        ...prev,
+        answered: answeredQuestions,
+        notAnswered: testData.questions.length - answeredQuestions
+      }));
+      
+      return newOptions;
+    });
+  };
+
+  // Check if option is selected
   const isOptionSelected = (questionId, optionId) => {
     return selectedOptions[questionId]?.[optionId] || false;
   };
 
+  // Navigation functions
   const handleNext = () => {
-    if (currentQuestion < totalQuestions) {
+    if (currentQuestion < testData.questions.length) {
       setCurrentQuestion(currentQuestion + 1);
     }
   };
@@ -255,127 +168,315 @@ const TestPlayer = () => {
     }
   };
 
+  // Enter fullscreen mode automatically when component mounts
+  useEffect(() => {
+    const enterFullscreen = async () => {
+      try {
+        const elem = document.documentElement;
+        if (elem.requestFullscreen) {
+          await elem.requestFullscreen();
+        } else if (elem.webkitRequestFullscreen) {
+          await elem.webkitRequestFullscreen();
+        } else if (elem.msRequestFullscreen) {
+          await elem.msRequestFullscreen();
+        }
+        setIsFullscreen(true);
+      } catch (err) {
+        console.error("Error attempting to enable fullscreen:", err);
+      }
+    };
+    
+    enterFullscreen(); // Enable fullscreen on test start
+    
+    const handleKeyPress = (e) => {
+      if (e.key === 'Escape') {
+        enterFullscreen(); // Re-enter fullscreen if user tries to exit
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    
+    return () => {
+      window.removeEventListener('keydown', handleKeyPress);
+      if (document.fullscreenElement && document.exitFullscreen) {
+        document.exitFullscreen().catch(err => console.error(err));
+      }
+    };
+  }, []);
+
+  // Timer functionality
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimer(prevTimer => {
+        if (prevTimer.minutes === 0 && prevTimer.seconds === 0) {
+          clearInterval(interval);
+          // Handle test submission when time is up
+          handleSubmitTest();
+          return prevTimer;
+        }
+        
+        let newMinutes = prevTimer.minutes;
+        let newSeconds = prevTimer.seconds;
+        
+        if (newSeconds === 0) {
+          newMinutes--;
+          newSeconds = 59;
+        } else {
+          newSeconds--;
+        }
+        
+        return { minutes: newMinutes, seconds: newSeconds };
+      });
+    }, 1000);
+    
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleSubmitTest = () => {
+    // Add test submission logic here
+    alert("Time's up! Submitting test...");
+  };
+
+  const handleMarkForReview = () => {
+    setMarkedQuestions(prev => ({
+      ...prev,
+      [currentQuestion]: !prev[currentQuestion]
+    }));
+    
+    // Update stats
+    const isAnswered = Object.keys(selectedOptions).includes(currentQuestion.toString());
+    const isMarked = !markedQuestions[currentQuestion];
+    
+    setStats(prev => ({
+      ...prev,
+      marked: isMarked ? prev.marked + 1 : prev.marked - 1,
+      markedAndAnswered: isAnswered && isMarked ? prev.markedAndAnswered + 1 : prev.markedAndAnswered
+    }));
+    
+    handleNext();
+  };
+
   const formatTime = () => {
-    const { hours, minutes, seconds } = timer;
-    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    const { minutes, seconds } = timer;
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  const handleBack = () => {
+    setShowExitConfirmation(true);
+  };
+
+  const handleConfirmExit = () => {
+    if (document.fullscreenElement && document.exitFullscreen) {
+      document.exitFullscreen().catch(err => console.error(err));
+    }
+    navigate(-1); // Go back to previous page
+  };
+
+  const handleCancelExit = () => {
+    setShowExitConfirmation(false);
   };
 
   return (
-    <div className="bg-gray-100 min-h-screen p-4">
-      <div className="max-w-7xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
-        {/* Header */}
-        <div className="p-4 flex justify-between items-center">
-          <div className="flex items-center space-x-2">
-            <button className="bg-black text-white px-3 py-2 rounded-md flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
-              </svg>
-              CSS Test
-            </button>
-          </div>
-          <div className="flex space-x-2">
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white border-b border-gray-200 fixed top-0 left-0 right-0 z-50">
+        <div className="container mx-auto px-4 py-2 flex justify-between items-center">
+          <div className="flex items-center space-x-4">
+            {/* Mobile menu button */}
             <button 
-              onClick={toggleFullscreen}
-              className="border border-gray-300 p-2 rounded-md"
-              title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              className="md:hidden p-2 rounded-md hover:bg-gray-100"
             >
-              {isFullscreen ? (
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              ) : (
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5" />
-                </svg>
-              )}
-            </button>
-            <button className="border border-gray-300 p-2 rounded-md">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
+            </button>
+            {/* Back Button */}
+            <button
+              onClick={handleBack}
+              className="flex items-center space-x-2 text-gray-600 hover:text-gray-800"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+              <span className="hidden md:inline">Back</span>
+            </button>
+            <h1 className="text-lg md:text-xl font-semibold">{testData.title}</h1>
+          </div>
+          <div className="flex items-center space-x-3 md:space-x-6">
+            <div className="hidden md:flex items-center space-x-2">
+              {/* <div className="w-8 h-8 rounded-full bg-gray-400 flex items-center justify-center">
+                <span className="text-sm text-white">SN</span>
+              </div> */}
+            </div>
+            <div className="bg-gray-100 px-3 md:px-4 py-2 rounded-md">
+              <span className="font-semibold text-base md:text-lg">{formatTime()}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Exit Confirmation Modal */}
+      {showExitConfirmation && (
+        <div className="fixed inset-0 bg-black bg-opacity-20 z-[60] flex items-center justify-center">
+          <div className="bg-white rounded-lg p-6 max-w-sm mx-4 w-full">
+            <h3 className="text-lg font-medium mb-4">Exit Test?</h3>
+            <p className="text-gray-600 mb-6">Are you sure you want to exit the test? Your progress will not be saved.</p>
+            <div className="flex space-x-4">
+              <button
+                onClick={handleCancelExit}
+                className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors duration-150"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmExit}
+                className="flex-1 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors duration-150"
+              >
+                Exit Test
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="flex pt-16">
+        {/* Overlay for mobile sidebar */}
+        {isSidebarOpen && (
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+            onClick={() => setIsSidebarOpen(false)}
+          />
+        )}
+
+        {/* Left Sidebar */}
+        <div className={`w-64 bg-gray-100 min-h-screen fixed left-0 overflow-y-auto z-50 transition-transform duration-300 ease-in-out transform ${
+          isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+        }`}>
+          {/* User Info */}
+          <div className="flex items-center gap-2 p-3 bg-gray-200">
+            <div className="w-8 h-8 rounded-full bg-gray-400 flex items-center justify-center">
+              <span className="text-sm text-white">SN</span>
+            </div>
+            <span className="text-sm">Sumit Nema</span>
+          </div>
+
+          {/* Stats */}
+          <div className="px-4 py-3 border-b border-gray-200">
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-600">Answered</span>
+                <span className="text-sm">{stats.answered}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-600">Not Answered</span>
+                <span className="text-sm">{stats.notAnswered}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-600">Marked</span>
+                <span className="text-sm">{stats.marked}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-600">Marked & Answered</span>
+                <span className="text-sm">{stats.markedAndAnswered}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Questions */}
+          <div className="px-4 py-3 border-b border-gray-200">
+            <h3 className="text-sm font-medium mb-3 text-gray-600">Questions</h3>
+            <div className="grid grid-cols-5 gap-2">
+              {[...Array(20)].map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => {
+                    setCurrentQuestion(idx + 1);
+                    setIsSidebarOpen(false);
+                  }}
+                  className={`w-8 h-8 text-sm border ${
+                    currentQuestion === idx + 1
+                      ? 'bg-gray-700 text-white border-gray-700'
+                      : 'bg-white hover:bg-gray-50 border-gray-300'
+                  }`}
+                >
+                  {idx + 1}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Submit Button */}
+          <div className="p-4">
+            <button 
+              onClick={handleSubmitTest}
+              className="w-full py-3 bg-gray-700 text-white rounded hover:bg-gray-800 transition-colors duration-150"
+            >
+              Submit Test
             </button>
           </div>
         </div>
 
-        <div className="flex">
-          {/* Sidebar */}
-          <div className="w-1/4 border-r border-gray-200">
-            {questions.map((q) => (
-              <div 
-                key={q.id} 
-                className={`p-4 border-b border-gray-200 cursor-pointer ${currentQuestion === q.id ? 'bg-gray-100' : ''}`}
-                onClick={() => setCurrentQuestion(q.id)}
-              >
-                <div className="text-sm text-gray-600">Question {q.id}</div>
-                <div className="font-medium">{q.title}</div>
+        {/* Main Content */}
+        <div className="flex-1 md:ml-64 p-4 md:p-6">
+          <div className="max-w-5xl mx-auto">
+            <div className="bg-white rounded-lg shadow-sm p-4 md:p-6">
+              <div className="mb-4">
+                <h2 className="text-base md:text-lg font-medium">Question {currentQuestion} of {testData.questions.length}</h2>
+                <p className="text-gray-600 mt-2 text-sm md:text-base">{getCurrentQuestion().questionText}</p>
               </div>
-            ))}
-          </div>
 
-          {/* Main content */}
-          <div className="w-3/4 p-6">
-            <div className="mb-6 flex justify-between items-center">
-              <div className="text-sm text-gray-600">Question {currentQuestion} of {totalQuestions}</div>
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center">
-                  <div className="w-2 h-2 bg-gray-400 rounded-full mr-2"></div>
-                  <span className="text-sm text-gray-600">Answered {answeredCount}/{totalQuestions}</span>
-                </div>
-                <div className="flex items-center">
-                  <div className="w-2 h-2 bg-gray-400 rounded-full mr-2"></div>
-                  <span className="text-sm text-gray-600">{formatTime()}</span>
-                </div>
-                <div className="flex items-center">
-                  <div className="w-8 h-8 bg-gray-200 rounded-full overflow-hidden flex items-center justify-center text-xs text-gray-600">SN</div>
-                  <span className="text-sm text-gray-600 ml-2">Sumit Nema</span>
-                </div>
+              <div className="mb-4">
+                <p className="text-xs md:text-sm text-gray-600">
+                  {getCurrentQuestion().allowMultiple ? 'Pick ONE OR MORE options' : 'Pick ONE option'}
+                </p>
               </div>
-            </div>
 
-            <div className="bg-white p-6 rounded-lg border border-gray-200">
-              <h2 className="text-lg font-medium mb-4">{questions[currentQuestion - 1].content.question}</h2>
-              
-              {questions[currentQuestion - 1].content.allowMultiple && (
-                <div className="mb-4 text-sm">
-                  Pick <span className="font-bold">ONE OR MORE</span> options
-                </div>
-              )}
-              
-              <div className="space-y-4">
-                {questions[currentQuestion - 1].content.options.map((option) => (
-                  <div key={option.id} className="flex items-start">
-                    <div className="flex items-center h-5">
-                      <input
-                        id={`${currentQuestion}-${option.id}`}
-                        type={questions[currentQuestion - 1].content.allowMultiple ? "checkbox" : "radio"}
-                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                        checked={isOptionSelected(currentQuestion, option.id)}
-                        onChange={() => handleOptionChange(currentQuestion, option.id)}
-                      />
-                    </div>
-                    <label htmlFor={`${currentQuestion}-${option.id}`} className="ml-3 text-sm font-medium text-gray-700">
-                      {option.text}
+              <div className="space-y-3 md:space-y-4">
+                {getCurrentQuestion().options.map((option, index) => (
+                  <div 
+                    key={index} 
+                    className="flex items-start p-2 md:p-3 rounded-lg hover:bg-gray-50 transition-colors duration-150"
+                  >
+                    <input
+                      type={getCurrentQuestion().allowMultiple ? "checkbox" : "radio"}
+                      id={`option-${index}`}
+                      name={`question-${currentQuestion}`}
+                      checked={isOptionSelected(currentQuestion, index)}
+                      onChange={() => handleOptionSelect(currentQuestion, index)}
+                      className="mt-1 mr-3"
+                    />
+                    <label htmlFor={`option-${index}`} className="text-sm md:text-base cursor-pointer flex-1">
+                      {option}
                     </label>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="flex justify-end mt-6 space-x-4">
+            <div className="mt-4 md:mt-6 flex flex-col md:flex-row justify-between space-y-3 md:space-y-0">
               <button 
-                onClick={handlePrev}
-                className="px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
-                disabled={currentQuestion === 1}
+                onClick={handleMarkForReview}
+                className="px-4 py-2 bg-yellow-100 text-yellow-800 rounded hover:bg-yellow-200 transition-colors duration-150 text-sm md:text-base"
               >
-                Prev
+                Mark for Review & Next
               </button>
-              <button 
-                onClick={handleNext}
-                className="px-4 py-2 bg-gray-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-gray-700"
-                disabled={currentQuestion === totalQuestions}
-              >
-                Next
-              </button>
+              <div className="flex space-x-3 md:space-x-4">
+                <button 
+                  onClick={handlePrev}
+                  className="flex-1 md:flex-none px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors duration-150 text-sm md:text-base"
+                  disabled={currentQuestion === 1}
+                >
+                  Previous
+                </button>
+                <button 
+                  onClick={handleNext}
+                  className="flex-1 md:flex-none px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors duration-150 text-sm md:text-base"
+                  disabled={currentQuestion === testData.questions.length}
+                >
+                  Save & Next
+                </button>
+              </div>
             </div>
           </div>
         </div>

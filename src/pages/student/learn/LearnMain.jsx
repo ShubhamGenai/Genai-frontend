@@ -1,11 +1,44 @@
+import React, { useState } from 'react';
+import ExploreCourses from "./Explore-course";
+import HeroSection from "./Hero-Learn";
+import PopularTopics from "./Popular-Topics";
+import StatsSection from "./Stats";
+import TrendingCourses from "./Trending-Courses";
+import WhyLearn from "./Why-Learn";
+
 const LearnMainPage = () => {
-    return (
-      <div style={{ textAlign: "center", padding: "50px" }}>
-        <h1>LearnMain Page</h1>
-        <p>This is a sample lean page.</p>
-      </div>
-    );
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    // Scroll to explore courses section when searching
+    const exploreSection = document.getElementById('explore-courses');
+    if (exploreSection) {
+      exploreSection.scrollIntoView({ behavior: 'smooth' });
+    }
   };
-  
-  export default LearnMainPage;
+
+  return (
+    <div className="min-h-screen">
+      <HeroSection onSearch={handleSearch} />
+      <div id="popular-topics" className="scroll-mt-20">
+        <PopularTopics />
+      </div>
+      <div id="explore-courses" className="scroll-mt-20">
+        <ExploreCourses searchQuery={searchQuery} />
+      </div>
+      <div id="trending-courses" className="scroll-mt-20">
+        <TrendingCourses />
+      </div>
+      <div id="stats" className="scroll-mt-20">
+        <StatsSection />
+      </div>
+      <div id="why-learn" className="scroll-mt-20">
+        <WhyLearn />
+      </div>
+    </div>
+  );
+};
+
+export default LearnMainPage;
   

@@ -139,7 +139,7 @@ const LeaderBoardPage = () => {
       {/* Header Section with improved styling */}
       <div className="max-w-7xl mx-auto text-center mb-6 sm:mb-8">
         <h1 className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-4">
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
+          <span className="bg-clip-text text-transparent bg-gradient-to-r  from-blue-600 to-purple-600">
             Leaderboard & Achievements
           </span>
         </h1>
