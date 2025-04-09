@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Clock, FileText, Award, BarChart2 } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchTestById } from '../../../../redux/DataSlice';
+import { toast } from "react-toastify";
+import axios from 'axios';
+import { addToCart, checkItemInCart } from '../../../../redux/CartSlice';
 
 const TestDetailsPage = () => {
+  const navigate = useNavigate();
   const [isSticky, setIsSticky] = useState(false);
 
   const dispatch = useDispatch();
@@ -12,6 +16,8 @@ const TestDetailsPage = () => {
   const id = query.get("id");
 
   const { testDetails, loading, error } = useSelector((state) => state.data);
+  const { isInCart } = useSelector((state) => state.cartData);
+  
 
   // Format test data with proper structure
   const formatTestData = (data) => {
@@ -66,6 +72,8 @@ const TestDetailsPage = () => {
     dispatch(fetchTestById(id));
   }, [dispatch, id]);
 
+
+ 
   useEffect(() => {
     const handleScroll = () => {
       const scrollPosition = window.scrollY;
@@ -83,6 +91,24 @@ const TestDetailsPage = () => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
+
+  const handleAddToCart = () => {
+    dispatch(addToCart({ itemId: id, itemType: "test" }))
+      .unwrap()
+      .then(() => {
+        toast.success("Added to cart!");
+        dispatch(checkItemInCart({ itemId: id, itemType: "test" })); // ✅ Re-check
+      })
+      .catch((err) => {
+        toast.error(err || "Failed to add to cart.");
+      });
+  };
+
+  useEffect(() => {
+    dispatch(checkItemInCart({ itemId: id, itemType: "test" }));
+  }, [dispatch, id]);
+
+
 
   if (!id) {
     return (
@@ -211,7 +237,7 @@ const TestDetailsPage = () => {
                   <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-sm font-medium">{testData.discount}</span>
                 </div>
                 <div className="flex items-center gap-2 sm:gap-3">
-                  <button className="bg-white text-gray-800 border border-gray-300 text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-md hover:bg-gray-50 transition-colors">
+                  <button className="bg-white text-gray-800 border border-gray-300 text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-md hover:bg-gray-50 transition-colors" onClick={() => handleAddToCart(id)}>
                     Add To Cart
                   </button>
                   <button className="bg-gray-800 text-white text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-md hover:bg-gray-700 transition-colors">
@@ -328,10 +354,20 @@ const TestDetailsPage = () => {
                 </div>
                 <span className="bg-gray-100 text-gray-800 text-sm px-3 py-1 rounded-md">{testData.discount}</span>
               </div>
+
+
+              {isInCart ? (
+        <button
+          onClick={() => navigate("/student/cart")}
+          className="w-full bg-gray-800 text-white py-3 rounded-md mb-3 hover:bg-gray-700 transition-colors font-medium"
+        >
+          Go to Cart
+        </button>
+      ) : (
               
-              <button className="w-full bg-gray-800 text-white py-3 rounded-md mb-3 hover:bg-gray-700 transition-colors font-medium">
+              <button className="w-full bg-gray-800 text-white py-3 rounded-md mb-3 hover:bg-gray-700 transition-colors font-medium"  onClick={() => handleAddToCart(id)}>
                 Add to Cart
-              </button>
+              </button>  )}
               
               <button className="w-full bg-white text-gray-800 border border-gray-300 py-3 rounded-md hover:bg-gray-50 transition-colors font-medium">
                 Buy Now

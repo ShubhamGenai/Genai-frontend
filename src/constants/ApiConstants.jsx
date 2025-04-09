@@ -7,6 +7,7 @@ export const EMPLOYERENDPOINTS = {
 VERIFY_EMPLOYER : `${API_BASE_URL}/employer/verify-employer`,
 COMPLETE_REGISTRATION :`${API_BASE_URL}/employer/employer-register`,
 EMPLOYER_SIGNIN :`${API_BASE_URL}/employer/employer-signin`,
+
 }
 
 
@@ -70,8 +71,10 @@ export const USERENDPOINTS = {
    GETTESTS: `${API_BASE_URL}/student/getTests`,
    GETTESTSBYID: `${API_BASE_URL}/student/getTestById`,
    GETTEST_CATEGORIES: `${API_BASE_URL}/student/getTestCategories`,
-
-       
+   ADD_TO_CART: `${API_BASE_URL}/student/addToCart`,
+   CHECK_CART: `${API_BASE_URL}/student/checkitemCart`,
+   GET_CART_TEST: `${API_BASE_URL}/student/getCartTests`,
+   REMOVE_FROM_CART:`${API_BASE_URL}/student/removeFromCart`,
 }
 
 

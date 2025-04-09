@@ -108,7 +108,10 @@ export function NavBar() {
 
           {/* Right Side Icons & Profile */}
           <div className="flex items-center gap-3">
+            <Link to="/student/cart">
             <MdOutlineShoppingCart className="text-gray-500 w-5 h-5 cursor-pointer" />
+            </Link>
+           
             {user.role && (
               <MdNotifications className="text-gray-500 w-5 h-5 cursor-pointer" />
             )}
