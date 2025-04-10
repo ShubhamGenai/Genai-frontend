@@ -75,6 +75,8 @@ export const USERENDPOINTS = {
    CHECK_CART: `${API_BASE_URL}/student/checkitemCart`,
    GET_CART_TEST: `${API_BASE_URL}/student/getCartTests`,
    REMOVE_FROM_CART:`${API_BASE_URL}/student/removeFromCart`,
+   GET_QUIZ:`${API_BASE_URL}/student/getQuiz`,
+   SUBMIT_QUIZ:`${API_BASE_URL}/student/submitQuiz`,
 }
 
 

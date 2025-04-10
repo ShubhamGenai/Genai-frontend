@@ -373,7 +373,7 @@ const TestDetailsPage = () => {
                 Buy Now
               </button>
 
-              <Link to={`/test-player?id=${id}`}>
+              <Link to={`/test-player?id=${testDetails.quizzes}`}>
                 <button className="w-full bg-white text-gray-800 border border-gray-300 py-3 rounded-md hover:bg-gray-50 transition-colors font-medium mt-3">
                   Take Test
                 </button>
