@@ -1,5 +1,6 @@
 import { MdOutlineGroup } from "react-icons/md";
 import { WiTime4 } from "react-icons/wi";
+import { Link } from "react-router-dom";
 
 export default function LearningSection() {
   return (
@@ -29,33 +30,56 @@ export default function LearningSection() {
               <br /> India amongst online learning platforms, you can surely rely on
               <br /> us to excel.
             </p>
+            <Link to="/learn">
+          
             <button className="mt-8 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition">
               Start learning now! →
             </button>
+            </Link>
           </div>
 
           {/* Course Cards Section */}
           <div className="w-full md:w-[670px] flex flex-col md:flex-row gap-4 mt-8 md:mt-0">
-            {["Data Analytics", "Prompt Engineering", "Design with AI"].map((title, index) => (
-              <div
-                key={index}
-                className="bg-white border border-gray-200 rounded-md shadow-sm h-auto w-full md:w-[417px]"
-              >
-                <img src="./courses/cat.png" alt={title} className="w-full" />
-                <div className="p-2">
-                  <h3 className="text-lg font-semibold mt-3">{title}</h3>
-                  <p className="text-gray-500 text-sm flex flex-col gap-1 mt-1">
-                    <span className="flex items-center gap-1">
-                      <MdOutlineGroup /> 5K+ Learners
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <WiTime4 /> 2 hours
-                    </span>
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
+  {[
+    {
+      title: "Data Analytics",
+      img: "/cards/Neet.jpeg",
+      learners: "5K+ Learners",
+      duration: "2 hours",
+    },
+    {
+      title: "Prompt Engineering",
+      img:  "/cards/test1.jpeg",
+      learners: "8K+ Learners",
+      duration: "3 hours",
+    },
+    {
+      title: "Design with AI",
+      img:  "/cards/test2.jpeg",
+      learners: "6K+ Learners",
+      duration: "2.5 hours",
+    },
+  ].map((course, index) => (
+    <div
+      key={index}
+      className="bg-white border border-gray-200 rounded-md shadow-sm h-auto w-full md:w-[417px]"
+    >
+      <img src={course.img} alt={course.title} className="w-full h-48 object-cover rounded-t-md" />
+      <div className="p-2">
+        <h3 className="text-lg font-semibold mt-3">{course.title}</h3>
+        <p className="text-gray-500 text-sm flex flex-col gap-1 mt-1">
+          <span className="flex items-center gap-1">
+            <MdOutlineGroup /> {course.learners}
+          </span>
+          <span className="flex items-center gap-1">
+            <WiTime4 /> {course.duration}
+          </span>
+        </p>
+      </div>
+    </div>
+  ))}
+</div>
+
         </div>
       </section>
     </div>

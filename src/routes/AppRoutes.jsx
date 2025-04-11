@@ -7,6 +7,7 @@ import StudentRoutes from "./StudentRoutes";
 import EmployerRoutes from "./EmployerRoutes";
 import PublicRoutes from "./PublicRoutes";
 import ProtectedRoute from "./ProtectedRoute";
+import ScrollToTop from "../component/Scroll-top";
 
 const roleComponents = {
   admin: <AdminRoutes />,
@@ -20,6 +21,8 @@ const AppRoutes = () => {
   const userRole = user?.role;
 
   return (
+    <>
+    <ScrollToTop/>
     <Routes>
       {/* Public Routes - Available to Everyone */}
       <Route path="/*" element={<PublicRoutes />} />
@@ -39,6 +42,7 @@ const AppRoutes = () => {
       {/* Redirect invalid paths */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+    </>
   );
 };
 

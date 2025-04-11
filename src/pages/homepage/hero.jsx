@@ -1,11 +1,24 @@
 // HeroSection.jsx
 import '@fontsource/inter'; // Import the Inter font
-import { Link } from 'react-router-dom';
+import { useContext } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { mainContext } from '../../context/MainContext';
 const HeroSection = () => {
+  const {user,token}= useContext(mainContext)
+  const navigate = useNavigate();
+ 
+
+  const handleGetStarted = () => {
+    if (token) {
+      navigate("/learn"); // user is logged in
+    } else {
+      navigate("/login-landing"); // not logged in
+    }
+  };
   return (
     <div className="">
       {/* Wave background */}
-      <div className="absolute inset-0 lg:mt-[100px] overflow-hidden">
+      <div className="absolute inset-0 lg:mt-[20px] overflow-hidden">
         <div className="top-0 left-0 w-screen overflow-hidden z-0 mr-40">
           <img
             src="Hero.png"
@@ -16,10 +29,10 @@ const HeroSection = () => {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col items-center justify-center mt-24 px-4">
+      <div className="relative z-10 flex flex-col items-center justify-center mt-24 px-4 ">
         {/* Logo/Title */}
         <div className="text-center mt-14">
-          <h1 className="text-4xl sm:text-6xl font-bold mb-3 ">
+          <h1 className="text-5xl sm:text-6xl font-sfu font-bold px-2 mb-3 py-2 ">
             Gen{' '}
             <span className="bg-gradient-to-r from-[hsla(221,83%,53%,1)] to-[hsla(155,100%,31%,1)] text-transparent bg-clip-text">
               Ai
@@ -27,7 +40,7 @@ const HeroSection = () => {
           </h1>
 
           <p
-            className="text-lg sm:text-xl text-gray-600 mt-2 opacity-80 tracking-widest font-semibold mb-4"
+            className="text-lg sm:text-2xl text-gray-700 mt-2 opacity-80 tracking-widest font-semibold mb-4 py-4"
             style={{ fontFamily: 'SF Pro Display, sans-serif' }}
           >
             The future of learning
@@ -35,12 +48,12 @@ const HeroSection = () => {
         </div>
 
         {/* Get Started Button */}
-        <Link to="/login-landing">
+      
        
-        <button className="bg-blue-600 text-white px-6 sm:px-8 py-2 sm:py-3 rounded-md hover:bg-blue-700 transition-colors duration-300 mb-12">
+        <button className="bg-blue-600 text-white px-4 sm:px-8 py-2 sm:py-3 rounded-md hover:bg-blue-700 transition-colors duration-300 mb-12" onClick={handleGetStarted}>
           Get Started
         </button>
-        </Link>
+    
 
         {/* Avatar Group */}
         <div className="flex -space-x-2 mt-10 sm:mt-[70px]">
@@ -68,7 +81,7 @@ const HeroSection = () => {
         </div>
 
         {/* Stats Text */}
-        <p className="text-xs sm:text-sm text-gray-600 mt-4 tracking-wide uppercase font-medium text-center">
+        <p className="text-xs sm:text-sm text-gray-600 mt-4 tracking-wide uppercase font-semibold text-center">
           OVER 5000 STUDENTS AND 1000 EMPLOYERS ARE ALREADY USING GEN AI LEARNING.
         </p>
       </div>
