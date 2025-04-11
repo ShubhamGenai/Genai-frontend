@@ -1,6 +1,6 @@
 import { MdOutlineGroup } from "react-icons/md";
 import { WiTime4 } from "react-icons/wi";
-
+import {Link} from "react-router-dom";
 export default function LeaderboardSection() {
   return (
     <div className="w-full">
@@ -21,9 +21,12 @@ export default function LeaderboardSection() {
             <p className="mb-11 mt-6">
               The better your rank, the brighter your career. Top the<br /> leaderboard, showcase your skills, and grab exclusive job offers<br /> from leading recruiters.
             </p>
+            <Link>
+     
             <button className="mt-8 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition">
               Start learning now! →
             </button>
+            </Link>
           </div>
 
           {/* Course Cards Section */}

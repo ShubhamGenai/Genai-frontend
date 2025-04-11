@@ -32,12 +32,13 @@ const HeroSection = () => {
       <div className="relative z-10 flex flex-col items-center justify-center mt-24 px-4 ">
         {/* Logo/Title */}
         <div className="text-center mt-14">
-          <h1 className="text-5xl sm:text-6xl font-sfu font-bold px-2 mb-3 py-2 ">
-            Gen{' '}
-            <span className="bg-gradient-to-r from-[hsla(221,83%,53%,1)] to-[hsla(155,100%,31%,1)] text-transparent bg-clip-text">
-              Ai
-            </span>
-          </h1>
+        <h1 className="text-5xl sm:text-6xl font-sfu font-bold px-2 mb-3 py-2 tracking-wide">
+  Gen{' '}
+  <span className="bg-gradient-to-r from-[hsla(221,83%,53%,1)] to-[hsla(155,100%,31%,1)] text-transparent bg-clip-text">
+    Ai
+  </span>
+</h1>
+
 
           <p
             className="text-lg sm:text-2xl text-gray-700 mt-2 opacity-80 tracking-widest font-semibold mb-4 py-4"
@@ -50,7 +51,7 @@ const HeroSection = () => {
         {/* Get Started Button */}
       
        
-        <button className="bg-blue-600 text-white px-4 sm:px-8 py-2 sm:py-3 rounded-md hover:bg-blue-700 transition-colors duration-300 mb-12" onClick={handleGetStarted}>
+        <button className="bg-blue-600 text-white font-medium px-4 sm:px-6 py-2 sm:py-3 rounded-md hover:bg-blue-700 transition-colors duration-300 mb-12" onClick={handleGetStarted}>
           Get Started
         </button>
     

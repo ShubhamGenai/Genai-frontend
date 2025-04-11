@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Clock, FileText, Award, BarChart2 } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -6,11 +6,14 @@ import { fetchTestById } from '../../../../redux/DataSlice';
 import { toast } from "react-toastify";
 import axios from 'axios';
 import { addToCart, checkItemInCart } from '../../../../redux/CartSlice';
+import { USERENDPOINTS } from '../../../../constants/ApiConstants';
+import { mainContext } from "../../../../context/MainContext";
 
 const TestDetailsPage = () => {
   const navigate = useNavigate();
   const [isSticky, setIsSticky] = useState(false);
-
+  const {token,user} = useContext(mainContext)
+ 
   const dispatch = useDispatch();
   const query = new URLSearchParams(useLocation().search);
   const id = query.get("id");
@@ -107,6 +110,64 @@ const TestDetailsPage = () => {
   useEffect(() => {
     dispatch(checkItemInCart({ itemId: id, itemType: "test" }));
   }, [dispatch, id]);
+
+
+  const handleBuyNow = async (testId) => {
+    try {
+      if (!token){
+        return toast.error("Please login to continue.");
+      }
+      // 1️⃣ Create Razorpay order
+      const { data } = await axios.post(USERENDPOINTS.CREATE_PAYMENT, { testId }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+  
+      const { order, paymentId } = data;
+  
+      // 2️⃣ Open Razorpay popup
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID, // or process.env.REACT_APP_RAZORPAY_KEY
+        amount: order.amount,
+        currency: "INR",
+        name: "Test Purchase",
+        description: "Buying a test",
+        order_id: order.id,
+        handler: async function (response) {
+          const verifyBody = {
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_signature: response.razorpay_signature,
+            paymentId,
+          };
+  
+          // 3️⃣ Verify payment on backend
+          const verifyRes = await axios.post(USERENDPOINTS.VERIFY_PAYMENT, verifyBody, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+  
+          if (verifyRes.data.success) {
+            toast.success("Payment successful! Test enrolled ✅");
+          } else {
+            toast.error("Payment verification failed ❌");
+          }
+        },
+        prefill: {
+          name: user?.name,
+          email: user?.email,
+        },
+        theme: {
+          color: "#6366f1",
+        },
+      };
+  
+      const razor = new window.Razorpay(options);
+      razor.open();
+    } catch (error) {
+      console.error(error);
+      toast.error("Payment failed or cancelled.");
+    }
+  };
+  
 
 
 
@@ -240,7 +301,7 @@ const TestDetailsPage = () => {
                   <button className="bg-white text-gray-800 border border-gray-300 text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-md hover:bg-gray-50 transition-colors" onClick={() => handleAddToCart(id)}>
                     Add To Cart
                   </button>
-                  <button className="bg-gray-800 text-white text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-md hover:bg-gray-700 transition-colors">
+                  <button className="bg-gray-800 text-white text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-md hover:bg-gray-700 transition-colors"onClick={() => handleBuyNow(test._id)}>
                     Buy Now
                   </button>
                 </div>
@@ -369,7 +430,7 @@ const TestDetailsPage = () => {
                 Add to Cart
               </button>  )}
               
-              <button className="w-full bg-white text-gray-800 border border-gray-300 py-3 rounded-md hover:bg-gray-50 transition-colors font-medium">
+              <button className="w-full bg-white text-gray-800 border border-gray-300 py-3 rounded-md hover:bg-gray-50 transition-colors font-medium" onClick={() => handleBuyNow(testDetails._id)}>
                 Buy Now
               </button>
 

@@ -77,6 +77,8 @@ export const USERENDPOINTS = {
    REMOVE_FROM_CART:`${API_BASE_URL}/student/removeFromCart`,
    GET_QUIZ:`${API_BASE_URL}/student/getQuiz`,
    SUBMIT_QUIZ:`${API_BASE_URL}/student/submitQuiz`,
+   CREATE_PAYMENT:`${API_BASE_URL}/student/create-payment`,
+   VERIFY_PAYMENT:`${API_BASE_URL}/student/verify-payment`,
 }
 
 
