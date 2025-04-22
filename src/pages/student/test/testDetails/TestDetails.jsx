@@ -21,6 +21,12 @@ const TestDetailsPage = () => {
   const { testDetails, loading, error } = useSelector((state) => state.data);
   const { isInCart } = useSelector((state) => state.cartData);
   
+  const isEnrolled = testDetails?.enrolledStudents?.some(
+    (student) =>
+      student === user?._id || // if just ID (non-populated)
+      student?._id === user?._id // if populated
+  );
+  
 
   // Format test data with proper structure
   const formatTestData = (data) => {
@@ -147,6 +153,7 @@ const TestDetailsPage = () => {
   
           if (verifyRes.data.success) {
             toast.success("Payment successful! Test enrolled ✅");
+            dispatch(fetchTestById(id));
           } else {
             toast.error("Payment verification failed ❌");
           }
@@ -417,28 +424,42 @@ const TestDetailsPage = () => {
               </div>
 
 
-              {isInCart ? (
-        <button
-          onClick={() => navigate("/student/cart")}
-          className="w-full bg-gray-800 text-white py-3 rounded-md mb-3 hover:bg-gray-700 transition-colors font-medium"
-        >
-          Go to Cart
-        </button>
-      ) : (
-              
-              <button className="w-full bg-gray-800 text-white py-3 rounded-md mb-3 hover:bg-gray-700 transition-colors font-medium"  onClick={() => handleAddToCart(id)}>
-                Add to Cart
-              </button>  )}
-              
-              <button className="w-full bg-white text-gray-800 border border-gray-300 py-3 rounded-md hover:bg-gray-50 transition-colors font-medium" onClick={() => handleBuyNow(testDetails._id)}>
-                Buy Now
-              </button>
+              {isEnrolled ? (
+  // ✅ If student is enrolled — only show Take Test
+  <Link to={`/test-player?id=${testDetails.quizzes}`}>
+    <button className="w-full bg-white text-gray-800 border border-gray-300 py-3 rounded-md hover:bg-gray-50 transition-colors font-medium mt-3">
+      Take Test
+    </button>
+  </Link>
+) : (
+  <>
+    {/* 🛒 Cart Logic */}
+    {isInCart ? (
+      <button
+        onClick={() => navigate("/student/cart")}
+        className="w-full bg-gray-800 text-white py-3 rounded-md mb-3 hover:bg-gray-700 transition-colors font-medium"
+      >
+        Go to Cart
+      </button>
+    ) : (
+      <button
+        onClick={() => handleAddToCart(id)}
+        className="w-full bg-gray-800 text-white py-3 rounded-md mb-3 hover:bg-gray-700 transition-colors font-medium"
+      >
+        Add to Cart
+      </button>
+    )}
 
-              <Link to={`/test-player?id=${testDetails.quizzes}`}>
-                <button className="w-full bg-white text-gray-800 border border-gray-300 py-3 rounded-md hover:bg-gray-50 transition-colors font-medium mt-3">
-                  Take Test
-                </button>
-              </Link>
+    {/* 💳 Buy Now */}
+    <button
+      className="w-full bg-white text-gray-800 border border-gray-300 py-3 rounded-md hover:bg-gray-50 transition-colors font-medium"
+      onClick={() => handleBuyNow(testDetails._id)}
+    >
+      Buy Now
+    </button>
+  </>
+)}
+
             </div>
           </div>
         </div>
