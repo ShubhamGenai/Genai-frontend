@@ -3,6 +3,7 @@ import LoginLandingPage from "../pages/auth-pages/Loginlanding";
 import ProtectedRoute from "./ProtectedRoute";
 import HomepgMain1 from "../pages/homepage/main";
 import CartPage from "../pages/student/Cart";
+import EnrolledCoursesPage from "../pages/student/enrolled/Mylist";
 
 
 const StudentRoutes = () => {
@@ -22,6 +23,17 @@ const StudentRoutes = () => {
         element={
           <ProtectedRoute allowedRoles={["student"]}>
             <CartPage/>
+        
+          </ProtectedRoute>
+        }
+      />
+
+
+<Route
+        path="/list"
+        element={
+          <ProtectedRoute allowedRoles={["student"]}>
+            <EnrolledCoursesPage/>
           </ProtectedRoute>
         }
       />
