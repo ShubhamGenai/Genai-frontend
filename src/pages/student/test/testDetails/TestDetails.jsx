@@ -424,33 +424,52 @@ const TestDetailsPage = () => {
               </div>
 
 
-              {isEnrolled ? (
-  // ✅ If student is enrolled — only show Take Test
-  <Link to={`/test-player?id=${testDetails.quizzes}`}>
-    <button className="w-full bg-white text-gray-800 border border-gray-300 py-3 rounded-md hover:bg-gray-50 transition-colors font-medium mt-3">
-      Take Test
-    </button>
-  </Link>
+              {user.name ? (
+  isEnrolled ? (
+    // ✅ User exists AND enrolled — Show Take Test
+    <Link to={`/test-player?id=${testDetails.quizzes}`}>
+      <button className="w-full bg-white text-gray-800 border border-gray-300 py-3 rounded-md hover:bg-gray-50 transition-colors font-medium mt-3">
+        Take Test
+      </button>
+    </Link>
+  ) : (
+    <>
+      {/* 🛒 Cart Logic */}
+      {isInCart ? (
+        <button
+          onClick={() => navigate("/student/cart")}
+          className="w-full bg-gray-800 text-white py-3 rounded-md mb-3 hover:bg-gray-700 transition-colors font-medium"
+        >
+          Go to Cart
+        </button>
+      ) : (
+        <button
+          onClick={() => handleAddToCart(id)}
+          className="w-full bg-gray-800 text-white py-3 rounded-md mb-3 hover:bg-gray-700 transition-colors font-medium"
+        >
+          Add to Cart
+        </button>
+      )}
+
+      {/* 💳 Buy Now */}
+      <button
+        className="w-full bg-white text-gray-800 border border-gray-300 py-3 rounded-md hover:bg-gray-50 transition-colors font-medium"
+        onClick={() => handleBuyNow(testDetails._id)}
+      >
+        Buy Now
+      </button>
+    </>
+  )
 ) : (
   <>
-    {/* 🛒 Cart Logic */}
-    {isInCart ? (
-      <button
-        onClick={() => navigate("/student/cart")}
-        className="w-full bg-gray-800 text-white py-3 rounded-md mb-3 hover:bg-gray-700 transition-colors font-medium"
-      >
-        Go to Cart
-      </button>
-    ) : (
-      <button
-        onClick={() => handleAddToCart(id)}
-        className="w-full bg-gray-800 text-white py-3 rounded-md mb-3 hover:bg-gray-700 transition-colors font-medium"
-      >
-        Add to Cart
-      </button>
-    )}
+    {/* 🚫 No user — Only show Add to Cart & Buy Now */}
+    <button
+      onClick={() => handleAddToCart(id)}
+      className="w-full bg-gray-800 text-white py-3 rounded-md mb-3 hover:bg-gray-700 transition-colors font-medium"
+    >
+      Add to Cart
+    </button>
 
-    {/* 💳 Buy Now */}
     <button
       className="w-full bg-white text-gray-800 border border-gray-300 py-3 rounded-md hover:bg-gray-50 transition-colors font-medium"
       onClick={() => handleBuyNow(testDetails._id)}
@@ -459,6 +478,7 @@ const TestDetailsPage = () => {
     </button>
   </>
 )}
+
 
             </div>
           </div>

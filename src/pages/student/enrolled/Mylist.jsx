@@ -125,15 +125,15 @@ export default function EnrolledCoursesPage() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-gradient-to-r from-blue-700 to-indigo-800 text-white">
-        <div className="max-w-6xl mx-auto py-10 px-4">
-          <h1 className="text-3xl font-bold">My Learning Dashboard</h1>
-          <p className="mt-2 text-blue-100">Track your progress, manage your courses, and prepare for upcoming tests</p>
+        <div className="max-w-7xl mx-auto py-10 px-4">
+          <h1 className="text-3xl font-bold px-2">My Learning Dashboard</h1>
+          <p className="mt-2 text-blue-100 px-2">Track your progress, manage your courses, and prepare for upcoming tests</p>
         </div>
       </header>
 
       {/* Navigation Tabs */}
       <div className="bg-white shadow">
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-7xl mx-auto px-2">
           <div className="flex border-b">
             <button 
               onClick={() => setActiveTab("courses")}
@@ -154,7 +154,7 @@ export default function EnrolledCoursesPage() {
       </div>
 
       {/* Main Content */}
-      <main className="max-w-6xl mx-auto py-8 px-4">
+      <main className="max-w-7xl mx-auto py-8 px-4">
         {activeTab === "courses" && (
           <div>
             <div className="flex justify-between items-center mb-6">

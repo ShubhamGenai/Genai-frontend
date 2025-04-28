@@ -16,16 +16,6 @@ EMPLOYER_SIGNIN :`${API_BASE_URL}/employer/employer-signin`,
 
 
 
-
-
-
-
-
-
-
-
-
-
 // API endpoints for admin
 export const ADMINENDPOINTS = {
 
@@ -79,6 +69,9 @@ export const USERENDPOINTS = {
    SUBMIT_QUIZ:`${API_BASE_URL}/student/submitQuiz`,
    CREATE_PAYMENT:`${API_BASE_URL}/student/create-payment`,
    VERIFY_PAYMENT:`${API_BASE_URL}/student/verify-payment`,
+
+   GETCOURSES: `${API_BASE_URL}/student/getCourse`,
+   
 }
 
 
