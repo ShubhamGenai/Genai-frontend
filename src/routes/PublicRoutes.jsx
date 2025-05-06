@@ -64,9 +64,9 @@ const PublicRoutes = () => {
       <Route path="test-player" element={<TestPlayer/>} /> 
       
       
-      <Route path="learn" element={<CoursesMain  />} /> 
+      {/* <Route path="learn" element={<CoursesMain  />} />  */}
 
-      {/* <Route path="learn" element={<LearnMainPage  />} />  */}
+      <Route path="learn" element={<LearnMainPage  />} /> 
       <Route path="course-details" element={<CourseDetails />} /> 
 
 

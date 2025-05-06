@@ -15,7 +15,7 @@ const CourseCard = ({ title, rating, reviews, learners, hours, isBestSeller, isH
   return (
     <div className="bg-white rounded-lg overflow-hidden shadow-md">
       <div className="relative">
-        <img src={getImageSrc(title)} alt={title} className="w-full h-40 object-cover" />
+        <img  alt={title} className="w-full h-40 object-cover" />
         {isBestSeller && (
           <span className="absolute top-2 left-2 bg-blue-500 text-white px-2 py-1 text-xs font-medium rounded">
             BEST
@@ -27,6 +27,7 @@ const CourseCard = ({ title, rating, reviews, learners, hours, isBestSeller, isH
           </span>
         )}
       </div>
+      <h1>{title}</h1>
       <div className="p-4">
         <h3 className="text-sm font-medium mb-2">{title}</h3>
         <div className="flex items-center mb-1">

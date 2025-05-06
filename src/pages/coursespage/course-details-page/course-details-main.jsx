@@ -4,11 +4,32 @@ import { CourseContent } from './course-content';
 import { CoursePricing } from './course-pricing';
 import { TestSection } from './Test-section/Test';
 import ReviewSection from './Test-section/Review-section';
+import { useDispatch, useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
+import { fetchCourseById } from '../../../redux/DataSlice';
+import { addToCart, checkItemInCart } from '../../../redux/CartSlice';
+import { toast } from 'react-toastify';
 
 export const CourseDetails = () => {
+
+  const dispatch = useDispatch();
+  const query = new URLSearchParams(useLocation().search);
+  const id = query.get("id");
+
+
+  const { courseDetails } = useSelector((state) => state.data);
+
+  useEffect(() => {
+    if (!id) {
+      return;
+    }
+    dispatch(fetchCourseById(id));
+  }, [dispatch, id]);
+
     useEffect(() => {
         window.scrollTo(0, 0);
       }, []);
+      
   return (
     <div className="min-h-screen font-sans relative">
       {/* Full-width header background container */}
@@ -18,15 +39,15 @@ export const CourseDetails = () => {
         <div className="flex flex-col md:flex-row gap-8">
           {/* Left Column */}
           <div className="md:w-7/12">
-            <CourseHeader />
-            <CourseContent />
+            <CourseHeader courseDetails={courseDetails}/>
+            <CourseContent courseDetails={courseDetails} />
            
           </div>
 
           {/* Right Column - Sticky Pricing Section */}
           <div className="md:w-5/12">
             <div className="md:sticky md:top-8 relative z-20  pt-6">
-              <CoursePricing />
+              <CoursePricing courseDetails={courseDetails}/>
             </div>
           </div>
         </div>
@@ -35,7 +56,7 @@ export const CourseDetails = () => {
       {/* Full-Width Review Section */}
       <div className="w-full bg-white py-12 mt-12">
         <div className="max-w-6xl mx-auto px-4">
-        <TestSection />
+        <TestSection  />
           <ReviewSection />
         </div>
       </div>

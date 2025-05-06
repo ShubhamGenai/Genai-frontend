@@ -1,209 +1,145 @@
 import React, { useState, useEffect } from 'react';
 import CourseCard from './CourseCard';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchCourses } from '../../../redux/DataSlice';
+import { Link } from 'react-router-dom';
 
 const ExploreCourses = ({ searchQuery }) => {
-  const [activeCategory, setActiveCategory] = useState("Data Analysis");
+  const [activeCategory, setActiveCategory] = useState("All Categories");
   const [filteredCourses, setFilteredCourses] = useState([]);
-  
-  const tabCategories = ["Data Analysis", "Management", "Web Development", "Marketing", "All Categories"];
+  const [currentPage, setCurrentPage] = useState(1);
 
-  const courses = [
-    {
-      id: 1,
-      title: "Data Analytics course for beginners",
-      rating: 4.8,
-      reviews: 783,
-      learners: "58K",
-      hours: "11",
-      isBestSeller: true,
-      isHot: false
-    },
-    {
-      id: 2,
-      title: "Prompt Engineering free course",
-      rating: 4.9,
-      reviews: 542,
-      learners: "76K",
-      hours: "4",
-      isBestSeller: false,
-      isHot: true
-    },
-    {
-      id: 3,
-      title: "ChatGPT with AI advanced design course",
-      rating: 4.7,
-      reviews: 356,
-      learners: "45K",
-      hours: "9",
-      isBestSeller: false,
-      isHot: false
-    },
-    {
-      id: 4,
-      title: "Data Analysis course for beginners",
-      rating: 4.8,
-      reviews: 783,
-      learners: "58K",
-      hours: "11",
-      isBestSeller: true,
-      isHot: false
-    },
-    {
-      id: 5,
-      title: "Prompt Engineering free course",
-      rating: 4.9,
-      reviews: 542,
-      learners: "76K",
-      hours: "4",
-      isBestSeller: false,
-      isHot: true
-    },
-    {
-      id: 6,
-      title: "Data Analysis course for beginners",
-      rating: 4.8,
-      reviews: 783,
-      learners: "58K",
-      hours: "11",
-      isBestSeller: true,
-      isHot: false
-    }
-  ];
+  const dispatch = useDispatch();
+  const { courses } = useSelector((state) => state.data);
+
+  const tabCategories = ["Data Analyst", "Management", "Web Development", "Marketing", "All Categories"];
+
+  const COURSES_PER_PAGE = 8;
 
   useEffect(() => {
-    // Filter courses based on search query
+    dispatch(fetchCourses());
+  }, [dispatch]);
+
+  useEffect(() => {
+    let updatedCourses = courses;
+
+    if (activeCategory !== "All Categories") {
+      updatedCourses = updatedCourses.filter(course =>
+        course.title.toLowerCase().includes(activeCategory.toLowerCase())
+      );
+    }
+
     if (searchQuery) {
-      const filtered = courses.filter(course => 
+      updatedCourses = updatedCourses.filter(course =>
         course.title.toLowerCase().includes(searchQuery.toLowerCase())
       );
-      setFilteredCourses(filtered);
-    } else {
-      setFilteredCourses(courses);
     }
-  }, [searchQuery]);
+
+    setFilteredCourses(updatedCourses);
+    setCurrentPage(1); // Reset to first page on filter change
+  }, [searchQuery, courses, activeCategory]);
 
   const handleCategoryChange = (category) => {
     setActiveCategory(category);
-    // Add smooth scroll to top of course grid
-    const courseGrid = document.getElementById('course-grid');
-    if (courseGrid) {
-      courseGrid.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
   };
 
+  // Pagination logic
+  const paginatedCourses = filteredCourses.slice(
+    (currentPage - 1) * COURSES_PER_PAGE,
+    currentPage * COURSES_PER_PAGE
+  );
+  const totalPages = Math.ceil(filteredCourses.length / COURSES_PER_PAGE);
+
   return (
-    <div className="container mx-auto px-4 py-4">
-      <h2 className="text-2xl font-semibold mb-4">Explore Courses & Start Learning</h2>
-      
-      {/* Tabs */}
-      <div className="flex border-b mb-6 overflow-x-auto">
-        {tabCategories.map((category) => (
-          <button
-            key={category}
-            className={`px-4 py-2 text-sm transition-all duration-300 ${
-              activeCategory === category
-                ? "text-blue-600 border-b-2 border-blue-600 font-medium"
-                : "text-gray-500 hover:text-blue-500"
-            }`}
-            onClick={() => handleCategoryChange(category)}
-          >
-            {category}
-          </button>
-        ))}
-      </div>
-
-      {/* Filters and Sorting */}
-      <div className="flex flex-wrap justify-between mb-6 items-center gap-4">
-        <div className="flex flex-wrap gap-4">
-          <div className="w-32">
-            <div className="bg-white p-2 rounded border flex items-center justify-between hover:border-blue-500 transition-colors duration-300 cursor-pointer">
-              <span className="text-sm">All Filters</span>
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </div>
-          </div>
-          <div className="hidden md:block">
-            <div className="bg-white p-2 rounded border flex items-center justify-between w-32">
-              <span className="text-sm">Categories</span>
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </div>
-          </div>
-          <div className="hidden md:block">
-            <div className="bg-white p-2 rounded border flex items-center justify-between w-24">
-              <span className="text-sm">Rating</span>
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </div>
-          </div>
-          <div className="hidden md:block">
-            <div className="bg-white p-2 rounded border flex items-center justify-between w-24">
-              <span className="text-sm">Duration</span>
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </div>
-          </div>
-          <div className="hidden lg:block">
-            <div className="bg-white p-2 rounded border flex items-center justify-between w-24">
-              <span className="text-sm">Level</span>
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex items-center">
-          <span className="text-sm text-gray-600 mr-2">Sort by:</span>
-          <div className="bg-white p-2 rounded border flex items-center justify-between w-32 hover:border-blue-500 transition-colors duration-300 cursor-pointer">
-            <span className="text-sm">Most Popular</span>
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
+    <div className="flex flex-col lg:flex-row p-6">
+      {/* Sidebar Filters */}
+      <div className="w-full lg:w-1/4 lg:pr-6 mb-6 lg:mb-0">
+        <div className="bg-white shadow rounded-lg p-4 sticky top-6">
+          <h3 className="text-lg font-semibold mb-4">All Filters</h3>
+          <div className="space-y-4">
+            <details className="group">
+              <summary className="cursor-pointer font-medium">Categories</summary>
+              <div className="ml-4 text-sm text-gray-600">Filter options go here</div>
+            </details>
+            <details className="group">
+              <summary className="cursor-pointer font-medium">Ratings</summary>
+              <div className="ml-4 text-sm text-gray-600">Filter options go here</div>
+            </details>
+            <details className="group">
+              <summary className="cursor-pointer font-medium">Duration</summary>
+              <div className="ml-4 text-sm text-gray-600">Filter options go here</div>
+            </details>
+            {/* Add more filters similarly */}
           </div>
         </div>
       </div>
 
-      {/* Course Grid */}
-      <div id="course-grid" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-6">
-        {filteredCourses.map((course) => (
-          <CourseCard
-            key={course.id}
-            title={course.title}
-            rating={course.rating}
-            reviews={course.reviews}
-            learners={course.learners}
-            hours={course.hours}
-            isBestSeller={course.isBestSeller}
-            isHot={course.isHot}
-          />
-        ))}
-      </div>
+      {/* Main Content */}
+      <div className="w-full lg:w-3/4">
+        {/* Top Tabs */}
+        <div className="flex justify-between items-center mb-4">
+          <div className="flex space-x-4 overflow-x-auto">
+            {tabCategories.map((category) => (
+              <button
+                key={category}
+                onClick={() => handleCategoryChange(category)}
+                className={`px-3 py-1.5 text-sm rounded-full border ${
+                  activeCategory === category
+                    ? "bg-blue-100 text-blue-600 font-semibold border-blue-300"
+                    : "text-gray-600 border-gray-300 hover:text-blue-500"
+                }`}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
 
-      {/* Pagination */}
-      <div className="flex justify-center mt-8 mb-12">
-        <div className="flex space-x-1">
-          <button className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-300 bg-white hover:bg-gray-100 transition-colors duration-300">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-          <button className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-300 bg-white text-sm font-medium">
-            1
-          </button>
-          <button className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-300 bg-white text-sm">
-            2
-          </button>
-          <button className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-300 bg-white text-sm">
-            3
-          </button>
-          <button className="w-8 h-8 flex items-center justify-center rounded-full bg-blue-600 text-white text-sm">
-            4
-          </button>
+          <div>
+            <select className="border border-gray-300 rounded px-2 py-1 text-sm">
+              <option>Most Popular</option>
+              <option>Newest</option>
+              <option>Highest Rated</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Result count */}
+        <p className="text-sm text-gray-600 mb-2">
+          {filteredCourses.length} results for {activeCategory} course
+        </p>
+
+        {/* Course Cards Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+  {paginatedCourses.map((course) => (
+    <Link to={`/course-details?id=${course._id}`} key={course.id}>
+      <CourseCard
+        title={course.title}
+        rating={course.rating}
+        reviews={course.reviews}
+        learners={course.learners}
+        hours={course.hours}
+        isBestSeller={course.isBestSeller}
+        isHot={course.isHot}
+      />
+    </Link>
+  ))}
+</div>
+
+        {/* Pagination */}
+        <div className="flex justify-center mt-6 space-x-2">
+          {[...Array(totalPages)].map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => setCurrentPage(idx + 1)}
+              className={`w-8 h-8 text-sm rounded-full border ${
+                currentPage === idx + 1
+                  ? "bg-blue-600 text-white"
+                  : "text-gray-600 hover:bg-gray-100"
+              }`}
+            >
+              {idx + 1}
+            </button>
+          ))}
         </div>
       </div>
     </div>

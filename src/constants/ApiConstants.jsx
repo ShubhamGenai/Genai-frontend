@@ -71,6 +71,10 @@ export const USERENDPOINTS = {
    VERIFY_PAYMENT:`${API_BASE_URL}/student/verify-payment`,
 
    GETCOURSES: `${API_BASE_URL}/student/getCourse`,
+   GETCOURSESBYID: `${API_BASE_URL}/student/getCourseById`,
+   GET_CART_COURSE: `${API_BASE_URL}/student/getCartCourses`,
+
+   GET_MODULES_DETAILS :`${API_BASE_URL}/student/getModulesDetails`, // Fetch modules by IDs
    
 }
 

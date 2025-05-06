@@ -1,67 +1,37 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getCartTests, removeFromCart } from "../../redux/CartSlice";
+import { getCartCourses, getCartTests, removeFromCart } from "../../redux/CartSlice";
 import { toast } from "react-toastify";
 
 const CartPage = () => {
   const dispatch = useDispatch();
-  const { cartTests, loading } = useSelector((state) => state.cartData);
-  
-  // Demo course data (to be replaced with actual data fetching later)
-  const [cartCourses, setCartCourses] = useState([
-    {
-      _id: "course1",
-      title: "Complete Web Development Bootcamp",
-      description: "Master HTML, CSS, JavaScript, React and Node.js in this comprehensive course designed for beginners to advanced learners.",
-      lessons: 120,
-      duration: "40 hours",
-      price: {
-        actual: 4999,
-        discounted: 1999
-      }
-    },
-    {
-      _id: "course2",
-      title: "Advanced React & Redux",
-      description: "Take your React skills to the next level with advanced patterns, state management with Redux, and performance optimization techniques.",
-      lessons: 85,
-      duration: "25 hours",
-      price: {
-        actual: 3499,
-        discounted: 1699
-      }
-    },
-    {
-      _id: "course3",
-      title: "Data Structures & Algorithms",
-      description: "Learn essential DSA concepts and improve your problem-solving skills for technical interviews and competitive programming.",
-      lessons: 90,
-      duration: "32 hours",
-      price: {
-        actual: 2999,
-        discounted: 1499
-      }
-    }
-  ]);
+  const { cartTests, loading ,cartCourses} = useSelector((state) => state.cartData);
 
+  
+ 
   useEffect(() => {
     dispatch(getCartTests());
+    dispatch(getCartCourses()); // Fetch cart courses if needed
     // Future implementation: dispatch(getCartCourses());
   }, [dispatch]);
 
   const handleRemove = (id, type) => {
-    if (type === "test") {
-      dispatch(removeFromCart({ itemId: id, itemType: "test" }))
+    if (type) {
+      dispatch(removeFromCart({ itemId: id, itemType: type }))
         .unwrap()
-        .then(() => toast.success("Removed test from cart"))
+        .then(() => {
+          toast.success("Removed data from cart");
+          // Fetch updated cart data based on the item type
+          if (type === "test") {
+            dispatch(getCartTests());
+          } else if (type === "course") {
+            dispatch(getCartCourses());
+          }
+        })
         .catch((err) => toast.error(err));
-    } else if (type === "course") {
-      // Demo implementation for courses (to be replaced later)
-      setCartCourses(cartCourses.filter(course => course._id !== id));
-      toast.success("Removed course from cart");
     }
   };
-
+  
   // Calculate totals
   const calculateSubtotal = () => {
     const testTotal = cartTests.reduce((sum, test) => sum + test.price.discounted, 0);

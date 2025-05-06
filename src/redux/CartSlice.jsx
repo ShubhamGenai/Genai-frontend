@@ -69,10 +69,27 @@ export const checkItemInCart = createAsyncThunk(
       return thunkAPI.rejectWithValue(err.response.data.message);
     }
   });
+
+
+  export const getCartCourses = createAsyncThunk("cart/getCartCourses", async (_, thunkAPI) => {
+    try {
+      const res = await axios.get(USERENDPOINTS.GET_CART_COURSE, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+   
+      
+      return res.data.courses; // assume this is the array of tests
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data.message);
+    }
+  });
+  
   
   export const removeFromCart = createAsyncThunk(
     "cart/removeFromCart",
-    async ({ itemId, itemType = "test" }, thunkAPI) => {
+    async ({ itemId, itemType }, thunkAPI) => {
       try {
         await axios.delete(`${USERENDPOINTS.REMOVE_FROM_CART}`, {
           data: { itemId, itemType },
@@ -92,6 +109,7 @@ const cartSlice = createSlice({
   initialState: {
     cartItems: [],
     cartTests:[],
+    cartCourses:[],
     isInCart: false,
     loading: false,
     error: null,
@@ -121,6 +139,9 @@ const cartSlice = createSlice({
       })
       .addCase(getCartTests.fulfilled, (state, action) => {
         state.cartTests = action.payload;
+      })
+      .addCase(getCartCourses.fulfilled, (state, action) => {
+        state.cartCourses = action.payload;
       })
       .addCase(removeFromCart.fulfilled, (state, action) => {
         state.cartTests = state.cartTests.filter(test => test._id !== action.payload);
