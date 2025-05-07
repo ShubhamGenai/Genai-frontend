@@ -4,11 +4,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { mainContext } from '../../../context/MainContext';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { USERENDPOINTS } from '../../../constants/ApiConstants';
 
 export const CoursePricing = ({ courseDetails }) => {
 
     const dispatch = useDispatch();
- const {token} = useContext(mainContext)
+ const {token,user} = useContext(mainContext)
 
  const navigate = useNavigate();
 
@@ -42,6 +44,67 @@ const id= courseDetails?._id || 0; // Assuming you have an ID for the course
       useEffect(() => {
         dispatch(checkItemInCart({ itemId: id, itemType: "course" }));
       }, [dispatch, id]);
+
+
+
+      const handleBuyNow = async (courseId) => {
+        try {
+          if (!token){
+            return toast.error("Please login to continue.");
+          }
+          // 1️⃣ Create Razorpay order
+          const { data } = await axios.post(USERENDPOINTS.CREATE_COURSE_PAYMENT, { courseId }, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+      
+          const { order, paymentId } = data;
+      
+          // 2️⃣ Open Razorpay popup
+          const options = {
+            key: import.meta.env.VITE_RAZORPAY_KEY_ID, // or process.env.REACT_APP_RAZORPAY_KEY
+            amount: order.amount,
+            currency: "INR",
+            name: "Course Purchase",
+            description: "Buying a course",
+            order_id: order.id,
+            handler: async function (response) {
+              const verifyBody = {
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                paymentId,
+              };
+      
+              // 3️⃣ Verify payment on backend
+              const verifyRes = await axios.post(USERENDPOINTS.VERIFY_COURSE_PAYMENT, verifyBody, {
+                headers: { Authorization: `Bearer ${token}` }
+              });
+      
+              if (verifyRes.data.success) {
+                toast.success("Payment successful! course enrolled ✅");
+                // dispatch(fetchTestById(id));
+              } else {
+                toast.error("Payment verification failed ❌");
+              }
+            },
+            prefill: {
+              name: user?.name,
+              email: user?.email,
+            },
+            theme: {
+              color: "#6366f1",
+            },
+          };
+      
+          const razor = new window.Razorpay(options);
+          razor.open();
+        } catch (error) {
+          console.error(error);
+          toast.error("Payment failed or cancelled.");
+        }
+      };
+      
+    
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6 sticky top-4 border-t border-gray-300">
@@ -92,7 +155,7 @@ const id= courseDetails?._id || 0; // Assuming you have an ID for the course
         Add to Cart
       </button>
     )}
-      <button className="w-full border border-gray-300 text-sm font-medium py-2 rounded mb-6">
+      <button className="w-full border border-gray-300 text-sm font-medium py-2 rounded mb-6" onClick={() => handleBuyNow(id)}>
         Buy Now
       </button>
 
