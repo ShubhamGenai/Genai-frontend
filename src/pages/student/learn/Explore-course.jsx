@@ -113,6 +113,7 @@ const ExploreCourses = ({ searchQuery }) => {
   {paginatedCourses.map((course) => (
     <Link to={`/course-details?id=${course._id}`} key={course.id}>
       <CourseCard
+       image={course.imageUrl}
         title={course.title}
         rating={course.rating}
         reviews={course.reviews}

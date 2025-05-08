@@ -83,6 +83,14 @@ export const addTest = createAsyncThunk("data/addTest", async (newTest) => {
   return response.data;
 });
 
+export const fetchLatestCoursesAndTests = createAsyncThunk(
+  "data/fetchLatestCoursesAndTests", 
+  async () => {
+    const response = await axios.get(`${USERENDPOINTS.GET_LATEST_COURSES_AND_TESTS}`);
+    return response.data; // Return both courses and tests in one object
+  }
+);
+
 const dataSlice = createSlice({
   name: "data",
   initialState: {
@@ -90,6 +98,8 @@ const dataSlice = createSlice({
     tests: [],
     categories:[],
     moduledata: [],
+    latestCourses: [],  // To store latest courses
+    latestTests: [], 
     testDetails: null,
     courseDetails: null,
     status: "idle", // "idle" | "loading" | "succeeded" | "failed"
@@ -122,6 +132,7 @@ const dataSlice = createSlice({
         state.status = "failed";
         state.error = action.error.message;
       })
+      
 
 
       .addCase(fetchTestById.pending, (state) => {
@@ -186,7 +197,20 @@ const dataSlice = createSlice({
       .addCase(fetchModulesByIds.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
-      }); 
+      })
+      .addCase(fetchLatestCoursesAndTests.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(fetchLatestCoursesAndTests.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.latestCourses = action.payload.courses;
+        state.latestTests = action.payload.tests;
+      })
+      .addCase(fetchLatestCoursesAndTests.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message;
+      })
+
 
 
    

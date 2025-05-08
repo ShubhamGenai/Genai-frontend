@@ -109,11 +109,11 @@ const id= courseDetails?._id || 0; // Assuming you have an ID for the course
   return (
     <div className="bg-white rounded-lg shadow-md p-6 sticky top-4 border-t border-gray-300">
       {/* Placeholder image */}
-      <div className="w-full h-32 bg-gray-200 rounded-lg mb-4 flex items-center justify-center">
+      <div className="w-full h-40 bg-gray-200 rounded-lg mb-4 flex items-center justify-center">
         <img
           src={courseDetails?.imageUrl || "/default-course.jpg"}
           alt="Course Thumbnail"
-          className="w-16 h-16 object-cover rounded-full"
+          className="w-full h-40 object-fit"
         />
       </div>
 

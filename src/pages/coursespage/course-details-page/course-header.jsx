@@ -26,7 +26,7 @@ const averageRating = ratings.length
 
     return (
       <div  className="w-full bg-cover bg-center  -mt-20 py-20 md:py-24"
-      style={{ backgroundImage: `url(${imageUrl})` }}
+     
     >
          
      

@@ -1,18 +1,36 @@
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { MdOutlineGroup } from "react-icons/md";
 import { WiTime4 } from "react-icons/wi";
 import { LuNotebookText } from "react-icons/lu";
 import { Link } from "react-router-dom";
+import { fetchLatestCoursesAndTests } from "../../redux/DataSlice";
 
 export default function TestSection() {
+  const dispatch = useDispatch();
+  const { latestCourses, latestTests, status, error } = useSelector((state) => state.data);
+
+  useEffect(() => {
+    dispatch(fetchLatestCoursesAndTests());  // Dispatch to fetch latest courses and tests
+  }, [dispatch]);
+
+  if (status === "loading") {
+    return <div className="flex justify-center items-center h-[300px]">
+    <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+  </div>;
+  }
+
+  if (status === "failed") {
+    return <div>Error: {error}</div>;
+  }
+
   return (
     <div className="w-full">
       <section className="bg-white pt-16 w-full flex justify-center">
         <div className="max-w-7xl w-full flex flex-col md:flex-row items-center justify-between border border-gray-200 rounded-lg p-10"
          style={{
           backgroundImage: "url('./bgs/bg.png')",
-         
           backgroundPosition: "center",
-          
         }}>
           {/* Left Text Section */}
           <div className="md:w-1/2 py-10">
@@ -27,74 +45,38 @@ export default function TestSection() {
               <br />us to excel.
             </p>
             <Link to="/tests">
-           
-            <button className="mt-8 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition">
-              Start learning now! →
-            </button>
+              <button className="mt-8 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition">
+                Start learning now! →
+              </button>
             </Link>
           </div>
 
-          {/* Course Cards Section */}
+          {/* Test Cards Section */}
           <div className="w-full md:w-[670px] flex flex-col md:flex-row gap-4 mt-8 md:mt-0">
-            {/* Card 1 */}
-            <div className="bg-white border border-gray-200 rounded-md shadow-sm h-auto w-full md:w-[417px]">
-              <img
-                src="./courses/jee.png"
-                alt="Data Analytics"
-                className="w-full"
-              />
-              <div className="p-2">
-                <h3 className="text-lg font-semibold mt-3">Data Analytics</h3>
-                <p className="text-gray-500 text-sm flex flex-col gap-1 mt-1">
-                  <span className="flex items-center gap-1">
-                    <LuNotebookText /> 5K+ Learners
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <WiTime4 /> 2 hours
-                  </span>
-                </p>
-              </div>
-            </div>
-
-            {/* Card 2 */}
-            <div className="bg-white border border-gray-200 rounded-md shadow-sm h-auto w-full md:w-[417px]">
-              <img
-                src="./courses/jee.png"
-                alt="Prompt Engineering"
-                className="w-full"
-              />
-              <div className="p-2">
-                <h3 className="text-lg font-semibold mt-3">Data Analytics</h3>
-                <p className="text-gray-500 text-sm flex flex-col gap-1 mt-1">
-                  <span className="flex items-center gap-1">
-                    <LuNotebookText /> 5K+ Learners
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <WiTime4 /> 2 hours
-                  </span>
-                </p>
-              </div>
-            </div>
-
-            {/* Card 3 */}
-            <div className="bg-white border border-gray-200 rounded-md shadow-sm h-auto w-full md:w-[417px]">
-              <img
-                src="./courses/jee.png"
-                alt="Design with AI"
-                className="w-full"
-              />
-              <div className="p-2">
-                <h3 className="text-lg font-semibold mt-3">Data Analytics</h3>
-                <p className="text-gray-500 text-sm flex flex-col gap-1 mt-1">
-                  <span className="flex items-center gap-1">
-                    <LuNotebookText /> 5K+ Learners
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <WiTime4 /> 2 hours
-                  </span>
-                </p>
-              </div>
-            </div>
+            {latestTests.map((test) => (
+              <Link
+                key={test._id}
+                to={`/test-details?id=${test._id}`}  // Pass the test ID in the URL query
+                className="bg-white border border-gray-200 rounded-md shadow-sm h-auto w-full md:w-[417px] transform transition-transform hover:scale-105 hover:shadow-xl"
+              >
+                <img
+                  src={test.image || "./courses/jee.png"}  // Replace this with the actual image path from the test data
+                  alt={test.title}
+                  className="w-full"
+                />
+                <div className="p-2">
+                  <h3 className="text-lg font-semibold mt-3">{test.title}</h3>
+                  <p className="text-gray-500 text-sm flex flex-col gap-1 mt-1">
+                    <span className="flex items-center gap-1">
+                      <LuNotebookText /> {test.enrolledStudentsCount || "0"}+ Learners
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <WiTime4 /> {test.duration || "N/A"} hours
+                    </span>
+                  </p>
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
       </section>

@@ -19,7 +19,7 @@ const HireSection = () => {
                 academic<br/> and professional growth. Start
                 your success story<br/> today.
               </p>
-              <Link>
+            <Link to="/login-landing">
            
               <button className="bg-transparent border border-white text-white px-4 py-2 sm:px-6 sm:py-3 rounded-md font-semibold flex items-center mt-6 sm:mt-10 hover:bg-white/10 transition-colors">
                 Start Learning <span className="ml-2">→</span>
@@ -41,9 +41,11 @@ const HireSection = () => {
                 Save time,<br/> reduce effort, and build your
                 dream team today.
               </p>
+               <Link to="/login-landing">
               <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 sm:px-6 sm:py-3 rounded-md font-semibold flex items-center mt-6 sm:mt-10 transition-colors">
                 Start Hiring <span className="ml-2">→</span>
               </button>
+              </Link>
             </div>
           </div>
         </div>

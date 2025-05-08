@@ -1,21 +1,12 @@
 import React from 'react';
 
-const CourseCard = ({ title, rating, reviews, learners, hours, isBestSeller, isHot }) => {
-  // Determine which image to use based on the course title
-  const getImageSrc = (title) => {
-    if (title.includes("Analytics")) {
-      return "/api/placeholder/300/200";
-    } else if (title.includes("Engineering")) {
-      return "/api/placeholder/300/200";
-    } else {
-      return "/api/placeholder/300/200";
-    }
-  };
+const CourseCard = ({ title, rating, reviews, learners, hours, isBestSeller, isHot, image }) => {
+
 
   return (
     <div className="bg-white rounded-lg overflow-hidden shadow-md">
       <div className="relative">
-        <img  alt={title} className="w-full h-40 object-cover" />
+        <img  src={image} alt={title} className="w-full h-40 object-cover" />
         {isBestSeller && (
           <span className="absolute top-2 left-2 bg-blue-500 text-white px-2 py-1 text-xs font-medium rounded">
             BEST

@@ -49,6 +49,76 @@ const CartPage = () => {
   const savings = calculateSavings();
   const totalItems = cartTests.length + cartCourses.length;
 
+  const handleCartCheckout = async () => {
+    const res = await loadRazorpayScript();
+    if (!res) {
+      toast.error("Razorpay SDK failed to load. Are you online?");
+      return;
+    }
+  
+    const courseIds = cartCourses.map((course) => course._id);
+    const testIds = cartTests.map((test) => test._id);
+  
+    try {
+      const { data } = await axios.post(
+        "/api/payment/cart-order",
+        { courseIds, testIds },
+        { withCredentials: true }
+      );
+  
+      const { order, paymentId } = data;
+  
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        amount: order.amount,
+        currency: order.currency,
+        name: "EduPlatform",
+        description: "Cart Payment",
+        order_id: order.id,
+        handler: async function (response) {
+          try {
+            const verifyRes = await axios.post(
+              "/api/payment/cart-verify",
+              {
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                paymentId,
+                courseIds,
+                testIds,
+              },
+              { withCredentials: true }
+            );
+  
+            if (verifyRes.data.success) {
+              toast.success("Payment successful!");
+              dispatch(getCartCourses());
+              dispatch(getCartTests());
+            } else {
+              toast.error("Payment verification failed");
+            }
+          } catch (error) {
+            toast.error("Verification failed");
+          }
+        },
+        prefill: {
+          name: "User",
+          email: "user@example.com",
+        },
+        theme: {
+          color: "#2563eb",
+        },
+      };
+  
+      const paymentObject = new window.Razorpay(options);
+      paymentObject.open();
+    } catch (error) {
+      console.error("Checkout error:", error);
+      toast.error("Something went wrong during checkout.");
+    }
+  };
+  
+
   return (
     <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
       <h1 className="text-2xl font-bold mb-6">My Cart</h1>
