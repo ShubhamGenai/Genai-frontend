@@ -39,7 +39,6 @@ const HeroSection = () => {
   </span>
 </h1>
 
-
           <p
             className="text-lg sm:text-2xl text-gray-700 mt-2 opacity-80 tracking-widest font-semibold mb-4 py-4"
             style={{ fontFamily: 'SF Pro Display, sans-serif' }}

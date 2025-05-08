@@ -27,6 +27,11 @@ export default function LearningSection() {
 
   return (
     <div className="w-full">
+        <div className="text-center py-2 mt-16">
+        <h2 className="text-3xl text-gray-600 font-medium">
+          Unlocking your Future with AI - <span className="font-bold text-gray-800">Smarter</span> , <span className="font-bold text-gray-800">Faster</span> , <span className="font-bold text-gray-800">Better</span>
+        </h2>
+      </div>
       <section className="bg-cover bg-center pt-16 w-full flex justify-center">
         <div
           className="max-w-7xl w-full flex flex-col md:flex-row items-center justify-between border border-gray-200 rounded-lg p-10 mt-5"
@@ -70,7 +75,7 @@ export default function LearningSection() {
                   alt={course.title}
                   className="w-full h-48 object-cover rounded-t-md"
                 />
-                <div className="p-2">
+                <div className="p-4">
                   <h3 className="text-lg font-semibold mt-3">{course.title}</h3>
                   <p className="text-gray-500 text-sm flex flex-col gap-1 mt-1">
                     <span className="flex items-center gap-1">
