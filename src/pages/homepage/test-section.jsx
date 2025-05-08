@@ -38,7 +38,7 @@ export default function TestSection() {
               </button>
             </Link>
           </div>
-
+          <Link to="/tests">
           {/* Right Cards Section */}
           <div className="w-full md:w-[670px] flex flex-col md:flex-row gap-4 mt-8 md:mt-0">
   {testCards.map((test) => (
@@ -79,6 +79,7 @@ export default function TestSection() {
     </div>
   ))}
 </div>
+</Link>
 
         </div>
       </section>
