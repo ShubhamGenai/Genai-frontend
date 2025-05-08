@@ -28,10 +28,10 @@ export default function StatsSection() {
             whileHover={{ scale: 1.05 }}
             transition={{ duration: 0.3 }}
           >
-            <p className="text-3xl sm:text-4xl font-extrabold text-black">
+            <p className="text-lg sm:text-xl md:text-2xl lg:text-4xl font-bold">
               <CountUp end={item.value} duration={2} separator="," />
             </p>
-            <p className="mt-2 text-sm sm:text-base text-gray-600 font-medium">
+            <p className="text-gray-500 text-sm sm:text-base">
               {item.label}
             </p>
           </motion.div>
