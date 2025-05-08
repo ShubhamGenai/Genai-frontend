@@ -47,14 +47,14 @@ export default function TestSection() {
       className="bg-white border border-gray-200 rounded-md shadow-sm h-auto w-full md:w-[417px] transform transition-transform "
     >
       {/* Title and Tag - Always Positioned Over the Image */}
-      <div className="absolute top-4 left-4 z-10 text-black">
+      {/* <div className="absolute top-4 left-4 z-10 text-black">
         <h3 className="text-lg font-semibold mt-3">{test.title}</h3>
         <button
           className={`inline-block text-xs text-white px-2 py-1 mt-2 rounded ${test.tagColor}`}
         >
           {test.tag}
         </button>
-      </div>
+      </div> */}
 
       {/* Image */}
       <div className="relative">

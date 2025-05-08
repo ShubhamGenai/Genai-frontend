@@ -5,6 +5,10 @@ import { Link } from "react-router-dom";
 export default function LearningSection() {
   return (
     <div className="w-full">
+        <div className="text-center py-2 mt-16">
+         <h2 className="text-3xl text-gray-600 font-medium">
+          Unlocking your Future with AI - <span className="font-bold text-gray-800">Smarter</span> , <span className="font-bold text-gray-800">Faster</span> , <span className="font-bold text-gray-800">Better</span>        </h2>
+       </div>
       <section
         className="bg-cover bg-center pt-16 w-full flex justify-center"
        

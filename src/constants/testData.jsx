@@ -7,7 +7,7 @@ export const testCards = [
       subject: "CAT",
       questions: "50 Questions",
       duration: "2 hours",
-      image: "../../courses/jee.png", // Make sure this image exists
+      image: "../../courses/cat1.png", // Make sure this image exists
       bgColor: "bg-green-200",
       tagColor: "bg-green-500",
     },
@@ -18,7 +18,7 @@ export const testCards = [
       subject: "JEE",
       questions: "50 Questions",
       duration: "2 hours",
-      image: "./../courses/jee.png",
+      image: "./../courses/jee1.png",
       bgColor: "bg-teal-200",
       tagColor: "bg-teal-500",
     },
@@ -29,7 +29,7 @@ export const testCards = [
       subject: "NEET",
       questions: "50 Questions",
       duration: "2 hours",
-      image: "../../courses/jee.png",
+      image: "../../courses/neet1.png",
       bgColor: "bg-blue-200",
       tagColor: "bg-blue-500",
     },
