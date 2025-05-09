@@ -29,12 +29,12 @@ const FilterGroup = ({ title, options, selectedValues, onChange, open: initialOp
   };
   
   return (
-    <div className="py-2 border-b">
+    <div className="py-4">
       <div 
         className="flex justify-between items-center cursor-pointer" 
         onClick={() => setIsOpen(!isOpen)}
       >
-        <span className="font-medium">{title}</span>
+        <span className="font-semibold text-base">{title}</span>
         <svg 
           className={`w-4 h-4 transition-transform ${isOpen ? 'transform rotate-180' : ''}`} 
           fill="none" 
@@ -45,7 +45,6 @@ const FilterGroup = ({ title, options, selectedValues, onChange, open: initialOp
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
         </svg>
       </div>
-      
       {isOpen && (
         <div className="mt-2 pl-2">
           {options.map(option => (
@@ -89,7 +88,15 @@ const SidebarFilters = ({ onFilterChange, currentFilters }) => {
   ];
   
   return (
-    <div className="bg-white rounded shadow p-4">
+    <div className="bg-white rounded-xl shadow-lg p-6">
+      <h3 className="text-lg font-bold mb-6 text-gray-800 border-b pb-4">All Filters</h3>
+      <FilterGroup 
+        title="Categories" 
+        options={[]}
+        selectedValues={[]}
+        onChange={() => {}}
+        open={false}
+      />
       <FilterGroup 
         title="Ratings" 
         options={ratingOptions}
@@ -97,31 +104,27 @@ const SidebarFilters = ({ onFilterChange, currentFilters }) => {
         onChange={(values) => onFilterChange('ratings', values)}
         open={true}
       />
-      
       <FilterGroup 
         title="Duration" 
         options={durationOptions}
         selectedValues={currentFilters.duration}
         onChange={(values) => onFilterChange('duration', values)}
       />
-      
       <FilterGroup 
         title="Level" 
         options={levelOptions}
         selectedValues={currentFilters.level}
         onChange={(values) => onFilterChange('level', values)}
       />
-      
       <FilterGroup 
         title="Price" 
         options={priceOptions}
         selectedValues={currentFilters.price}
         onChange={(values) => onFilterChange('price', values)}
       />
-      
-      <div className="mt-4">
+      <div className="mt-6">
         <button 
-          className="w-full bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300"
+          className="w-full bg-gray-200 text-gray-700 px-4 py-2 rounded font-semibold hover:bg-gray-300"
           onClick={() => onFilterChange('reset', {
             ratings: [],
             duration: [],

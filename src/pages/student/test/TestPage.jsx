@@ -7,16 +7,17 @@ import Pagination from './Pagination';
 import TrendingTests from './TrendingTest';
 import Stats from './Stats';
 import FaqSection from '../jobs/Faq';
-import {  trendingTests, statsData, faqData } from './TestData';
+import { trendingTests as trendingTestsData, statsData, faqData } from './TestData';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchTests, fetchTestsCategories } from '../../../redux/DataSlice';
+import SubscribeBanner from './SubscribeBanner';
 
 
 const TestPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortBy, setSortBy] = useState('');
+  const [sortBy, setSortBy] = useState('mostPopular');
   const [filters, setFilters] = useState({
     ratings: [],
     duration: [],
@@ -27,7 +28,7 @@ const TestPage = () => {
   const dispatch = useDispatch();
   const { categories,tests, status, error } = useSelector((state) => state.data);
   const allTests = tests || [];
-  const allCategories = categories || []
+  const allCategories = categories || ["Jee","CAT"]
 
   useEffect(() => {
   dispatch(fetchTestsCategories());
@@ -47,6 +48,7 @@ const TestPage = () => {
   useEffect(() => {
     let result = [...allTests];
     
+    // Remove initial filter: do not filter by category, search, or filters unless user sets them
     // Filter by category
     if (selectedCategory) {
       result = result.filter(test => test.category === selectedCategory);
@@ -84,6 +86,10 @@ const TestPage = () => {
     } else if (sortBy === 'highestRated') {
       result.sort((a, b) => b.rating - a.rating);
     }
+    // If sortBy is 'newest', sort by a 'createdAt' or similar field if available
+    else if (sortBy === 'newest') {
+      result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    }
     
     setTotalTests(result.length);
     
@@ -91,13 +97,20 @@ const TestPage = () => {
     const startIndex = (currentPage - 1) * testsPerPage;
     const endIndex = startIndex + testsPerPage;
     setFilteredTests(result.slice(startIndex, endIndex));
-  }, [selectedCategory, searchQuery, filters, sortBy, currentPage]);
+  }, [selectedCategory, searchQuery, filters, sortBy, currentPage, allTests]);
   
   // Calculate total pages for pagination
   const totalPages = Math.ceil(totalTests / testsPerPage);
   
   // Handler for filter changes
   const handleFilterChange = (filterType, values) => {
+    if (filterType === 'reset') {
+      setFilters({ ratings: [], duration: [], level: [], price: [] });
+      setSelectedCategory("");
+      setSearchQuery("");
+      setCurrentPage(1);
+      return;
+    }
     setFilters(prev => ({
       ...prev,
       [filterType]: values
@@ -108,8 +121,22 @@ const TestPage = () => {
   // Handler for search
   const handleSearch = (query) => {
     setSearchQuery(query);
+    setSelectedCategory(""); // Clear selected category so search works for both title and category
     setCurrentPage(1);
   };
+
+  // Trending tests: top 3 by rating or reviews
+  const trendingTests = [...allTests]
+    .sort((a, b) => (b.rating || 0) - (a.rating || 0))
+    .slice(0, 3)
+    .map((test, idx) => ({
+      ...test,
+      badge: idx === 1 ? 'Free' : 'Premium',
+      questions: `${test.questions || 8} Questions`,
+      duration: test.duration || '5 Minutes',
+      reviews: test.reviews ? test.reviews.toLocaleString() : '2,750',
+      subtitle: `${test.category || 'General'} (Level)`
+    }));
 
   if (status === "loading") return <div className="flex items-center justify-center h-screen">
   <div className="w-12 h-12 border-4 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
@@ -118,19 +145,18 @@ const TestPage = () => {
   if (status === "failed") return <p>Error: {error}</p>;
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-100">
+    <div className="flex flex-col min-h-screen ">
       <Header onSearch={handleSearch} />
-
       <main className="flex-grow px-4 py-8 md:px-8">
         <CategoryFilter 
           categories={allCategories} 
           selectedCategory={selectedCategory} 
           onCategorySelect={(category) => {
             setSelectedCategory(category);
+            setSearchQuery(category);
             setCurrentPage(1);
           }} 
         />
-
         <h2 className="text-lg font-semibold mb-4">Explore Tests</h2>
         <div className="flex flex-col md:flex-row gap-6">
           <div className="w-full md:w-1/4">
@@ -139,7 +165,6 @@ const TestPage = () => {
               currentFilters={filters}
             />
           </div>
-          
           <div className="w-full md:w-3/4">
             <div className="flex justify-between items-center mb-4">
               <p className="text-gray-600">{totalTests} tests</p>
@@ -156,7 +181,6 @@ const TestPage = () => {
                 </select>
               </div>
             </div>
-            
             {filteredTests.length > 0 ? (
               <TestListing tests={filteredTests} />
             ) : (
@@ -174,7 +198,6 @@ const TestPage = () => {
                 </button>
               </div>
             )}
-            
             {totalPages > 1 && (
               <Pagination 
                 currentPage={currentPage} 
@@ -184,10 +207,11 @@ const TestPage = () => {
             )}
           </div>
         </div>
-        
-        <TrendingTests tests={trendingTests} />
+        <TrendingTests trendingTests={trendingTests} />
         <Stats statsData={statsData} />
+      
         <FaqSection faqs={faqData} />
+        <SubscribeBanner />
       </main>
     </div>
   );

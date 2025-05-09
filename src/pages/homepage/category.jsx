@@ -78,7 +78,7 @@ const Section = () => {
                     onClick={() => setActiveTab(tab.id)}
                     className={`flex-1 py-3 sm:py-5 px-4 rounded-3xl transition-all duration-300 ${
                       activeTab === tab.id
-                        ? "bg-blue-600 text-white"
+                        ? "bg-blue-600 text-black"
                         : "text-gray-800 hover:bg-blue-600 hover:text-white"
                     } font-semibold text-sm sm:text-md`}
                   >

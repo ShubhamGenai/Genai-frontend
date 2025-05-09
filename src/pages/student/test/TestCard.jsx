@@ -3,20 +3,26 @@ import { Link } from 'react-router-dom';
 
 const TestCard = ({ test }) => {
   return (
-    <div className="bg-white rounded shadow p-4 hover:shadow-md transition-shadow">
-      <h3 className="font-medium text-gray-800 mb-2">{test.title}</h3>
-      <div className="flex justify-between text-xs text-gray-500 mb-2">
-        <span>{test.quizzes.length} Questions</span>
-        <span>{test.duration}hr</span>
+    <div className="bg-white rounded-lg shadow p-6 flex flex-col hover:shadow-lg transition-shadow min-h-[180px]">
+      <h3 className="font-semibold text-gray-900 text-base mb-2 leading-tight line-clamp-2">{test.title}</h3>
+      <div className="flex items-center text-xs text-gray-500 mb-2 gap-3">
+        <div className="flex items-center gap-1">
+          <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12H9m12 0A9 9 0 11 3 12a9 9 0 0118 0z" /></svg>
+          <span>{test.questions} Questions</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <svg className="w-4 h-4 text-gray-400 " fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          <span>{test.duration}</span>
+        </div>
       </div>
-      <div className="flex items-center mb-3">
+      <div className="flex items-center mb-4">
         <div className="flex">
           {[1, 2, 3, 4, 5].map((star) => (
             <svg
               key={star}
               className={`w-4 h-4 ${
-                star <= Math.floor(test.averageRating) 
-                  ? "text-yellow-400" 
+                star <= Math.floor(test.rating || test.averageRating || 0)
+                  ? "text-yellow-400"
                   : "text-gray-300"
               }`}
               fill="currentColor"
@@ -26,10 +32,10 @@ const TestCard = ({ test }) => {
             </svg>
           ))}
         </div>
-        <span className="text-xs text-gray-500 ml-1">({test.ratings.length})</span>
+        <span className="text-xs text-gray-500 ml-2">({test.reviews || (test.ratings ? test.ratings.length : 0)})</span>
       </div>
-      <Link to={`/test-details?id=${test._id}`}>
-        <button className="w-2x1 bg-gray-600 text-white text-sm py-1 px-3 rounded hover:bg-gray-700 transition">
+      <Link to={`/test-details?id=${test._id || test.id}`} className="w-full mt-auto">
+        <button className="w-20 bg-[#5F5F5F]  text-white text-sm py-2 rounded font-semibold hover:bg-gray-900 transition">
           Get Test
         </button>
       </Link>

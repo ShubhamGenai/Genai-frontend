@@ -24,36 +24,26 @@ const StarRating = ({ rating }) => {
 // Individual Test Card Component
 const TrendingTestCard = ({ test }) => {
   return (
-    <div className="bg-white rounded p-12">
-      <div className="mb-2">
-        {test.badge && (
-          <span className={`inline-block text-xs px-2 py-1 rounded mb-2 ${
-            test.badge === 'Free' ? 'bg-black text-white' : 'bg-orange-400 text-white'
-          }`}>
-            {test.badge}
-          </span>
-        )}
-        <h3 className="font-medium text-sm">{test.title}</h3>
-        <p className="text-xs text-gray-500">{test.subtitle}</p>
+    <div className="bg-white rounded-lg p-6 flex flex-col items-start shadow min-h-[220px]">
+      {test.badge && (
+        <span className={`inline-block text-xs px-2 py-1 rounded mb-2 font-semibold ${
+          test.badge === 'Free' ? 'bg-black text-white' : 'bg-orange-400 text-white'
+        }`}>
+          {test.badge}
+        </span>
+      )}
+      <h3 className="font-semibold text-sm text-gray-900 mb-1 line-clamp-2">{test.title}</h3>
+      <p className="text-xs text-gray-500 mb-2">{test.subtitle}</p>
+      <div className="flex items-center gap-2 text-xs text-gray-500 mb-2">
+        <span>{test.questions}</span>
+        <span className="mx-1">•</span>
+        <span>{test.duration}</span>
       </div>
-      
-      <div className="flex flex-col gap-2 mb-3">
-        <div className="flex items-center gap-1">
-          <div className="w-4 h-4 bg-gray-400 rounded-full"></div>
-          <span className="text-xs text-gray-600">{test.questions} Questions</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <div className="w-4 h-4 bg-gray-400 rounded-full"></div>
-          <span className="text-xs text-gray-600">{test.duration}</span>
-        </div>
-      </div>
-      
       <div className="flex items-center mb-3">
         <StarRating rating={test.rating} />
         <span className="text-xs text-gray-500 ml-1">({test.reviews})</span>
       </div>
-      
-      <button className="w-full bg-white border border-gray-300 text-gray-700 text-sm py-2 rounded hover:bg-gray-50 transition">
+      <button className="w-full bg-white border border-gray-300 text-gray-700 text-sm py-2 rounded hover:bg-gray-50 transition font-semibold">
         View Test
       </button>
     </div>
@@ -96,27 +86,26 @@ const TrendingTests = () => {
   ];
 
   return (
-    <div className="bg-gray-200 p-16 rounded-lg mt-8">
-      <div className="flex flex-col md:flex-row gap-8">
-        <div className="md:w-1/3">
-          <div className="uppercase text-sm font-medium text-gray-600 mb-2">FOR YOU</div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">Trending Tests</h2>
-          <p className="text-gray-600 mb-6">
+    <div className="bg-[#BBBBBB] p-8 md:p-12 rounded-2xl mt-10 flex flex-col md:flex-row gap-8 items-stretch">
+      <div className="md:w-1/3 flex flex-col justify-between mb-6 md:mb-0">
+        <div>
+          <div className="uppercase text-xs font-semibold text-gray-500 mb-2 tracking-wider">FOR YOU</div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-3">Trending Tests</h2>
+          <p className="text-gray-600 mb-6 text-sm">
             The better your rank, the brighter your career. Top the leaderboard, showcase your skills, and grab exclusive job offers from leading recruiters.
           </p>
-          <button className="bg-blue-500 text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-blue-600 transition">
-            Explore Trending Jobs
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-            </svg>
-          </button>
         </div>
-        
-        <div className="md:w-2/3 grid grid-cols-1 md:grid-cols-3 gap-4">
-          {trendingTests.map(test => (
-            <TrendingTestCard key={test.id} test={test} />
-          ))}
-        </div>
+        <button className="bg-blue-600 text-white px-5 py-2 rounded flex items-center gap-2 font-semibold hover:bg-blue-700 transition w-fit">
+          Explore Trending Jobs
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+          </svg>
+        </button>
+      </div>
+      <div className="md:w-2/3 grid grid-cols-1 md:grid-cols-3 gap-4">
+        {trendingTests.map(test => (
+          <TrendingTestCard key={test.id} test={test} />
+        ))}
       </div>
     </div>
   );
