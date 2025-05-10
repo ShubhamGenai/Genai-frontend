@@ -147,7 +147,7 @@ const TestPage = () => {
   return (
     <div className="flex flex-col min-h-screen ">
       <Header onSearch={handleSearch} />
-      <main className="flex-grow px-4 py-8 md:px-8">
+      <main className="flex-grow px-8 py-8 md:px-8">
         <CategoryFilter 
           categories={allCategories} 
           selectedCategory={selectedCategory} 
@@ -157,8 +157,8 @@ const TestPage = () => {
             setCurrentPage(1);
           }} 
         />
-        <h2 className="text-lg font-semibold mb-4">Explore Tests</h2>
-        <div className="flex flex-col md:flex-row gap-6">
+        <h2 className="text-2xl px-6 font-bold mt-8 ml-8 text-left">Explore Tests</h2>
+        <div className="flex flex-col md:flex-row p-8 gap-8">
           <div className="w-full md:w-1/4">
             <SidebarFilters 
               onFilterChange={handleFilterChange}

@@ -88,8 +88,8 @@ const SidebarFilters = ({ onFilterChange, currentFilters }) => {
   ];
   
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6">
-      <h3 className="text-lg font-bold mb-6 text-gray-800 border-b pb-4">All Filters</h3>
+    <div className="bg-white rounded-xl rounded-[10px] border transition border-gray-300  p-6 ">
+      <h3 className="text-md font- mb-2 text-gray-500 border-b pb-4">All Filters</h3>
       <FilterGroup 
         title="Categories" 
         options={[]}

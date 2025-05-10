@@ -1,28 +1,31 @@
 import React from 'react';
 import CourseCategory from './CourseCategory';
 
-const PopularTopics = () => {
+const PopularTopics = ({ activeTopic, onTopicSelect }) => {
   const categories = [
+    
     "Data Science",
     "Management",
     "Web Development",
     "Marketing",
-    "DevOps",
-    "Networking",
-    "Cyber Security",
+    "Govt. Exams",
     "ChatGPT & AI"
   ];
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h2 className="text-lg font-semibold mb-4">Popular topics</h2>
-      <div className="flex flex-wrap gap-2">
+    <div className="container mx-auto px-4 pt-8 pb-4">
+      <h2 className="text-2xl font-bold mb-4 text-left">Popular topics</h2>
+      <div className="flex flex-nowrap  gap-3 overflow-x-auto pb-2">
         {categories.map((category) => (
-          <CourseCategory
+          <button
             key={category}
-            name={category}
-            active={category === "Data Science"}
-          />
+            onClick={() => onTopicSelect(category)}
+          >
+            <CourseCategory
+              name={category}
+              active={activeTopic === category}
+            />
+          </button>
         ))}
       </div>
     </div>
