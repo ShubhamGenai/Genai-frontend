@@ -30,7 +30,7 @@ export const CourseContent = ({courseDetails}) => {
   
     return (
       <div>
-        <div className="mb-8">
+        <div className="mb-8 ">
           <h2 className="text-xl font-bold mb-4">What you'll learn</h2>
           <div className="grid md:grid-cols-2 gap-3 text-sm">
 
