@@ -12,11 +12,6 @@ EMPLOYER_SIGNIN :`${API_BASE_URL}/employer/employer-signin`,
 }
 
 
-
-
-
-
-
 // API endpoints for admin
 export const ADMINENDPOINTS = {
 
@@ -93,6 +88,14 @@ export const GEUESTENDPOINTS = {
   EXAM_TYPES:`${API_BASE_URL}user/guestExamType`,
   TESTS_BY_TYPE:`${API_BASE_URL}user/test-by-Type`,
   GUESTTESTDETAIL_BY_ID:`${API_BASE_URL}user/test-by-id`
+ 
+ 
+}
+
+
+export const CONTENTMANAGER = {
+
+  CONTENT_SIGNIN:`${API_BASE_URL}/auth/content-manager-signin`,
  
  
 }

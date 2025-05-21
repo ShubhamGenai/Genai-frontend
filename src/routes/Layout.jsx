@@ -15,7 +15,7 @@ const Layout = ({ children }) => {
   const { user } = useContext(mainContext);
   const location = useLocation();
 
-  const hideNavAndFooterRoutes = ["/signup", "/login","/employer-signup","/employer-signin","/admin","/test-player"];
+  const hideNavAndFooterRoutes = ["/signup", "/login","/employer-signup","/employer-signin","/admin","/test-player","/content-login", ];
   const hideOnlyFooterRoutes = ["/login-landing",];
 
   const hideNavAndFooter = hideNavAndFooterRoutes.includes(location.pathname);
@@ -26,7 +26,7 @@ const Layout = ({ children }) => {
     if (user) {
       switch (user.role) {
         case "admin": return <AdminNavBar />;
-        case "contentmanager": return <ContentManagerNavBar />;
+        case "content": return <ContentManagerNavBar />;
         case "employer": return <EmployerNavBar />;
         default: return <NavBar />;
       }
@@ -39,7 +39,7 @@ const Layout = ({ children }) => {
     if (user) {
       switch (user.role) {
         case "admin": return <AdminFooter />;
-        case "contentmanager": return <ContentManagerFooter />;
+        case "content": return <ContentManagerFooter />;
         case "employer": return <EmployerFooter />;
         default: return <Footer />;
       }

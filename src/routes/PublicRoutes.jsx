@@ -18,6 +18,8 @@ import JobDetails from "../pages/student/jobs/JobDetails";
 import TestDetailsPage from "../pages/student/test/testDetails/TestDetails";
 import TestPlayer from "../pages/student/test/testDetails/Test-Player";
 import LearnMainPage from "../pages/student/learn/LearnMain";
+import ContentLogin from "../pages/auth-pages/content-auth/Content-login";
+
 
 
 
@@ -28,7 +30,8 @@ const authComponents = {
   "/signup": <SignupPage />,
   "/employer-signup": <EmployerRegistration/>,
   "/employer-signin": <EmployerSignIn/>,
-  "/admin": <AdminLogin/>
+  "/admin": <AdminLogin/>,
+   "/content-login": <ContentLogin/>
 };
 
 const PublicRoutes = () => {
@@ -38,7 +41,7 @@ const PublicRoutes = () => {
   // Role-based redirection paths
   const roleRedirects = {
     admin: "/admin",
-    contentmanager: "/contentmanager/home",
+    content: "/content",
     employer: "/employer/home",
     student: "/", // Explicitly keep students on homepage
   };
@@ -74,10 +77,14 @@ const PublicRoutes = () => {
       <Route path="job-details" element={<JobDetails/>} /> 
 
 
+        {/* <Route path="contentss" element={<ContentManagerDashboard/>} />  */}
+
+
 
       <Route path="leaderboard" element={<LeaderBoardPage />} /> 
       
       <Route path="auth/callback" element={<AuthCallback/>} />
+
       <Route path="admin" element={<AdminLogin/>} />
 
 

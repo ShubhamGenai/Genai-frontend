@@ -2,7 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { useContext } from "react";
 import { mainContext } from "../context/MainContext";
 import AdminRoutes from "./AdminRoutes";
-import ContentManagerRoute from "./ContentManger";
+import ContentManagerRoute from "./ContentMangerRoutes";
 import StudentRoutes from "./StudentRoutes";
 import EmployerRoutes from "./EmployerRoutes";
 import PublicRoutes from "./PublicRoutes";
@@ -12,7 +12,7 @@ import ScrollToTop from "../component/Scroll-top";
 const roleComponents = {
   admin: <AdminRoutes />,
   student: <StudentRoutes />,
-  contentmanager: <ContentManagerRoute />,
+  content: <ContentManagerRoute />,
   employer: <EmployerRoutes />,
 };
 
