@@ -79,7 +79,7 @@ const Courses = () => {
           <p className="text-gray-600">Manage your online courses</p>
         </div>
         <Link 
-          to="/courses/add" 
+          to="/content/course/add" 
           className="mt-4 md:mt-0 flex items-center justify-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
         >
           <PlusIcon className="h-5 w-5 mr-2" />

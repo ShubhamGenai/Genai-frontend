@@ -43,10 +43,10 @@ const Sidebar = () => {
   const menuItems = [
     { name: 'Dashboard', path: '/', icon: HomeIcon },
     { name: 'Courses', path: '/content/courses-list', icon: BookOpenIcon },
-    { name: 'Modules', path: '/modules', icon: CollectionIcon },
-    { name: 'Lessons', path: '/lessons', icon: VideoCameraIcon },
-    { name: 'Quizzes', path: '/quizzes', icon: QuestionMarkCircleIcon },
-    { name: 'Tests', path: '/tests', icon: ClipboardCheckIcon },
+    { name: 'Modules', path: '/content/modules', icon: CollectionIcon },
+    { name: 'Lessons', path: '/content/lessons', icon: VideoCameraIcon },
+    { name: 'Quizzes', path: '/content/quizzes', icon: QuestionMarkCircleIcon },
+    { name: 'Tests', path: '/content/test-list', icon: ClipboardCheckIcon },
   ];
 
   return (

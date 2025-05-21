@@ -92,7 +92,7 @@ const ContentManagerDashboard = () => {
             <h2 className="text-lg font-medium text-gray-900">Quick Actions</h2>
           </div>
           <div className="p-6 grid grid-cols-2 gap-4">
-            <Link to="/content/courses-list" className="flex flex-col items-center justify-center p-4 bg-indigo-50 rounded-lg hover:bg-indigo-100 transition-colors">
+            <Link to="/content/course/add" className="flex flex-col items-center justify-center p-4 bg-indigo-50 rounded-lg hover:bg-indigo-100 transition-colors">
               <AcademicCapIcon className="h-8 w-8 text-indigo-600" />
               <span className="mt-2 text-sm font-medium text-gray-900">Add Course</span>
             </Link>

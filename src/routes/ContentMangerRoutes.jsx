@@ -4,6 +4,14 @@ import ProtectedRoute from "./ProtectedRoute";
 import ContentManagerDashboard from "../pages/contentManager/homepage/Landing";
 import Sidebar, { SidebarProvider, useSidebar } from "../component/baseComponents/contentManager/Content-Sidebar";
 import Courses from "../pages/contentManager/pages/Course-list";
+import CourseForm from "../component/contentManagerComponents/CourseForm";
+import AddQuiz from "../pages/contentManager/pages/quiz/Add-quiz";
+import Quizzes from "../pages/contentManager/pages/quiz/Quiz-list";
+import ModuleList from "../pages/contentManager/pages/module/Module-list";
+import AddModule from "../pages/contentManager/pages/module/Add-Module";
+import LessonList from "../pages/contentManager/pages/lesson/Lesson-list";
+import LessonForm from "../pages/contentManager/pages/lesson/Add-lesson";
+import TestList from "../pages/contentManager/pages/test/Test-lists";
 
 // Component that wraps our content and responds to sidebar state
 const ContentWrapper = ({ children }) => {
@@ -57,7 +65,88 @@ const ContentManagerRoutes = () => {
                 </ProtectedRoute>
               }
             />
+
+              <Route
+              path="course/add"
+              element={
+                <ProtectedRoute allowedRoles={["content"]}>
+                  <CourseForm />
+                </ProtectedRoute>
+              }
+            />
+
+    <Route
+              path="quizzes"
+              element={
+                <ProtectedRoute allowedRoles={["content"]}>
+                  <Quizzes />
+                </ProtectedRoute>
+              }
+            />
+
+               <Route
+              path="quizzes/add"
+              element={
+                <ProtectedRoute allowedRoles={["content"]}>
+                  <AddQuiz />
+                </ProtectedRoute>
+              }
+            />
+
+               <Route
+              path="modules"
+              element={
+                <ProtectedRoute allowedRoles={["content"]}>
+                  <ModuleList />
+                </ProtectedRoute>
+              }
+            />
+              <Route
+              path="modules/add"
+              element={
+                <ProtectedRoute allowedRoles={["content"]}>
+                  <AddModule />
+                </ProtectedRoute>
+              }
+            />
+
+             <Route
+              path="lessons"
+              element={
+                <ProtectedRoute allowedRoles={["content"]}>
+                  <LessonList />
+                </ProtectedRoute>
+              }
+            />
+             <Route
+              path="lessons/add"
+              element={
+                <ProtectedRoute allowedRoles={["content"]}>
+                  <LessonForm />
+                </ProtectedRoute>
+              }
+            />
+             <Route
+              path="lessons/add/:id"
+              element={
+                <ProtectedRoute allowedRoles={["content"]}>
+                  <LessonForm />
+                </ProtectedRoute>
+              }
+            />
+
+              <Route
+              path="test-list"
+              element={
+                <ProtectedRoute allowedRoles={["content"]}>
+                  <TestList />
+                </ProtectedRoute>
+              }
+            />
+
           </Routes>
+
+          
         </ContentWrapper>
       </div>
     </SidebarProvider>
