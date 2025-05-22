@@ -1,176 +1,318 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { Plus, Trash2, Save } from 'lucide-react';
+import { CONTENTMANAGER } from '../../../../constants/ApiConstants';
 import axios from 'axios';
-import { useParams, useNavigate } from 'react-router-dom';
 
 const LessonForm = () => {
-  const { id } = useParams(); // If id exists, it's edit mode
-  const navigate = useNavigate();
-
-  const [lessonData, setLessonData] = useState({
+  const [lesson, setLesson] = useState({
     title: '',
-    videoUrl: '',
+    content: '',
     duration: '',
-    practiceQuestions: [{ question: '', description: '' }],
+    practiceQuestions: [],
+    quiz: []
   });
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [quizInput, setQuizInput] = useState('');
 
-  // Load existing lesson if editing
-  useEffect(() => {
-    if (id) {
-      setLoading(true);
-      axios.get(`/api/lessons/${id}`)
-        .then((res) => {
-          const { title, videoUrl, duration, practiceQuestions } = res.data;
-          setLessonData({
-            title,
-            videoUrl,
-            duration,
-            practiceQuestions: practiceQuestions.length > 0 ? practiceQuestions : [{ question: '', description: '' }],
-          });
-          setLoading(false);
-        })
-        .catch(() => {
-          setError('Failed to load lesson data');
-          setLoading(false);
-        });
-    }
-  }, [id]);
-
-  // Handle form field changes
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setLessonData({ ...lessonData, [name]: value });
-  };
-
-  // Handle practice questions change
-  const handlePracticeQuestionChange = (index, field, value) => {
-    const newQuestions = [...lessonData.practiceQuestions];
-    newQuestions[index][field] = value;
-    setLessonData({ ...lessonData, practiceQuestions: newQuestions });
-  };
-
-  // Add new practice question
+  // Add a new practice question
   const addPracticeQuestion = () => {
-    setLessonData({
-      ...lessonData,
-      practiceQuestions: [...lessonData.practiceQuestions, { question: '', description: '' }],
-    });
+    setLesson(prev => ({
+      ...prev,
+      practiceQuestions: [
+        ...prev.practiceQuestions,
+        {
+          question: '',
+          description: '',
+          instructions: '',
+          code: '',
+          expectedAnswer: ''
+        }
+      ]
+    }));
   };
 
-  // Remove practice question
+  // Remove a practice question
   const removePracticeQuestion = (index) => {
-    const newQuestions = lessonData.practiceQuestions.filter((_, i) => i !== index);
-    setLessonData({ ...lessonData, practiceQuestions: newQuestions.length ? newQuestions : [{ question: '', description: '' }] });
+    setLesson(prev => ({
+      ...prev,
+      practiceQuestions: prev.practiceQuestions.filter((_, i) => i !== index)
+    }));
   };
 
-  // Submit handler
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-
-    const apiCall = id
-      ? axios.put(`/api/lessons/${id}`, lessonData)
-      : axios.post('/api/lessons', lessonData);
-
-    apiCall
-      .then(() => {
-        setLoading(false);
-        navigate('/lessons');
-      })
-      .catch(() => {
-        setError('Failed to save lesson');
-        setLoading(false);
-      });
+  // Update practice question
+  const updatePracticeQuestion = (index, field, value) => {
+    setLesson(prev => ({
+      ...prev,
+      practiceQuestions: prev.practiceQuestions.map((q, i) => 
+        i === index ? { ...q, [field]: value } : q
+      )
+    }));
   };
 
-  if (loading) return <div className="p-6">Loading...</div>;
+  // Add quiz reference
+  const addQuizReference = () => {
+    if (quizInput.trim()) {
+      setLesson(prev => ({
+        ...prev,
+        quiz: [...prev.quiz, quizInput.trim()]
+      }));
+      setQuizInput('');
+    }
+  };
+
+  // Remove quiz reference
+  const removeQuizReference = (index) => {
+    setLesson(prev => ({
+      ...prev,
+      quiz: prev.quiz.filter((_, i) => i !== index)
+    }));
+  };
+
+  // Handle form submission
+ const handleSubmit = async () => {
+  // Basic validation
+  if (!lesson.title.trim() || !lesson.content.trim()) {
+    alert('Please fill in all required fields (Title and Content)');
+    return;
+  }
+
+  // Validate practice questions
+  for (let i = 0; i < lesson.practiceQuestions.length; i++) {
+    if (!lesson.practiceQuestions[i].question.trim()) {
+      alert(`Please fill in the question for Practice Question ${i + 1}`);
+      return;
+    }
+  }
+
+  try {
+    const response = await axios.post(CONTENTMANAGER.ADD_LESSON, lesson); // Change endpoint if needed
+    console.log('Lesson created:', response.data);
+    alert('Lesson created successfully!');
+    setLesson({
+        title: '',
+    content: '',
+    duration: '',
+    practiceQuestions: [],
+    quiz: []})
+  } catch (error) {
+    console.error('Error creating lesson:', error.response?.data || error.message);
+    alert('Failed to create lesson. Check console for details.');
+  }
+};
 
   return (
-    <div className="p-6 max-w-3xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">{id ? 'Edit Lesson' : 'Add Lesson'}</h1>
-      {error && <div className="mb-4 text-red-600">{error}</div>}
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div>
-          <label className="block mb-1 font-semibold">Title</label>
-          <input
-            type="text"
-            name="title"
-            value={lessonData.title}
-            onChange={handleChange}
-            required
-            className="w-full border px-3 py-2 rounded"
-          />
-        </div>
-        <div>
-          <label className="block mb-1 font-semibold">Video URL</label>
-          <input
-            type="url"
-            name="videoUrl"
-            value={lessonData.videoUrl}
-            onChange={handleChange}
-            required
-            className="w-full border px-3 py-2 rounded"
-          />
-        </div>
-        <div>
-          <label className="block mb-1 font-semibold">Duration (minutes)</label>
-          <input
-            type="number"
-            name="duration"
-            value={lessonData.duration}
-            onChange={handleChange}
-            min={0}
-            className="w-full border px-3 py-2 rounded"
-          />
-        </div>
+    <div className="max-w-8xl mx-auto p-6 bg-white">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Add New Lesson</h1>
+        <p className="text-gray-600">Create a comprehensive lesson with practice questions and quiz references.</p>
+      </div>
 
-        <div>
-          <label className="block mb-2 font-semibold">Practice Questions</label>
-          {lessonData.practiceQuestions.map((pq, index) => (
-            <div key={index} className="mb-4 border p-3 rounded bg-gray-50">
+      <div className="space-y-8">
+        {/* Basic Lesson Information */}
+        <div className="bg-gray-50 p-6 rounded-lg">
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">Lesson Information</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Title *
+              </label>
               <input
                 type="text"
-                placeholder="Question"
-                value={pq.question}
-                onChange={(e) => handlePracticeQuestionChange(index, 'question', e.target.value)}
                 required
-                className="w-full mb-2 border px-3 py-2 rounded"
+                value={lesson.title}
+                onChange={(e) => setLesson(prev => ({ ...prev, title: e.target.value }))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Enter lesson title"
               />
-              <textarea
-                placeholder="Description (optional)"
-                value={pq.description}
-                onChange={(e) => handlePracticeQuestionChange(index, 'description', e.target.value)}
-                className="w-full border px-3 py-2 rounded"
-              />
-              <button
-                type="button"
-                onClick={() => removePracticeQuestion(index)}
-                className="mt-2 text-red-600 hover:underline"
-                disabled={lessonData.practiceQuestions.length === 1}
-              >
-                Remove Question
-              </button>
             </div>
-          ))}
-          <button
-            type="button"
-            onClick={addPracticeQuestion}
-            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
-          >
-            + Add Practice Question
-          </button>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Duration (minutes)
+              </label>
+              <input
+                type="number"
+                value={lesson.duration}
+                onChange={(e) => setLesson(prev => ({ ...prev, duration: e.target.value }))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="30"
+                min="1"
+              />
+            </div>
+          </div>
+
+          <div className="mt-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Content *
+            </label>
+            <textarea
+              required
+              value={lesson.content}
+              onChange={(e) => setLesson(prev => ({ ...prev, content: e.target.value }))}
+              rows={6}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Enter the lesson content..."
+            />
+          </div>
         </div>
 
+        {/* Practice Questions Section */}
+        <div className="bg-gray-50 p-6 rounded-lg">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-gray-800">Practice Questions</h2>
+            <button
+              type="button"
+              onClick={addPracticeQuestion}
+              className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+              Add Question
+            </button>
+          </div>
+
+          {lesson.practiceQuestions.length === 0 ? (
+            <p className="text-gray-500 text-center py-8">No practice questions added yet. Click "Add Question" to get started.</p>
+          ) : (
+            <div className="space-y-6">
+              {lesson.practiceQuestions.map((question, index) => (
+                <div key={index} className="bg-white p-4 rounded-lg border border-gray-200">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-medium text-gray-800">Question {index + 1}</h3>
+                    <button
+                      type="button"
+                      onClick={() => removePracticeQuestion(index)}
+                      className="flex items-center gap-1 px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors text-sm"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                      Remove
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Question *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={question.question}
+                        onChange={(e) => updatePracticeQuestion(index, 'question', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="Enter the question prompt"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Description
+                      </label>
+                      <textarea
+                        value={question.description}
+                        onChange={(e) => updatePracticeQuestion(index, 'description', e.target.value)}
+                        rows={3}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="Additional information about the question"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Instructions
+                      </label>
+                      <textarea
+                        value={question.instructions}
+                        onChange={(e) => updatePracticeQuestion(index, 'instructions', e.target.value)}
+                        rows={3}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="Step-by-step instructions"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Code
+                      </label>
+                      <textarea
+                        value={question.code}
+                        onChange={(e) => updatePracticeQuestion(index, 'code', e.target.value)}
+                        rows={4}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm"
+                        placeholder="Starter code or example code"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Expected Answer
+                      </label>
+                      <textarea
+                        value={question.expectedAnswer}
+                        onChange={(e) => updatePracticeQuestion(index, 'expectedAnswer', e.target.value)}
+                        rows={4}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="Expected answer or solution"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Quiz References Section */}
+        <div className="bg-gray-50 p-6 rounded-lg">
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">Quiz References</h2>
+          
+          <div className="flex gap-3 mb-4">
+            <input
+              type="text"
+              value={quizInput}
+              onChange={(e) => setQuizInput(e.target.value)}
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Enter Quiz ID (e.g., 507f1f77bcf86cd799439011)"
+              onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addQuizReference())}
+            />
+            <button
+              type="button"
+              onClick={addQuizReference}
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            >
+              Add Quiz
+            </button>
+          </div>
+
+          {lesson.quiz.length > 0 && (
+            <div className="space-y-2">
+              <h3 className="text-sm font-medium text-gray-700">Referenced Quizzes:</h3>
+              {lesson.quiz.map((quizId, index) => (
+                <div key={index} className="flex items-center justify-between bg-white px-3 py-2 rounded border">
+                  <span className="font-mono text-sm text-gray-700">{quizId}</span>
+                  <button
+                    type="button"
+                    onClick={() => removeQuizReference(index)}
+                    className="text-red-600 hover:text-red-800 transition-colors"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="flex justify-end pt-6 border-t border-gray-200">
         <button
-          type="submit"
-          className="px-6 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition"
+          onClick={handleSubmit}
+          className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
         >
-          {id ? 'Update Lesson' : 'Create Lesson'}
+          <Save className="w-5 h-5" />
+          Save Lesson
         </button>
-      </form>
+      </div>
     </div>
   );
 };

@@ -12,6 +12,8 @@ import AddModule from "../pages/contentManager/pages/module/Add-Module";
 import LessonList from "../pages/contentManager/pages/lesson/Lesson-list";
 import LessonForm from "../pages/contentManager/pages/lesson/Add-lesson";
 import TestList from "../pages/contentManager/pages/test/Test-lists";
+import LessonView from "../pages/contentManager/pages/lesson/Lesson-View";
+import EditLesson from "../pages/contentManager/pages/lesson/Lesson_edit";
 
 // Component that wraps our content and responds to sidebar state
 const ContentWrapper = ({ children }) => {
@@ -126,11 +128,19 @@ const ContentManagerRoutes = () => {
                 </ProtectedRoute>
               }
             />
-             <Route
-              path="lessons/add/:id"
+              <Route
+              path="lessons/edit/:lessonId"
               element={
                 <ProtectedRoute allowedRoles={["content"]}>
-                  <LessonForm />
+                  <EditLesson />
+                </ProtectedRoute>
+              }
+            />
+             <Route
+              path="lessons/:lessonId"
+              element={
+                <ProtectedRoute allowedRoles={["content"]}>
+                  <LessonView />
                 </ProtectedRoute>
               }
             />
@@ -143,6 +153,8 @@ const ContentManagerRoutes = () => {
                 </ProtectedRoute>
               }
             />
+
+
 
           </Routes>
 

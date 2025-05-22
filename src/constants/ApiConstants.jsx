@@ -96,7 +96,11 @@ export const GEUESTENDPOINTS = {
 export const CONTENTMANAGER = {
 
   CONTENT_SIGNIN:`${API_BASE_URL}/auth/content-manager-signin`,
- 
+  ADD_QUIZ:`${API_BASE_URL}/content/add-quiz`,
+  GET_QUIZ:`${API_BASE_URL}/content/get-quiz`,
+  ADD_LESSON:`${API_BASE_URL}/content/add-lesson`,
+  GET_LESSONS:`${API_BASE_URL}/content/get-lesson`,
+  LESSON_VIEW:`${API_BASE_URL}/content/lesson-view`,
  
 }
 

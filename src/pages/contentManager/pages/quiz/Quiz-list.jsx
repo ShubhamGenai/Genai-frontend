@@ -1,38 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PlusIcon, PencilIcon, TrashIcon } from '@heroicons/react/outline';
+import { CONTENTMANAGER } from '../../../../constants/ApiConstants';
+import axios from 'axios';
 
 const Quizzes = () => {
   const [quizzes, setQuizzes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
 
-  useEffect(() => {
-    // Simulate API fetch
-    setTimeout(() => {
-      const mockQuizzes = [
-        {
-          _id: 'q1',
-          title: 'Basic JavaScript Quiz',
-          duration: 20,
-          questions: [
-            { questionText: 'What is closure?', options: ['A', 'B'], answer: 'A' },
-            { questionText: 'What is hoisting?', options: ['A', 'B'], answer: 'B' },
-          ],
-        },
-        {
-          _id: 'q2',
-          title: 'React Fundamentals',
-          duration: 30,
-          questions: [
-            { questionText: 'What is JSX?', options: ['A', 'B'], answer: 'A' },
-          ],
-        },
-      ];
-      setQuizzes(mockQuizzes);
+useEffect(() => {
+  const fetchQuizzes = async () => {
+    try {
+      const response = await axios.get(CONTENTMANAGER.GET_QUIZ); // Adjust endpoint if needed
+      setQuizzes(response.data);
       setIsLoading(false);
-    }, 1000);
-  }, []);
+    } catch (error) {
+      console.error('Error fetching quizzes:', error);
+      setIsLoading(false);
+    }
+  };
+
+  fetchQuizzes();
+}, []);
 
   const handleDelete = (id) => {
     if (window.confirm('Are you sure you want to delete this quiz?')) {
