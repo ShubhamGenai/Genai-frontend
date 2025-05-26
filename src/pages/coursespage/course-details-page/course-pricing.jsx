@@ -1,11 +1,12 @@
-import React, { useContext, useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 import { addToCart, checkItemInCart } from '../../../redux/CartSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { mainContext } from '../../../context/MainContext';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { USERENDPOINTS } from '../../../constants/ApiConstants';
+import { fetchCourseById } from '../../../redux/DataSlice';
 
 export const CoursePricing = ({ courseDetails }) => {
 
@@ -26,6 +27,20 @@ export const CoursePricing = ({ courseDetails }) => {
   const instructorName = courseDetails?.instructor?.name || "Instructor";
 
 const id= courseDetails?._id || 0; // Assuming you have an ID for the course
+
+  useEffect(() => {
+    dispatch(checkItemInCart({ itemId: id, itemType: "course" }));
+  }, [dispatch, id]);
+
+    const isEnrolled = courseDetails?.enrolledStudents?.some(
+    (student) =>
+      student === user?._id || // if just ID (non-populated)
+      student?._id === user?._id // if populated
+  );
+
+  console.log(isEnrolled);
+  
+  
 
   const handleAddToCart = () => {
     if(!token){toast.error("Please login to add items to cart"); return;}
@@ -81,6 +96,7 @@ const id= courseDetails?._id || 0; // Assuming you have an ID for the course
               });
       
               if (verifyRes.data.success) {
+                dispatch(fetchCourseById(courseId)); // Update course state
                 toast.success("Payment successful! course enrolled ✅");
                 // dispatch(fetchTestById(id));
               } else {
@@ -141,23 +157,59 @@ const id= courseDetails?._id || 0; // Assuming you have an ID for the course
           </div>
         ))}
       </div>
-
-      {/* Buttons */}
-      {isInCart ? (
-        <button
-          onClick={() => navigate("/student/cart")}
-          className="w-full bg-gray-700 text-white text-sm font-medium py-2 rounded mb-3"
-        >
-          Go to Cart
+ {user?.name ? (
+    isEnrolled ? (
+      // ✅ User exists AND enrolled — Show Take Course
+      <Link to={`/course-player?id=${courseDetails?.quizzes}`}>
+        <button className="w-full bg-white text-gray-800 border border-gray-300 py-3 rounded-md hover:bg-gray-50 transition-colors font-medium mt-3">
+          Go to Course
         </button>
-      ) : (
-      <button className="w-full bg-gray-700 text-white text-sm font-medium py-2 rounded mb-3"  onClick={() => handleAddToCart(id)}>
+      </Link>
+    ) : (
+      <>
+        {/* 🛒 Cart Logic */}
+        {isInCart ? (
+          <button
+            onClick={() => navigate("/student/cart")}
+            className="w-full bg-gray-700 text-white text-sm font-medium py-2 rounded mb-3"
+          >
+            Go to Cart
+          </button>
+        ) : (
+          <button
+            className="w-full bg-gray-700 text-white text-sm font-medium py-2 rounded mb-3"
+            onClick={handleAddToCart}
+          >
+            Add to Cart
+          </button>
+        )}
+
+        <button
+          className="w-full border border-gray-300 text-sm font-medium py-2 rounded mb-6"
+          onClick={() => handleBuyNow(id)}
+        >
+          Buy Now
+        </button>
+      </>
+    )
+  ) : (
+    <>
+      <button
+        className="w-full bg-gray-700 text-white text-sm font-medium py-2 rounded mb-3"
+        onClick={handleAddToCart}
+      >
         Add to Cart
       </button>
-    )}
-      <button className="w-full border border-gray-300 text-sm font-medium py-2 rounded mb-6" onClick={() => handleBuyNow(id)}>
+
+      <button
+        className="w-full border border-gray-300 text-sm font-medium py-2 rounded mb-6"
+        onClick={() => handleBuyNow(id)}
+      >
         Buy Now
       </button>
+    </>
+  )}
+
 
       {/* GenAI Plus Promo */}
       <div className="mb-6">

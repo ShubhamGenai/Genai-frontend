@@ -4,6 +4,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import HomepgMain1 from "../pages/homepage/main";
 import CartPage from "../pages/student/Cart";
 import EnrolledCoursesPage from "../pages/student/enrolled/Mylist";
+import StudentProfile from "../pages/student/profile/Profile_Main";
 
 
 const StudentRoutes = () => {
@@ -34,6 +35,16 @@ const StudentRoutes = () => {
         element={
           <ProtectedRoute allowedRoles={["student"]}>
             <EnrolledCoursesPage/>
+          </ProtectedRoute>
+        }
+      />
+
+
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute allowedRoles={["student"]}>
+            <StudentProfile/>
           </ProtectedRoute>
         }
       />

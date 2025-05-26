@@ -424,17 +424,17 @@ const TestDetailsPage = () => {
               </div>
 
 
-              {user.name ? (
+ {user.name ? (
   isEnrolled ? (
-    // ✅ User exists AND enrolled — Show Take Test
-    <Link to={`/test-player?id=${testDetails.quizzes}`}>
+    // ✅ User is logged in AND enrolled — Show Take Test
+    <Link to={`/course-player?id=${courseDetails._id}`}>
       <button className="w-full bg-white text-gray-800 border border-gray-300 py-3 rounded-md hover:bg-gray-50 transition-colors font-medium mt-3">
-        Take Test
+       Go To Course
       </button>
     </Link>
   ) : (
     <>
-      {/* 🛒 Cart Logic */}
+      {/* 🛒 Cart Logic for logged-in but not enrolled */}
       {isInCart ? (
         <button
           onClick={() => navigate("/student/cart")}
@@ -451,10 +451,10 @@ const TestDetailsPage = () => {
         </button>
       )}
 
-      {/* 💳 Buy Now */}
+      {/* 💳 Buy Now for logged-in user */}
       <button
         className="w-full bg-white text-gray-800 border border-gray-300 py-3 rounded-md hover:bg-gray-50 transition-colors font-medium"
-        onClick={() => handleBuyNow(testDetails._id)}
+        onClick={() => handleBuyNow(courseDetails._id)}
       >
         Buy Now
       </button>
@@ -462,7 +462,7 @@ const TestDetailsPage = () => {
   )
 ) : (
   <>
-    {/* 🚫 No user — Only show Add to Cart & Buy Now */}
+    {/* 🚫 Not logged in — allow Add to Cart & Buy Now */}
     <button
       onClick={() => handleAddToCart(id)}
       className="w-full bg-gray-800 text-white py-3 rounded-md mb-3 hover:bg-gray-700 transition-colors font-medium"
@@ -472,7 +472,7 @@ const TestDetailsPage = () => {
 
     <button
       className="w-full bg-white text-gray-800 border border-gray-300 py-3 rounded-md hover:bg-gray-50 transition-colors font-medium"
-      onClick={() => handleBuyNow(testDetails._id)}
+      onClick={() => handleBuyNow(courseDetails._id)}
     >
       Buy Now
     </button>

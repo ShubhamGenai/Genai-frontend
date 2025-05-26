@@ -47,7 +47,7 @@ export function NavBar() {
   // Profile menu items
   const profileMenuItems = [
     { icon: <MdDashboard className="w-5 h-5" />, label: "Dashboard", link: "/dashboard" },
-    { icon: <MdAccountCircle className="w-5 h-5" />, label: "Profile", link: "/profile" },
+    { icon: <MdAccountCircle className="w-5 h-5" />, label: "Profile", link: "/student/profile" },
     { icon: <MdBookmark className="w-5 h-5" />, label: "Saved Courses", link: "/saved-courses" },
     { icon: <MdNotifications className="w-5 h-5" />, label: "Notifications", link: "/notifications" },
     { icon: <MdSettings className="w-5 h-5" />, label: "Settings", link: "/settings" },
