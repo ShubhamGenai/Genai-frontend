@@ -46,7 +46,7 @@ export function NavBar() {
 
   // Profile menu items
   const profileMenuItems = [
-    { icon: <MdDashboard className="w-5 h-5" />, label: "Dashboard", link: "/dashboard" },
+    { icon: <MdDashboard className="w-5 h-5" />, label: "Dashboard", link: "/student/list" },
     { icon: <MdAccountCircle className="w-5 h-5" />, label: "Profile", link: "/student/profile" },
     { icon: <MdBookmark className="w-5 h-5" />, label: "Saved Courses", link: "/saved-courses" },
     { icon: <MdNotifications className="w-5 h-5" />, label: "Notifications", link: "/notifications" },
@@ -137,18 +137,30 @@ export function NavBar() {
                 </button>
 
                 {/* Profile Dropdown */}
-                {isProfileOpen && (
-                  <div className="profile-dropdown absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg py-2 border border-gray-200">
-                    {profileMenuItems.map((item, index) => (
-                      <div key={index}>
-                        {index === profileMenuItems.length - 1 && <div className="border-t border-gray-100 my-1"></div>}
-                        <Link to={item.link} className={`flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-100 ${item.className || 'text-gray-700'}`} onClick={item.onClick}>
-                          {item.icon} {item.label}
-                        </Link>
-                      </div>
-                    ))}
-                  </div>
-                )}
+               {isProfileOpen && (
+  <div className="profile-dropdown absolute right-0 mt-2 w-60 bg-white rounded-2xl shadow-xl py-2 border border-gray-200">
+     {profileMenuItems.map((item, index) => (
+        <div key={index}>
+          {/* Divider before the last item */}
+          {index === profileMenuItems.length - 1 && (
+            <div className="my-2 border-t border-gray-200" />
+          )}
+
+          <Link
+            to={item.link}
+            onClick={item.onClick}
+            className={`flex items-center gap-3 px-5 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200 ${
+              item.className || ''
+            }`}
+          >
+            <span className="text-gray-500 text-base">{item.icon}</span>
+            <span className="whitespace-nowrap">{item.label}</span>
+          </Link>
+        </div>
+      ))}
+  </div>
+)}
+
               </div>
             ) : (
               <div className="hidden md:flex items-center gap-2">

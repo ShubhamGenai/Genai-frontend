@@ -6,6 +6,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { API_BASE_URL } from '../../constants/ApiConstants';
 import { mainContext } from '../../context/MainContext';
+import { auth,signInWithPopup,provider } from '../../config/firebase';
 
 const LoginPage = () => {
   const { setUser, setToken } = useContext(mainContext);
@@ -73,19 +74,68 @@ const LoginPage = () => {
 
 
   // Handle Google login
-  const handleGoogleLogin = () => {
-    setGoogleLoading(true);
-    try {
-      // Redirect to backend Google OAuth route
-      window.location.href = `${API_BASE_URL}/auth/google`;
-    } catch (error) {
-      toast.error('Google Login Error:', error);
-      toast('An error occurred during Google login');
-    } finally {
-      setGoogleLoading(false);
-    }
-  };
+  // const handleGoogleLogin = () => {
+  //   setGoogleLoading(true);
+  //   try {
+  //     // Redirect to backend Google OAuth route
+  //     window.location.href = `${API_BASE_URL}/auth/google`;
+  //   } catch (error) {
+  //     toast.error('Google Login Error:', error);
+  //     toast('An error occurred during Google login');
+  //   } finally {
+  //     setGoogleLoading(false);
+  //   }
+  // };
 
+
+  const handleGoogleLogin = async () => {
+  setGoogleLoading(true);
+  
+  try {
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+    const { displayName, email, uid } = user;
+
+    const res = await axios.post(`${API_BASE_URL}/auth/google`, {
+      name: displayName,
+      email,
+      firebaseUid: uid,
+    });
+
+    console.log(res.data);
+    
+    // ✅ Correct destructuring based on backend response format
+    const { token, user: backendUser } = res.data;
+    
+    // ✅ Set localStorage with proper data
+    localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(backendUser));
+
+    // ✅ Update context state
+    setUser(backendUser);
+    setToken(token);
+
+    // ✅ Show success message
+    toast.success('Google login successful!');
+    
+    // ✅ Navigate to home
+    navigate("/");
+    
+  } catch (err) {
+    console.error("Google login error:", err);
+    
+    // ✅ Handle different types of errors
+    if (err.response?.data?.message) {
+      toast.error(err.response.data.message);
+    } else if (err.code === 'auth/popup-closed-by-user') {
+      toast.error('Login cancelled by user');
+    } else {
+      toast.error('Google login failed. Please try again.');
+    }
+  } finally {
+    setGoogleLoading(false);
+  }
+};
 
   return (
     <div className="flex min-h-screen">

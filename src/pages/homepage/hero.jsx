@@ -31,7 +31,7 @@ const HeroSection = () => {
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center justify-center mt-24 px-4 ">
         {/* Logo/Title */}
-        <div className="text-center mt-14">
+        <div className="text-center mt-14" id="font">
         <h1 className="text-5xl sm:text-6xl font-sfu font-bold px-2 mb-3 py-2 tracking-wide">
   Gen{' '}
   <span className="bg-gradient-to-r from-[hsla(221,83%,53%,1)] to-[hsla(155,100%,31%,1)] text-transparent bg-clip-text">
