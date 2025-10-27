@@ -11,7 +11,6 @@ import { mainContext } from "../../../../context/MainContext";
 
 const TestDetailsPage = () => {
   const navigate = useNavigate();
-  const [isSticky, setIsSticky] = useState(false);
   const {token,user} = useContext(mainContext)
  
   const dispatch = useDispatch();
@@ -83,23 +82,6 @@ const TestDetailsPage = () => {
 
 
  
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY;
-      setIsSticky(scrollPosition > 100);
-    };
-
-    // Add event listener
-    window.addEventListener('scroll', handleScroll, { passive: true });
-
-    // Initial check
-    handleScroll();
-
-    // Cleanup
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
 
   const handleAddToCart = () => {
     dispatch(addToCart({ itemId: id, itemType: "test" }))
@@ -261,62 +243,7 @@ const TestDetailsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10">
-    
-      {/* Sticky header that appears on scroll */}
-      {isSticky && (
-        <div className="fixed top-0 left-0 w-full bg-gray-500 text-white z-50 shadow-sm transition-all duration-300">
-          <div className="max-w-7xl mx-auto py-3 px-4 sm:py-4 sm:px-6">
-            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
-              {/* Left side - Title and details */}
-              <div className="flex-1">
-                <h2 className="text-lg sm:text-xl font-bold mb-1 sm:mb-2 line-clamp-1">{testData.title}</h2>
-                <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-200">
-                  <div className="flex items-center">
-                    <Clock size={14} className="mr-1 sm:mr-2" />
-                    <span>{testData.duration}</span>
-                  </div>
-                  <div className="flex items-center">
-                    <FileText size={14} className="mr-1 sm:mr-2" />
-                    <span>{testData.questions} Questions</span>
-                  </div>
-                  {testData.hasCertificate && (
-                    <div className="flex items-center">
-                      <Award size={14} className="mr-1 sm:mr-2" />
-                      <span>Certificate</span>
-                    </div>
-                  )}
-                  <div className="hidden sm:flex items-center">
-                    <BarChart2 size={14} className="mr-1 sm:mr-2" />
-                    <span>{testData.level}</span>
-                  </div>
-                  <div className="hidden sm:flex items-center">
-                    <StarRating rating={testData.rating} />
-                    <span className="ml-1 sm:ml-2">({testData.reviews})</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Right side - Price and buttons */}
-              <div className="flex flex-col items-end">
-                <div className="flex items-baseline mb-2 sm:mb-3 gap-2 sm:gap-4">
-                  <span className="text-xl sm:text-2xl font-bold text-white">₹{testData.price}</span>
-                  <span className="text-gray-300 text-xs sm:text-sm line-through">₹{testData.originalPrice}</span>
-                  <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-sm font-medium">{testData.discount}</span>
-                </div>
-                <div className="flex items-center gap-2 sm:gap-3">
-                  <button className="bg-white text-gray-800 border border-gray-300 text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-md hover:bg-gray-50 transition-colors" onClick={() => handleAddToCart(id)}>
-                    Add To Cart
-                  </button>
-                  <button className="bg-gray-800 text-white text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-md hover:bg-gray-700 transition-colors"onClick={() => handleBuyNow(test._id)}>
-                    Buy Now
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+    <div className="bg-gray-50">
       
       {/* Main content */}
       <div className="max-w-7xl mx-auto px-6 py-8">
@@ -414,7 +341,7 @@ const TestDetailsPage = () => {
           
           {/* Right section - Pricing */}
           <div className="lg:w-80">
-            <div className={`bg-white border rounded-lg p-5 sticky top-24 transition-all duration-300 ${isSticky ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+            <div className="bg-white border rounded-lg p-5 sticky top-24">
               <div className="flex items-center justify-between mb-5">
                 <div className="flex items-baseline">
                   <span className="text-2xl font-semibold">₹{testData.price}</span>

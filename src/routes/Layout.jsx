@@ -19,12 +19,20 @@ const Layout = ({ children }) => {
   const hideNavAndFooterRoutes = ["/signup", "/login","/employer-signup","/employer-signin","/admin","/test-player","/content-login", ];
   const hideOnlyFooterRoutes = ["/login-landing",];
   const hideNavForStudentRoutes = location.pathname.startsWith("/student");
+  
+  // Hide navbar and footer for guest layout pages (only show on home screen)
+  const hideNavForGuestLayoutRoutes = location.pathname.startsWith("/learn") || 
+                                     location.pathname.startsWith("/jobs") || 
+                                     location.pathname.startsWith("/tests") || 
+                                     location.pathname.startsWith("/test-details") || 
+                                     location.pathname.startsWith("/course-details") || 
+                                     location.pathname.startsWith("/job-details");
 
   const hideNavAndFooter = hideNavAndFooterRoutes.includes(location.pathname);
   const hideFooter = hideOnlyFooterRoutes.includes(location.pathname);
 
   const getNavBar = () => {
-    if (hideNavAndFooter || hideNavForStudentRoutes) return null;
+    if (hideNavAndFooter || hideNavForStudentRoutes || hideNavForGuestLayoutRoutes) return null;
     if (user) {
       switch (user.role) {
         case "admin": return <AdminNavBar />;
@@ -38,7 +46,7 @@ const Layout = ({ children }) => {
   };
 
   const getFooter = () => {
-    if (hideNavAndFooter || hideFooter) return null;
+    if (hideNavAndFooter || hideFooter || hideNavForGuestLayoutRoutes) return null;
     if (user) {
       switch (user.role) {
         case "admin": return <AdminFooter />;

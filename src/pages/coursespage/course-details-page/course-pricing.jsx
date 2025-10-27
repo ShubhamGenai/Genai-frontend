@@ -160,7 +160,7 @@ const id= courseDetails?._id || 0; // Assuming you have an ID for the course
  {user?.name ? (
     isEnrolled ? (
       // ✅ User exists AND enrolled — Show Take Course
-      <Link to={`/course-player?id=${courseDetails?.quizzes}`}>
+      <Link to={user ? `/student/course-player?id=${courseDetails?.quizzes}` : `/course-player?id=${courseDetails?.quizzes}`}>
         <button className="w-full bg-white text-gray-800 border border-gray-300 py-3 rounded-md hover:bg-gray-50 transition-colors font-medium mt-3">
           Go to Course
         </button>
@@ -170,7 +170,7 @@ const id= courseDetails?._id || 0; // Assuming you have an ID for the course
         {/* 🛒 Cart Logic */}
         {isInCart ? (
           <button
-            onClick={() => navigate("/student/cart")}
+            onClick={() => navigate(user ? "/student/cart" : "/cart")}
             className="w-full bg-gray-700 text-white text-sm font-medium py-2 rounded mb-3"
           >
             Go to Cart
@@ -196,16 +196,16 @@ const id= courseDetails?._id || 0; // Assuming you have an ID for the course
     <>
       <button
         className="w-full bg-gray-700 text-white text-sm font-medium py-2 rounded mb-3"
-        onClick={handleAddToCart}
+        onClick={() => navigate("/login")}
       >
-        Add to Cart
+        Login to Add to Cart
       </button>
 
       <button
         className="w-full border border-gray-300 text-sm font-medium py-2 rounded mb-6"
-        onClick={() => handleBuyNow(id)}
+        onClick={() => navigate("/login")}
       >
-        Buy Now
+        Login to Buy Now
       </button>
     </>
   )}

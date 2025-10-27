@@ -10,6 +10,11 @@ import LearnMainPage from "../pages/student/learn/LearnMain";
 import TestPage from "../pages/student/test/TestPage";
 import JobsPage from "../pages/student/jobs/JobsMain";
 import LeaderBoardPage from "../pages/student/leaderBoard/LeaderBoard";
+import { CourseDetails } from "../pages/coursespage/course-details-page/course-details-main";
+import TestDetailsPage from "../pages/student/test/testDetails/TestDetails";
+import TestPlayer from "../pages/student/test/testDetails/Test-Player";
+import JobDetails from "../pages/student/jobs/JobDetails";
+import CoursePlayer from "../pages/student/learn/course-player/Course-Player";
 
 const StudentRoutes = () => {
   return (
@@ -30,8 +35,13 @@ const StudentRoutes = () => {
         
         {/* Main Navigation Routes */}
         <Route path="learn" element={<LearnMainPage />} />
+        <Route path="course-details" element={<CourseDetails />} />
+        <Route path="course-player" element={<CoursePlayer />} />
         <Route path="tests" element={<TestPage />} />
+        <Route path="test-details" element={<TestDetailsPage />} />
+        <Route path="test-player" element={<TestPlayer />} />
         <Route path="jobs" element={<JobsPage />} />
+        <Route path="job-details" element={<JobDetails />} />
         
         {/* Community Submenu Routes */}
         <Route path="community/forum" element={<div className="p-6"><h1 className="text-2xl font-bold">Community Forum</h1><p>Forum functionality coming soon...</p></div>} />

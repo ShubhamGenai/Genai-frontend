@@ -24,10 +24,7 @@ const AppRoutes = () => {
     <>
     <ScrollToTop/>
     <Routes>
-      {/* Public Routes - Available to Everyone */}
-      <Route path="/*" element={<PublicRoutes />} />
-
-      {/* Role-Based Routing - Protected */}
+      {/* Role-Based Routing - Protected (Higher Priority) */}
       {userRole && roleComponents[userRole] && (
         <Route
           path={`${userRole}/*`}
@@ -38,6 +35,9 @@ const AppRoutes = () => {
           }
         />
       )}
+
+      {/* Public Routes - Available to Everyone */}
+      <Route path="/*" element={<PublicRoutes />} />
 
       {/* Redirect invalid paths */}
       <Route path="*" element={<Navigate to="/" replace />} />

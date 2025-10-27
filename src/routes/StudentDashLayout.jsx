@@ -21,9 +21,9 @@ const StudentDashboardLayout = () => {
     else if (path.includes("/leaderboard")) setActiveItem("progress-leaderboard");
     
     // Check for main menu routes
-    else if (path.includes("/learn")) setActiveItem("learn");
-    else if (path.includes("/tests")) setActiveItem("tests");
-    else if (path.includes("/jobs")) setActiveItem("jobs");
+    else if (path.includes("/learn") || path.includes("/course-details") || path.includes("/course-player")) setActiveItem("learn");
+    else if (path.includes("/tests") || path.includes("/test-details") || path.includes("/test-player")) setActiveItem("tests");
+    else if (path.includes("/jobs") || path.includes("/job-details")) setActiveItem("jobs");
     else if (path.includes("/community")) setActiveItem("community");
     else if (path.includes("/progress")) setActiveItem("progress");
     else if (path.includes("/settings")) setActiveItem("settings");

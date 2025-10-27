@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import {
   MdOutlineShoppingCart, MdMenu, MdClose, MdAccountCircle, MdLogout,
-  MdSettings, MdDashboard, MdHelpOutline, MdBookmark, MdNotifications, MdSearch
+  MdSettings, MdDashboard, MdHelpOutline, MdBookmark, MdNotifications
 } from "react-icons/md";
 import { LuGraduationCap } from "react-icons/lu";
 import { Link, useNavigate, useLocation } from "react-router-dom";
@@ -68,23 +68,10 @@ export function NavBar() {
             <span className="font-semibold text-2xl ">GenAi Learning</span>
           </Link>
 
-          {/* Search Bar */}
-          <div className="hidden md:flex flex-1 max-w-sm mx-2">
-            <div className="relative w-full">
-              <input
-                type="text"
-                placeholder="Search course here"
-                className="w-full px-5 py-3 pr-12 bg-white border border-gray-200 rounded-lg text-[15px] font-medium focus:outline-none focus:border-blue-500"
-              />
-              <div className="absolute right-2.5 top-1/2 transform -translate-y-1/2 bg-blue-50 p-2 rounded-md">
-                <MdSearch className="text-blue-600 w-6 h-6" />
-              </div>
-            </div>
-          </div>
 
           {/* Desktop Navigation Links */}
           <div className="hidden md:flex items-center gap-10">
-            {["Learn", "Tests", "Jobs", "Leaderboard"].map((item) => {
+            {["Home","Learn", "Jobs", ].map((item) => {
               const path = `/${item.toLowerCase()}`;
               const isActive = location.pathname === path;
               return (
@@ -108,9 +95,12 @@ export function NavBar() {
 
           {/* Right Side Icons & Profile */}
           <div className="flex items-center gap-3">
-            <Link to="/student/cart">
-            <MdOutlineShoppingCart className="text-gray-500 w-5 h-5 cursor-pointer" />
-            </Link>
+            {/* Only show cart for authenticated users */}
+            {user.role && (
+              <Link to="/student/cart">
+                <MdOutlineShoppingCart className="text-gray-500 w-5 h-5 cursor-pointer" />
+              </Link>
+            )}
            
             {user.role && (
               <MdNotifications className="text-gray-500 w-5 h-5 cursor-pointer" />
@@ -201,21 +191,8 @@ export function NavBar() {
           </button>
         </div>
 
-        {/* Mobile Search Bar */}
-        <div className="px-4 py-3 border-b border-gray-100">
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Search course here"
-              className="w-full px-4 py-2 pr-10 bg-white/70 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-blue-500"
-            />
-            <div className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-50 p-1.5 rounded-md">
-              <MdSearch className="text-blue-600 w-4 h-4" />
-            </div>
-          </div>
-        </div>
 
-        {/* Mobile User Profile Section */}
+        {/* Mobile User Profile Section - Only for authenticated users */}
         {user.role && (
           <div className="px-6 py-4 border-b border-gray-100 bg-white/60">
             <div className="flex items-center gap-3">
@@ -242,10 +219,8 @@ export function NavBar() {
         <div className="flex-1 overflow-y-auto py-4">
           <div className="flex flex-col gap-2 px-3">
             {[
-              { to: "/learn", label: "Learn", icon: "🎓" },
-              { to: "/tests", label: "Tests", icon: "📝" },
+              { to: "/learn", label: "Learn", icon: "🎓" },         
               { to: "/jobs", label: "Jobs", icon: "💼" },
-              { to: "/leader-board", label: "Leaderboard", icon: "🏆" },
             ].map((item, index) => {
               const isActive = location.pathname === item.to;
               return (
@@ -268,7 +243,7 @@ export function NavBar() {
             })}
           </div>
 
-          {/* Profile Menu Items */}
+          {/* Profile Menu Items - Only for authenticated users */}
           {user.role ? (
             <div className="mt-6 px-3">
               <div className="text-xs font-medium text-gray-400 px-4 mb-2">ACCOUNT SETTINGS</div>

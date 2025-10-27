@@ -5,8 +5,6 @@ import HomepgMain1 from "../pages/homepage/main";
 import LoginLandingPage from "../pages/auth-pages/Loginlanding";
 import SignupPage from "../pages/auth-pages/Signup-page";
 import LoginPage from "../pages/auth-pages/Login-page";
-import TestPage from "../pages/student/test/TestPage";
-import CoursesMain from "../pages/coursespage/main";
 import LeaderBoardPage from "../pages/student/leaderBoard/LeaderBoard";
 import AuthCallback from "../hooks/AuthCallback";
 import { CourseDetails } from "../pages/coursespage/course-details-page/course-details-main";
@@ -15,11 +13,13 @@ import EmployerSignIn from "../pages/auth-pages/employer-auth/Employer-signin";
 import AdminLogin from "../pages/auth-pages/admin-auth/AdminLogin";
 import JobsPage from "../pages/student/jobs/JobsMain";
 import JobDetails from "../pages/student/jobs/JobDetails";
-import TestDetailsPage from "../pages/student/test/testDetails/TestDetails";
-import TestPlayer from "../pages/student/test/testDetails/Test-Player";
 import LearnMainPage from "../pages/student/learn/LearnMain";
 import ContentLogin from "../pages/auth-pages/content-auth/Content-login";
 import CoursePlayer from "../pages/student/learn/course-player/Course-Player";
+import GuestLearnLayout from "../component/layout/GuestLearnLayout";
+import AdaptiveLayout from "../component/layout/AdaptiveLayout";
+import TestPage from "../pages/student/test/TestPage";
+import TestDetailsPage from "../pages/student/test/testDetails/TestDetails";
 
 
 
@@ -63,26 +63,48 @@ const PublicRoutes = () => {
 
       {/* Public Pages */}
  
-      <Route path="tests" element={<TestPage />} /> 
-      <Route path="test-details" element={<TestDetailsPage />} /> 
-      <Route path="test-player" element={<TestPlayer/>} /> 
+      {/* All pages with adaptive layout - Works for both guest and authenticated users */}
+      <Route path="learn" element={<AdaptiveLayout />}>
+        <Route index element={<LearnMainPage />} />
+        <Route path="tests" element={<TestPage/>}/>
+        <Route path="jobs" element={<JobsPage />} />
+        <Route path="community" element={<div className="p-6"><h1 className="text-2xl font-bold">Community</h1><p>Community functionality coming soon...</p></div>} />
+      </Route>
       
+      <Route path="jobs" element={<AdaptiveLayout />}>
+        <Route index element={<JobsPage />} />
+        <Route path="learn" element={<LearnMainPage />} />
+        <Route path="tests" element={<TestPage/>} />
+        <Route path="community" element={<div className="p-6"><h1 className="text-2xl font-bold">Community</h1><p>Community functionality coming soon...</p></div>} />
+      </Route>
       
-      {/* <Route path="learn" element={<CoursesMain  />} />  */}
+      <Route path="tests" element={<AdaptiveLayout />}>
+        <Route index element={<TestPage/>} />
+        <Route path="learn" element={<LearnMainPage />} />
+        <Route path="jobs" element={<JobsPage />} />
+        <Route path="community" element={<div className="p-6"><h1 className="text-2xl font-bold">Community</h1><p>Community functionality coming soon...</p></div>} />
+      </Route>
+      
+      {/* Details pages with adaptive layout - Works for both guest and authenticated users */}
+      <Route path="course-details" element={<AdaptiveLayout />}>
+        <Route index element={<CourseDetails />} />
+      </Route>
+      
+      <Route path="job-details" element={<AdaptiveLayout />}>
+        <Route index element={<JobDetails />} />
+      </Route>
+      
+      <Route path="test-details" element={<AdaptiveLayout />}>
+        <Route index element={<TestDetailsPage />} />
+      </Route>
 
-      <Route path="learn" element={<LearnMainPage  />} /> 
-      <Route path="course-details" element={<CourseDetails />} /> 
+      <Route path="leaderboard" element={<AdaptiveLayout />}>
+        <Route index element={<LeaderBoardPage />} />
+      </Route>
 
-
-      <Route path="jobs" element={<JobsPage />} /> 
-      <Route path="job-details" element={<JobDetails/>} /> 
-
-
-        <Route path="testss" element={<CoursePlayer/>} /> 
-
-
-
-      <Route path="leaderboard" element={<LeaderBoardPage />} /> 
+      <Route path="testss" element={<AdaptiveLayout />}>
+        <Route index element={<CoursePlayer />} />
+      </Route>
       
       <Route path="auth/callback" element={<AuthCallback/>} />
 
