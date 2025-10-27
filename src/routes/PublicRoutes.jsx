@@ -44,7 +44,7 @@ const PublicRoutes = () => {
     admin: "/admin",
     content: "/content",
     employer: "/employer/home",
-    student: "/", // Explicitly keep students on homepage
+    student: "/student", // Redirect students to their dashboard
   };
 
   return (
@@ -53,7 +53,7 @@ const PublicRoutes = () => {
       <Route
         path="/"
         element={
-          isAuthenticated && user.role !== "student" ? (
+          isAuthenticated ? (
             <Navigate to={roleRedirects[user.role] || "/"} replace />
           ) : (
             <HomepgMain1 />

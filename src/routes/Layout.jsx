@@ -9,6 +9,7 @@ import AdminFooter from "../component/baseComponents/admin/AdminFooter";
 import ContentManagerFooter from "../component/baseComponents/contentManager/ContentManagerFooter";
 import EmployerFooter from "../component/baseComponents/employer/EmployerFooter";
 import Footer from "../component/baseComponents/footer";
+import { Header } from "../component/dashboard/Dash_Header";
 
 
 const Layout = ({ children }) => {
@@ -17,17 +18,19 @@ const Layout = ({ children }) => {
 
   const hideNavAndFooterRoutes = ["/signup", "/login","/employer-signup","/employer-signin","/admin","/test-player","/content-login", ];
   const hideOnlyFooterRoutes = ["/login-landing",];
+  const hideNavForStudentRoutes = location.pathname.startsWith("/student");
 
   const hideNavAndFooter = hideNavAndFooterRoutes.includes(location.pathname);
   const hideFooter = hideOnlyFooterRoutes.includes(location.pathname);
 
   const getNavBar = () => {
-    if (hideNavAndFooter) return null;
+    if (hideNavAndFooter || hideNavForStudentRoutes) return null;
     if (user) {
       switch (user.role) {
         case "admin": return <AdminNavBar />;
         case "content": return <ContentManagerNavBar />;
         case "employer": return <EmployerNavBar />;
+        case "student": return <Header />;
         default: return <NavBar />;
       }
     }
@@ -41,6 +44,7 @@ const Layout = ({ children }) => {
         case "admin": return <AdminFooter />;
         case "content": return <ContentManagerFooter />;
         case "employer": return <EmployerFooter />;
+        case "student": return null;
         default: return <Footer />;
       }
     }
