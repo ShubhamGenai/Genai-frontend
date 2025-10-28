@@ -9,7 +9,7 @@ const courses = [
     rating: 4.8,
     students: '72K',
     price: '₹449',
-    image: '/public/learn/hero.jpeg',
+    image: 'https://images.unsplash.com/photo-1652696290920-ee4c836c711e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb2RpbmclMjBwcm9ncmFtbWluZyUyMGxhcHRvcHxlbnwxfHx8fDE3NjEzNTAzNTB8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
     badge: 'Trending',
     badgeColor: 'bg-yellow-400'
   },
@@ -19,7 +19,7 @@ const courses = [
     rating: 4.7,
     students: '45K',
     price: '₹399',
-    image: '/public/learn/hero.jpeg',
+    image: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkaWdpdGFsJTIwbGVhcm5pbmd8ZW58MXx8fHwxNzYxNDI1OTE1fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
     badge: 'Popular',
     badgeColor: 'bg-yellow-400'
   },
@@ -29,7 +29,7 @@ const courses = [
     rating: 4.9,
     students: '89K',
     price: '₹599',
-    image: '/public/learn/hero.jpeg',
+    image: 'https://images.unsplash.com/photo-1608986596619-eb50cc56831f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxvbmxpbmUlMjBlZHVjYXRpb24lMjBjbGFzc3Jvb218ZW58MXx8fHwxNzYxNDE1NTg1fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
     badge: 'Bestseller',
     badgeColor: 'bg-yellow-400'
   }

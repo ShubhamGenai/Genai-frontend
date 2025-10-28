@@ -40,7 +40,7 @@ export default function AudiencePrograms() {
           <div className="order-2 lg:order-1">
             <div className="relative rounded-2xl overflow-hidden shadow-[0_30px_80px_-20px_rgba(30,64,175,0.25)] group cursor-pointer">
               <img 
-                src="/public/learn/hero.jpeg" 
+                src="https://images.unsplash.com/photo-1758874573116-2bc02232eef1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdHVkZW50JTIwbGVhcm5pbmclMjBvbmxpbmV8ZW58MXx8fHwxNzYxMzc1NDM2fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral" 
                 alt="Learning" 
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
               />
