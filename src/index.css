@@ -28,11 +28,17 @@
     --radius: 0.5rem;
   }
 
-  /* Apply the Apple system font stack globally */
+  /* Apply Inter as the global font with sensible fallbacks */
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "San Francisco", "Helvetica Neue", Arial, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
+  }
+
+  /* Ensure all elements inherit the global font */
+  *, *::before, *::after,
+  button, input, select, textarea {
+    font-family: inherit;
   }
 }
 

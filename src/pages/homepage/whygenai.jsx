@@ -6,7 +6,7 @@ const FeatureCard = ({ icon, title, description }) => (
     <div className="mb-2">
       <img src={icon} alt={`${title} icon`} className="w-16 h-16 sm:w-20 sm:h-20 object-contain" />
     </div>
-    <h3 className="font-bold text-base sm:text-lg mb-2">{title}</h3>
+    <h3 className="font-semibold text-base sm:text-lg mb-2">{title}</h3>
     <p className="text-gray-600 text-sm sm:text-sm">{description}</p>
   </div>
 );
@@ -18,7 +18,7 @@ const WhyGenAiLearning = () => {
         <div className="mt-8 sm:mt-36">
           <h2 className="text-2xl sm:text-4xl mb-4">
             <span className="font-semibold">Why, </span>
-            <span className="text-green-600 font-bold">GenAi Learning?</span>
+            <span className="text-blue-600 font-semibold">GenAi Learning?</span>
           </h2>
           <p className="text-gray-600 text-sm sm:text-base mb-6">
             With 1.8+ Crore Students and one of the best selection rates in <br/>India amongst online learning platforms, you can surely rely on<br/> us to excel.

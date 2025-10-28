@@ -43,9 +43,9 @@ const TestimonialsSection = () => {
           </div>
           <p className="text-sm font-bold text-gray-500">5000+ HAPPY GEN AI LEARNING USERS</p>
           <h2 className="text-4xl mt-3 mb-16">
-            <span className="font-bold">Trusted</span>
+            <span className="font-semibold">Trusted</span>
             <span className="font-semibold"> by Learners, </span>
-            <span className="font-bold">Loved</span>
+            <span className="font-semibold">Loved</span>
             <span className="font-semibold"> by Employers</span>
           </h2>
         </div>

@@ -2,6 +2,13 @@ import { useContext, useEffect, useState } from 'react';
 import LearningSection from './learning-section';
 import TestSection from './test-section';
 import LeaderboardSection from './leaderboard';
+import AudiencePrograms from './AudiencePrograms';
+import AIFeatures from './AIFeatures';
+import PopularCourses from './PopularCourses';
+import PricingPlans from './PricingPlans';
+import LeaderboardSectionNew from './LeaderboardSection';
+import CTABanner from './CTABanner';
+import NewsletterSignup from './NewsletterSignup';
 
 
 export default function HomePage() {
@@ -36,6 +43,27 @@ export default function HomePage() {
 
   return (
     <div>
+      {/* New audience programs section */}
+      <AudiencePrograms />
+      
+      {/* AI Features section */}
+      <AIFeatures />
+      
+      {/* Popular Courses section */}
+      <PopularCourses />
+      
+      {/* Pricing Plans section */}
+      <PricingPlans />
+      
+      {/* Leaderboard Section */}
+      <LeaderboardSectionNew />
+      
+      {/* CTA Banner */}
+      <CTABanner />
+      
+      {/* Newsletter Signup */}
+      <NewsletterSignup />
+
       <div className="text-center text-3xl text-gray-500 mt-24 mb-24">
         Unlocking your Future with <span className="text-black font-medium">AI</span> -
         <span className="font-bold text-black"> Smarter</span>,

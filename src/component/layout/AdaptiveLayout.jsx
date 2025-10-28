@@ -125,7 +125,7 @@ const AdaptiveLayout = () => {
           </Link>
           
           {/* Auth Buttons */}
-          <Link 
+          {/* <Link 
             to="/login" 
             className="px-3 py-1.5 text-gray-500 rounded-lg font-medium hover:bg-blue-50 hover:text-gray-800 text-md transition-colors"
           >
@@ -136,7 +136,7 @@ const AdaptiveLayout = () => {
             className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 text-md transition-colors"
           >
             Sign Up
-          </Link>
+          </Link> */}
         </div>
       </div>
     </header>

@@ -1,12 +1,13 @@
 // HeroSection.jsx
 import '@fontsource/inter'; // Import the Inter font
 import { useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { mainContext } from '../../context/MainContext';
+import { Play, Sparkles } from 'lucide-react';
+
 const HeroSection = () => {
-  const {user,token}= useContext(mainContext)
+  const {user, token} = useContext(mainContext);
   const navigate = useNavigate();
- 
 
   const handleGetStarted = () => {
     if (token) {
@@ -15,172 +16,87 @@ const HeroSection = () => {
       navigate("/login-landing"); // not logged in
     }
   };
+
   return (
-    <div className="">
-      {/* Wave background */}
-      <div className="absolute inset-0 lg:mt-[20px] overflow-hidden">
-        <div className="top-0 left-0 w-screen overflow-hidden z-0 mr-40">
-          <img
-            src="Hero.png"
-            alt="Description"
-            className="w-screen h-screen object-cover transform scale-100"
-          />
-        </div>
-      </div>
+    <div className="relative min-h-[80vh] w-full overflow-hidden">
+      {/* Background image */}
+      <img
+        src="Hero.png"
+        alt="Hero background"
+        className="absolute inset-0 w-full h-full object-cover"
+      />
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col items-center justify-center mt-24 px-4 ">
-        {/* Logo/Title */}
-        <div className="text-center mt-14" id="font">
-        <h1 className="text-5xl sm:text-6xl font-sfu font-bold px-2 mb-3 py-2 tracking-wide">
-  Gen{' '}
-  <span className="bg-gradient-to-r from-[hsla(221,83%,53%,1)] to-[hsla(155,100%,31%,1)] text-transparent bg-clip-text">
-    Ai
-  </span>
-</h1>
-
-          <p
-            className="text-lg sm:text-2xl text-gray-700 mt-2 opacity-80 tracking-widest font-semibold mb-4 py-4"
-            style={{ fontFamily: 'SF Pro Display, sans-serif' }}
-          >
-            The future of learning
-          </p>
+      <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20 lg:pt-24 pb-12 flex flex-col items-center text-center">
+        {/* Powered by AI badge */}
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-blue-100 text-blue-700 text-xs sm:text-sm font-medium hover:bg-blue-200 hover:scale-105 transition-all duration-300 ease-in-out cursor-pointer">
+          <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 animate-pulse" />
+          Powered by AI
         </div>
 
-        {/* Get Started Button */}
-      
-       
-        <button className="bg-blue-600 text-white font-medium px-4 sm:px-6 py-2 sm:py-3 rounded-md hover:bg-blue-700 transition-colors duration-300 mb-12" onClick={handleGetStarted}>
-          Get Started
-        </button>
-    
+        {/* Title */}
+        <h1 className="mt-4 sm:mt-6 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight tracking-tight">
+          Gen{' '}
+          <span className="bg-gradient-to-r from-blue-600 to-emerald-600 bg-clip-text text-transparent hover:from-blue-700 hover:to-emerald-700 transition-all duration-500">
+            AI
+          </span>
+        </h1>
 
-        {/* Avatar Group */}
-        <div className="flex -space-x-2 mt-10 sm:mt-[70px]">
-          <img
-            src="https://images.rawpixel.com/image_png_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIyLTA4L2pvYjEwMzQtZWxlbWVudC0wNi0zOTcucG5n.png"
-            alt="User"
-            className="w-6 sm:w-8 h-6 sm:h-8 rounded-full border-2 border-white"
-          />
-          
-          <img
-            src="https://images.rawpixel.com/image_png_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIyLTA4L2pvYjEwMzQtZWxlbWVudC0wNS0zODUucG5n.png"
-            alt="User"
-            className="w-6 sm:w-8 h-6 sm:h-8 rounded-full border-2 border-white"
-          />
-          <img
-            src="https://images.rawpixel.com/image_png_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIyLTA4L2pvYjExMjAtZWxlbWVudC0xOS5wbmc.png"
-            alt="User"
-            className="w-6 sm:w-8 h-6 sm:h-8 rounded-full border-2 border-white"
-          />
-          <img
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRhGJPxvhV4u_WpRUlvawm9YpDkbtL0d8D2FlZ6HgC5JcoeHfqR-FmG0eWyeLfbATOv2EU&usqp=CAU"
-            alt="User"
-            className="w-6 sm:w-8 h-6 sm:h-8 rounded-full border-2 border-white"
-          />
-        </div>
-
-        {/* Stats Text */}
-        <p className="text-xs sm:text-sm text-gray-600 mt-4 tracking-wide uppercase font-semibold text-center">
-          OVER 5000 STUDENTS AND 1000 EMPLOYERS ARE ALREADY USING GEN AI LEARNING.
+        {/* Subtitle */}
+        <p className="mt-4 sm:mt-6 text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 max-w-2xl lg:max-w-3xl px-2">
+          11B+ parameters powering your personalized learning experience
         </p>
+
+        {/* CTA buttons */}
+        <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-center gap-3 sm:gap-4 w-full sm:w-auto">
+          <button
+            onClick={handleGetStarted}
+            className="w-full sm:w-auto bg-blue-600 text-white px-6 sm:px-8 py-3 sm:py-3.5 rounded-lg font-medium 
+                     hover:bg-black hover:scale-105 hover:shadow-lg
+                     active:scale-95 
+                     transition-all duration-300 ease-in-out
+                     focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+          >
+            Get Started Free
+          </button>
+          
+          <button
+            type="button"
+            className="w-full sm:w-auto bg-white/90 backdrop-blur-sm border border-gray-200 text-gray-800 px-6 sm:px-8 py-3 sm:py-3.5 rounded-lg font-medium 
+                     inline-flex items-center justify-center gap-2 
+                     hover:bg-white hover:border-gray-300 hover:scale-105 hover:shadow-lg
+                     active:scale-95
+                     transition-all duration-300 ease-in-out
+                     focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2
+                     group"
+          >
+            <span>Watch Demo</span>
+            <Play className="w-4 h-4 group-hover:scale-110 group-hover:text-blue-600 transition-all duration-300" />
+          </button>
+        </div>
+
+        {/* Social proof */}
+        <div className="mt-8 sm:mt-10 text-gray-500 text-xs sm:text-sm font-medium hover:text-gray-700 transition-colors duration-300">
+          Trusted by 100,000+ learners worldwide
+        </div>
+
+        {/* Category chips */}
+        <div className="mt-3 sm:mt-4 flex flex-wrap justify-center gap-2 sm:gap-3 max-w-lg sm:max-w-2xl">
+          {['NCERT Aligned', 'IIT-JEE', 'NEET', 'SSC', 'Professional'].map((label) => (
+            <span 
+              key={label} 
+              className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg bg-gray-100/80 backdrop-blur-sm text-gray-800 text-xs sm:text-sm font-medium
+                       hover:bg-gray-200 hover:scale-105 hover:shadow-md
+                       cursor-pointer transition-all duration-300 ease-in-out
+                       border border-transparent hover:border-gray-300"
+            >
+              {label}
+            </span>
+          ))}
+        </div>
       </div>
     </div>
   );
 };
 
 export default HeroSection;
-
-
-
-
-
-
-
-
-
-
-// import '@fontsource/inter'; // Import the Inter font
-// import { Link } from 'react-router-dom';
-// import Threads from '../../component/ui/styles/Thread';
-
-// const HeroSection = () => {
-//   return (
-//     <div className="">
-//       {/* Threads background replacing wave background */}
-//       <div className="absolute inset-0 lg:mt-[100px] overflow-hidden">
-//       <div className="absolute inset-0 overflow-hidden z-0 h-100vh bottom-[200px] height-[600px]">
-//         <Threads
-//           amplitude={2.5}
-//           distance={0.2}
-//           enableMouseInteraction={true}
-//           color={ [
-//             [59 / 255, 130 / 255, 246 / 255] 
-
-         
-//           ]}
-//         />
-//       </div>
-//       </div>
-
-//       {/* Content */}
-//       <div className="relative z-10 flex flex-col items-center justify-center mt-24 px-4">
-//         {/* Logo/Title */}
-//         <div className="text-center mt-14">
-//           <h1 className="text-4xl sm:text-6xl font-bold mb-3 ">
-//             Gen{' '}
-//             <span className="bg-gradient-to-r from-[hsla(221,83%,53%,1)] to-[hsla(155,100%,31%,1)] text-transparent bg-clip-text">
-//               Ai
-//             </span>
-//           </h1>
-
-//           <p
-//             className="text-lg sm:text-xl text-gray-600 mt-2 opacity-80 tracking-widest font-semibold mb-4"
-//             style={{ fontFamily: 'SF Pro Display, sans-serif' }}
-//           >
-//             The future of learning
-//           </p>
-//         </div>
-
-//         {/* Get Started Button */}
-//         <Link to="/login-landing">
-//         <button className="bg-blue-600 text-white px-6 sm:px-8 py-2 sm:py-3 rounded-md hover:bg-blue-700 transition-colors duration-300 mb-12">
-//           Get Started
-//         </button>
-//         </Link>
-
-//         {/* Avatar Group */}
-//         <div className="flex -space-x-2 mt-10 sm:mt-[70px]">
-//               <img
-//             src="https://images.rawpixel.com/image_png_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIyLTA4L2pvYjEwMzQtZWxlbWVudC0wNi0zOTcucG5n.png"
-//             alt="User"
-//             className="w-6 sm:w-8 h-6 sm:h-8 rounded-full border-2 border-white"
-//           />
-          
-//           <img
-//             src="https://images.rawpixel.com/image_png_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIyLTA4L2pvYjEwMzQtZWxlbWVudC0wNS0zODUucG5n.png"
-//             alt="User"
-//             className="w-6 sm:w-8 h-6 sm:h-8 rounded-full border-2 border-white"
-//           />
-//           <img
-//             src="https://images.rawpixel.com/image_png_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIyLTA4L2pvYjExMjAtZWxlbWVudC0xOS5wbmc.png"
-//             alt="User"
-//             className="w-6 sm:w-8 h-6 sm:h-8 rounded-full border-2 border-white"
-//           />
-//           <img
-//             src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRhGJPxvhV4u_WpRUlvawm9YpDkbtL0d8D2FlZ6HgC5JcoeHfqR-FmG0eWyeLfbATOv2EU&usqp=CAU"
-//             alt="User"
-//             className="w-6 sm:w-8 h-6 sm:h-8 rounded-full border-2 border-white"
-//           />
-//         </div>
-
-//         {/* Stats Text */}
-//         <p className="text-xs sm:text-sm text-gray-600 mt-4 tracking-wide uppercase font-medium text-center">
-//           OVER 5000 STUDENTS AND 1000 EMPLOYERS ARE ALREADY USING GEN AI LEARNING.
-//         </p>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default HeroSection;
