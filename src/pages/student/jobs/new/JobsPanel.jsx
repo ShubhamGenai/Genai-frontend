@@ -219,7 +219,7 @@ const JobsPlatform = () => {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
           <div className="text-center">
                  <Loader className="w-12 h-12 text-blue-600 animate-spin mx-auto mb-4" />
-                 <p className="text-gray-600 text-lg">Loading courses...</p>
+                 <p className="text-gray-600 text-lg">Loading jobs...</p>
                </div>
       </div>
     );
@@ -250,7 +250,7 @@ const JobsPlatform = () => {
           <div className="flex flex-col lg:flex-row items-start lg:items-center gap-8">
             {/* Left Section - Text */}
             <div className="flex-1">
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3 text-white">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-medium mb-3 text-white">
                 Explore Career Opportunities
               </h1>
               <p className="text-base sm:text-lg text-white font-normal max-w-2xl">

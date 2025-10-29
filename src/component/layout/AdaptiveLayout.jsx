@@ -132,7 +132,7 @@ const AdaptiveLayout = () => {
       name: "Library",
       icon: LibraryIcon,
       path: "/library",
-      hasSubmenu: true,
+      hasSubmenu: false,
       submenu: [
         {
           id: "all-library",
