@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MapPin, Calendar, DollarSign, Building2, ChevronDown, ChevronUp, Filter, TrendingUp, Users, Briefcase, Search } from 'lucide-react';
+import { MapPin, Calendar, DollarSign, Building2, ChevronDown, ChevronUp, Filter, TrendingUp, Users, Briefcase, Search, Loader } from 'lucide-react';
 
 const JobsPlatform = () => {
   const [selectedCategory, setSelectedCategory] = useState('ui-ux-designer');
@@ -217,10 +217,10 @@ const JobsPlatform = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <Briefcase className="w-12 h-12 text-blue-600 animate-pulse mx-auto mb-4" />
-          <p className="text-gray-600 text-lg">Loading jobs...</p>
-        </div>
+          <div className="text-center">
+                 <Loader className="w-12 h-12 text-blue-600 animate-spin mx-auto mb-4" />
+                 <p className="text-gray-600 text-lg">Loading courses...</p>
+               </div>
       </div>
     );
   }
@@ -243,48 +243,53 @@ const JobsPlatform = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white py-12 px-4 sm:px-6 lg:px-8">
+      <div className="bg-[#2962FF] text-white py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">Explore Career Opportunities</h1>
-          <p className="text-lg sm:text-xl text-blue-100 font-light max-w-4xl mb-8">
-            Discover your dream job with AI-powered matching, personalized recommendations, and comprehensive job listings across industries.
-          </p>
-          
-          {/* Stats Section */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-8">
-            <div className="bg-blue-500/20 backdrop-blur-sm rounded-lg p-6 border border-blue-400/30">
-              <div className="flex items-center gap-4">
-                <div className="bg-white/20 p-3 rounded-lg">
-                  <Briefcase className="w-8 h-8 text-white" />
-                </div>
-                <div>
-                  <div className="text-3xl font-bold">500+</div>
-                  <div className="text-blue-100">Job Openings</div>
-                </div>
-              </div>
+          <div className="flex flex-col lg:flex-row items-start lg:items-center gap-8">
+            {/* Left Section - Text */}
+            <div className="flex-1">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3 text-white">
+                Explore Career Opportunities
+              </h1>
+              <p className="text-base sm:text-lg text-white font-normal max-w-2xl">
+                Discover your dream job with AI-powered matching, personalized recommendations, and comprehensive job listings across industries.
+              </p>
             </div>
             
-            <div className="bg-blue-500/20 backdrop-blur-sm rounded-lg p-6 border border-blue-400/30">
-              <div className="flex items-center gap-4">
-                <div className="bg-white/20 p-3 rounded-lg">
-                  <Building2 className="w-8 h-8 text-white" />
+            {/* Right Section - Stats */}
+            <div className="flex flex-row flex-wrap lg:flex-nowrap gap-4 lg:gap-5">
+              {/* Job Openings */}
+              <div className="flex flex-row items-start gap-2.5">
+                <div className="bg-[#5C9EFF] rounded-lg p-2 flex-shrink-0 shadow-md flex items-center justify-center">
+                  <Briefcase className="w-5 h-5 lg:w-6 lg:h-6 text-white" />
                 </div>
-                <div>
-                  <div className="text-3xl font-bold">200+</div>
-                  <div className="text-blue-100">Top Companies</div>
+                <div className="flex flex-col">
+                  <div className="text-xl lg:text-2xl xl:text-3xl font-bold text-white leading-tight">500+</div>
+                  <div className="text-xs lg:text-sm text-white font-normal mt-0.5">Job Openings</div>
                 </div>
               </div>
-            </div>
-            
-            <div className="bg-blue-500/20 backdrop-blur-sm rounded-lg p-6 border border-blue-400/30">
-              <div className="flex items-center gap-4">
-                <div className="bg-white/20 p-3 rounded-lg">
-                  <TrendingUp className="w-8 h-8 text-white" />
+              
+              {/* Top Companies */}
+              <div className="flex flex-row items-start gap-2.5">
+                <div className="bg-[#5C9EFF] rounded-lg p-2 flex-shrink-0 shadow-md flex items-center justify-center">
+                  <Building2 className="w-5 h-5 lg:w-6 lg:h-6 text-white" />
                 </div>
-                <div>
-                  <div className="text-3xl font-bold">90%</div>
-                  <div className="text-blue-100">Placement Rate</div>
+                <div className="flex flex-col">
+                  <div className="text-xl lg:text-2xl xl:text-3xl font-bold text-white leading-tight">200+</div>
+                  <div className="text-xs lg:text-sm text-white font-normal mt-0.5">Top Companies</div>
+                </div>
+              </div>
+              
+              {/* Placement Rate */}
+              <div className="flex flex-row items-start gap-2.5">
+                <div className="bg-[#5C9EFF] rounded-lg p-2 flex-shrink-0 shadow-md flex items-center justify-center">
+                  <TrendingUp className="w-5 h-5 lg:w-6 lg:h-6 text-white" />
+                </div>
+                <div className="flex flex-col">
+                  <div className="text-xl lg:text-2xl xl:text-3xl font-bold text-white leading-tight">90%</div>
+                  <div className="text-xs lg:text-sm text-white font-normal mt-0.5">Placement Rate</div>
                 </div>
               </div>
             </div>
