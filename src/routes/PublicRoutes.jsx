@@ -16,7 +16,6 @@ import JobDetails from "../pages/student/jobs/JobDetails";
 import LearnMainPage from "../pages/student/learn/LearnMain";
 import ContentLogin from "../pages/auth-pages/content-auth/Content-login";
 import CoursePlayer from "../pages/student/learn/course-player/Course-Player";
-import GuestLearnLayout from "../component/layout/GuestLearnLayout";
 import AdaptiveLayout from "../component/layout/AdaptiveLayout";
 import TestPage from "../pages/student/test/TestPage";
 import TestDetailsPage from "../pages/student/test/testDetails/TestDetails";
@@ -26,7 +25,11 @@ import CollegeCommunityPage from "../pages/student/community/CollegeCommunityPag
 import CompanyCommunityPage from "../pages/student/community/CompanyCommunityPage";
 import ExamPrepCommunityPage from "../pages/student/community/ExamPrepCommunityPage";
 import SkillsCommunityPage from "../pages/student/community/SkillsCommunityPage";
-import LearningPlatform from "../pages/student/learn/Learnpage";
+
+import TestPlatform from "../pages/student/test/new/TestPage-new";
+import LearningPlatform from "../pages/student/learn/new/Learnpage";
+import JobsPanel from "../pages/student/jobs/new/JobsPanel";
+import JobsPlatform from "../pages/student/jobs/new/JobsPanel";
 
 
 
@@ -76,8 +79,9 @@ const PublicRoutes = () => {
       {/* old lean page */}
         {/* <Route index element={<LearnMainPage />} /> */}
           <Route index element={<LearningPlatform />} />
-        <Route path="tests" element={<TestPage/>}/>
-        <Route path="jobs" element={<JobsPage />} />
+        <Route path="tests" element={<TestPlatform/>}/>
+
+        <Route path="jobs" element={<JobsPlatform />} />
         <Route path="library" element={<LibraryPage />} />
         <Route path="community" element={<CommunityPage />} />
         <Route path="community/all" element={<CommunityPage />} />
@@ -88,9 +92,9 @@ const PublicRoutes = () => {
       </Route>
       
       <Route path="jobs" element={<AdaptiveLayout />}>
-        <Route index element={<JobsPage />} />
-        <Route path="learn" element={<LearnMainPage />} />
-        <Route path="tests" element={<TestPage/>} />
+        <Route index element={<JobsPanel />} />
+        <Route path="learn" element={<LearningPlatform />} />
+        <Route path="tests" element={<TestPlatform/>} />
         <Route path="library" element={<LibraryPage />} />
         <Route path="community" element={<CommunityPage />} />
         <Route path="community/all" element={<CommunityPage />} />
@@ -101,8 +105,8 @@ const PublicRoutes = () => {
       </Route>
       
       <Route path="tests" element={<AdaptiveLayout />}>
-        <Route index element={<TestPage/>} />
-        <Route path="learn" element={<LearnMainPage />} />
+        <Route index element={<TestPlatform/>} />
+        <Route path="learn" element={<LearningPlatform />} />
         <Route path="jobs" element={<JobsPage />} />
         <Route path="library" element={<LibraryPage />} />
         <Route path="community" element={<CommunityPage />} />
