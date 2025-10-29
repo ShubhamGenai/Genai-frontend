@@ -26,6 +26,7 @@ import CollegeCommunityPage from "../pages/student/community/CollegeCommunityPag
 import CompanyCommunityPage from "../pages/student/community/CompanyCommunityPage";
 import ExamPrepCommunityPage from "../pages/student/community/ExamPrepCommunityPage";
 import SkillsCommunityPage from "../pages/student/community/SkillsCommunityPage";
+import LearningPlatform from "../pages/student/learn/Learnpage";
 
 
 
@@ -71,7 +72,10 @@ const PublicRoutes = () => {
  
       {/* All pages with adaptive layout - Works for both guest and authenticated users */}
       <Route path="learn" element={<AdaptiveLayout />}>
-        <Route index element={<LearnMainPage />} />
+
+      {/* old lean page */}
+        {/* <Route index element={<LearnMainPage />} /> */}
+          <Route index element={<LearningPlatform />} />
         <Route path="tests" element={<TestPage/>}/>
         <Route path="jobs" element={<JobsPage />} />
         <Route path="library" element={<LibraryPage />} />

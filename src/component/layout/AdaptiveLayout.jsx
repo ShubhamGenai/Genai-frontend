@@ -491,7 +491,7 @@ const AdaptiveLayout = () => {
           )}
           
           {/* Outlet renders the child routes */}
-          <main className="flex-1 overflow-y-auto p-  md:p-6">
+          <main className="flex-1 overflow-y-auto ">
             <Outlet />
           </main>
         </div>
