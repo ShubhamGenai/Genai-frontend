@@ -119,10 +119,12 @@ export function NavBar() {
         <nav className="flex items-center justify-between max-w-7xl mx-auto px-4 sm:px-6 py-2">
           {/* Logo Section */}
           <Link to="/" className="flex items-center gap-2 min-w-0">
-            <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-              <LuGraduationCap className="text-white w-5 h-5" />
-            </div>
-            <span className="font-semibold text-2xl hidden sm:inline">GenAi Learning</span>
+           <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold leading-tight tracking-tight">
+          Gen{' '}
+          <span className="bg-gradient-to-r from-blue-600 to-emerald-600 bg-clip-text text-transparent hover:from-blue-700 hover:to-emerald-700 transition-all duration-500">
+            AI
+          </span>
+        </h1>
           </Link>
 
 
@@ -251,11 +253,11 @@ export function NavBar() {
 
               </div>
             ) : (
-              <div className="hidden md:flex items-center gap-2">
-                <Link to="/login" className="px-3 p-2 py-1.5 text-gray-500   rounded-lg font-medium hover:bg-blue-50 hover:text-gray-800 text-md">
+              <div className="hidden sm:flex items-center gap-2">
+                <Link to="/login" className="px-3 sm:px-4 py-1.5 sm:py-2 text-gray-500 rounded-lg text-sm sm:text-base font-medium hover:bg-blue-50 hover:text-gray-800 transition-colors duration-300">
                   Sign In
                 </Link>
-                <Link to="/login-landing" className="px-4 p-2 py-2 border border-blue-600 text-blue-600 rounded-lg font-medium hover:bg-blue-50 text-md">
+                <Link to="/login-landing" className="px-3 sm:px-4 py-1.5 sm:py-2 border border-blue-600 text-blue-600 rounded-lg text-sm sm:text-base font-medium hover:bg-blue-50 transition-colors duration-300">
                   Sign Up
                 </Link>
               </div>
@@ -285,10 +287,12 @@ export function NavBar() {
         <div className="flex items-center justify-between w-full px-6 py-4 border-b border-gray-100">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
-            <div className="w-9 h-9 bg-blue-600 rounded-full flex items-center justify-center">
-              <LuGraduationCap className="text-white w-5 h-5" />
-            </div>
-            <span className="font-semibold text-xl bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">GenAi</span>
+            <h1 className="text-lg sm:text-xl font-bold leading-tight tracking-tight">
+              Gen{' '}
+              <span className="bg-gradient-to-r from-blue-600 to-emerald-600 bg-clip-text text-transparent">
+                AI
+              </span>
+            </h1>
           </Link>
 
           {/* Close Button */}
@@ -398,14 +402,14 @@ export function NavBar() {
             <div className="px-6 mt-6">
               <Link 
                 to="/login" 
-                className="block text-center mb-3 px-4 py-2 text-gray-600 hover:text-gray-800 font-medium"
+                className="block text-center mb-3 px-4 py-2.5 text-sm sm:text-base text-gray-600 hover:text-gray-800 font-medium rounded-lg hover:bg-gray-50 transition-colors duration-300"
                 onClick={() => setIsOpen(false)}
               >
                 Sign In
               </Link>
               <Link 
                 to="/login-landing" 
-                className="block text-center px-4 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                className="block text-center px-4 py-2.5 text-sm sm:text-base bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors duration-300"
                 onClick={() => setIsOpen(false)}
               >
                 Sign Up

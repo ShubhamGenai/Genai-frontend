@@ -42,7 +42,7 @@ export default function PopularCourses() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 sm:mb-12">
           <div className="mb-4 sm:mb-0">
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-gray-900 mb-2">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-medium text-gray-900 mb-2">
               Learn anything,{' '}
               <span className="text-blue-600">Achieve everything</span>
             </h2>

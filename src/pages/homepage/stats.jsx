@@ -13,9 +13,9 @@ export default function StatsSection() {
   ];
 
   return (
-    <div className="bg-gray-50 py-20 px-4">
+    <div className="bg-gray-50 py-12 sm:py-16 md:py-20 px-3 sm:px-4 md:px-6 lg:px-8">
       <motion.div
-        className="max-w-6xl mx-auto flex flex-wrap justify-center gap-10 md:gap-16 text-center"
+        className="max-w-6xl mx-auto flex flex-wrap justify-center gap-6 sm:gap-8 md:gap-12 lg:gap-16 text-center"
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
@@ -24,14 +24,14 @@ export default function StatsSection() {
         {stats.map((item, index) => (
           <motion.div
             key={index}
-            className="w-24 sm:w-28 md:w-32"
+            className="w-20 xs:w-24 sm:w-28 md:w-32 lg:w-36"
             whileHover={{ scale: 1.05 }}
             transition={{ duration: 0.3 }}
           >
-            <p className="text-lg sm:text-xl md:text-2xl lg:text-4xl font-semibold">
+            <p className="text-lg xs:text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold">
               <CountUp end={item.value} duration={2} separator="," />+
             </p>
-            <p className="text-gray-500 text-sm sm:text-base">
+            <p className="text-gray-500 text-xs xs:text-sm sm:text-base font-medium">
               {item.label}
             </p>
           </motion.div>

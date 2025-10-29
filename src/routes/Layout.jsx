@@ -24,9 +24,13 @@ const Layout = ({ children }) => {
   const hideNavForGuestLayoutRoutes = location.pathname.startsWith("/learn") || 
                                      location.pathname.startsWith("/jobs") || 
                                      location.pathname.startsWith("/tests") || 
+                                     location.pathname.startsWith("/library") ||
+                                     location.pathname.startsWith("/community") ||
                                      location.pathname.startsWith("/test-details") || 
                                      location.pathname.startsWith("/course-details") || 
-                                     location.pathname.startsWith("/job-details");
+                                     location.pathname.startsWith("/job-details") ||
+                                     location.pathname.startsWith("/leaderboard") ||
+                                     location.pathname.startsWith("/testss");
 
   const hideNavAndFooter = hideNavAndFooterRoutes.includes(location.pathname);
   const hideFooter = hideOnlyFooterRoutes.includes(location.pathname);

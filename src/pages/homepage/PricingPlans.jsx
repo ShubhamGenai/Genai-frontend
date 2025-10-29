@@ -58,11 +58,11 @@ export default function PricingPlans() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-8 sm:mb-12">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-sembold text-gray-900 mb-2">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-medium text-gray-900 mb-2">
             Test your skills,{' '}
             <span className="text-blue-600">own your future</span>
           </h2>
-          <p className="text-base sm:text-lg text-gray-600 font-light">
+          <p className="text-base sm:text-lg text-gray-600 font-medium">
             Choose the perfect plan for your learning journey
           </p>
         </div>

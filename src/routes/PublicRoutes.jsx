@@ -20,6 +20,12 @@ import GuestLearnLayout from "../component/layout/GuestLearnLayout";
 import AdaptiveLayout from "../component/layout/AdaptiveLayout";
 import TestPage from "../pages/student/test/TestPage";
 import TestDetailsPage from "../pages/student/test/testDetails/TestDetails";
+import LibraryPage from "../pages/student/library/LibraryPage";
+import CommunityPage from "../pages/student/community/CommunityPage";
+import CollegeCommunityPage from "../pages/student/community/CollegeCommunityPage";
+import CompanyCommunityPage from "../pages/student/community/CompanyCommunityPage";
+import ExamPrepCommunityPage from "../pages/student/community/ExamPrepCommunityPage";
+import SkillsCommunityPage from "../pages/student/community/SkillsCommunityPage";
 
 
 
@@ -68,21 +74,72 @@ const PublicRoutes = () => {
         <Route index element={<LearnMainPage />} />
         <Route path="tests" element={<TestPage/>}/>
         <Route path="jobs" element={<JobsPage />} />
-        <Route path="community" element={<div className="p-6"><h1 className="text-2xl font-bold">Community</h1><p>Community functionality coming soon...</p></div>} />
+        <Route path="library" element={<LibraryPage />} />
+        <Route path="community" element={<CommunityPage />} />
+        <Route path="community/all" element={<CommunityPage />} />
+        <Route path="community/college" element={<CollegeCommunityPage />} />
+        <Route path="community/company" element={<CompanyCommunityPage />} />
+        <Route path="community/exam-prep" element={<ExamPrepCommunityPage />} />
+        <Route path="community/skills" element={<SkillsCommunityPage />} />
       </Route>
       
       <Route path="jobs" element={<AdaptiveLayout />}>
         <Route index element={<JobsPage />} />
         <Route path="learn" element={<LearnMainPage />} />
         <Route path="tests" element={<TestPage/>} />
-        <Route path="community" element={<div className="p-6"><h1 className="text-2xl font-bold">Community</h1><p>Community functionality coming soon...</p></div>} />
+        <Route path="library" element={<LibraryPage />} />
+        <Route path="community" element={<CommunityPage />} />
+        <Route path="community/all" element={<CommunityPage />} />
+        <Route path="community/college" element={<CollegeCommunityPage />} />
+        <Route path="community/company" element={<CompanyCommunityPage />} />
+        <Route path="community/exam-prep" element={<ExamPrepCommunityPage />} />
+        <Route path="community/skills" element={<SkillsCommunityPage />} />
       </Route>
       
       <Route path="tests" element={<AdaptiveLayout />}>
         <Route index element={<TestPage/>} />
         <Route path="learn" element={<LearnMainPage />} />
         <Route path="jobs" element={<JobsPage />} />
-        <Route path="community" element={<div className="p-6"><h1 className="text-2xl font-bold">Community</h1><p>Community functionality coming soon...</p></div>} />
+        <Route path="library" element={<LibraryPage />} />
+        <Route path="community" element={<CommunityPage />} />
+        <Route path="community/all" element={<CommunityPage />} />
+        <Route path="community/college" element={<CollegeCommunityPage />} />
+        <Route path="community/company" element={<CompanyCommunityPage />} />
+        <Route path="community/exam-prep" element={<ExamPrepCommunityPage />} />
+        <Route path="community/skills" element={<SkillsCommunityPage />} />
+      </Route>
+
+      {/* Library route */}
+      <Route path="library" element={<AdaptiveLayout />}>
+        <Route index element={<LibraryPage />} />
+        <Route path="all" element={<LibraryPage />} />
+        <Route path="courses" element={<LibraryPage />} />
+        <Route path="books" element={<LibraryPage />} />
+        <Route path="documents" element={<LibraryPage />} />
+        <Route path="articles" element={<LibraryPage />} />
+        <Route path="learn" element={<LearnMainPage />} />
+        <Route path="tests" element={<TestPage/>} />
+        <Route path="jobs" element={<JobsPage />} />
+        <Route path="community" element={<CommunityPage />} />
+        <Route path="community/all" element={<CommunityPage />} />
+        <Route path="community/college" element={<CollegeCommunityPage />} />
+        <Route path="community/company" element={<CompanyCommunityPage />} />
+        <Route path="community/exam-prep" element={<ExamPrepCommunityPage />} />
+        <Route path="community/skills" element={<SkillsCommunityPage />} />
+      </Route>
+
+      {/* Community routes */}
+      <Route path="community" element={<AdaptiveLayout />}>
+        <Route index element={<CommunityPage />} />
+        <Route path="all" element={<CommunityPage />} />
+        <Route path="college" element={<CollegeCommunityPage />} />
+        <Route path="company" element={<CompanyCommunityPage />} />
+        <Route path="exam-prep" element={<ExamPrepCommunityPage />} />
+        <Route path="skills" element={<SkillsCommunityPage />} />
+        <Route path="learn" element={<LearnMainPage />} />
+        <Route path="tests" element={<TestPage/>} />
+        <Route path="jobs" element={<JobsPage />} />
+        <Route path="library" element={<LibraryPage />} />
       </Route>
       
       {/* Details pages with adaptive layout - Works for both guest and authenticated users */}
