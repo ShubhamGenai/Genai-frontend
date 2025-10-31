@@ -15,6 +15,7 @@ import TestDetailsPage from "../pages/student/test/testDetails/TestDetails";
 import TestPlayer from "../pages/student/test/testDetails/Test-Player";
 import JobDetails from "../pages/student/jobs/JobDetails";
 import CoursePlayer from "../pages/student/learn/course-player/Course-Player";
+import LearnDetails from "../pages/student/learn/LearnDetails";
 
 const StudentRoutes = () => {
   return (
@@ -35,6 +36,7 @@ const StudentRoutes = () => {
         
         {/* Main Navigation Routes */}
         <Route path="learn" element={<LearnMainPage />} />
+        <Route path="learn/details/:id" element={<LearnDetails />} />
         <Route path="course-details" element={<CourseDetails />} />
         <Route path="course-player" element={<CoursePlayer />} />
         <Route path="tests" element={<TestPage />} />

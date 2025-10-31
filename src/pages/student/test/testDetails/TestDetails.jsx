@@ -1,124 +1,124 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { Clock, FileText, Award, BarChart2 } from 'lucide-react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import React, { useState, useMemo, useContext, useEffect } from 'react';
+import { Clock, FileText, Award, BarChart2, PlayCircle, CheckCircle, Star, Users } from 'lucide-react';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchTestById } from '../../../../redux/DataSlice';
-import { toast } from "react-toastify";
+import { toast } from 'react-toastify';
 import axios from 'axios';
 import { addToCart, checkItemInCart } from '../../../../redux/CartSlice';
 import { USERENDPOINTS } from '../../../../constants/ApiConstants';
-import { mainContext } from "../../../../context/MainContext";
+import { mainContext } from '../../../../context/MainContext';
+import { MOCK_TESTS } from '../mockTestCatalog';
 
 const TestDetailsPage = () => {
   const navigate = useNavigate();
-  const {token,user} = useContext(mainContext)
- 
+  const { token, user } = useContext(mainContext);
+
   const dispatch = useDispatch();
-  const query = new URLSearchParams(useLocation().search);
-  const id = query.get("id");
+  const location = useLocation();
+  const params = useParams();
+  const query = new URLSearchParams(location.search);
+  const queryId = query.get('id');
+  const paramsId = params?.id;
 
   const { testDetails, loading, error } = useSelector((state) => state.data);
   const { isInCart } = useSelector((state) => state.cartData);
-  
-  const isEnrolled = testDetails?.enrolledStudents?.some(
-    (student) =>
-      student === user?._id || // if just ID (non-populated)
-      student?._id === user?._id // if populated
-  );
-  
 
-  // Format test data with proper structure
-  const formatTestData = (data) => {
-    if (!data) return {
-      title: '',
-      company: '',
-      duration: '0 minutes',
-      questions: 0,
-      hasCertificate: false,
-      level: '',
-      rating: 0,
-      reviews: 0,
-      price: 0,
-      originalPrice: 0,
-      discount: '0% OFF',
-      benefits: [],
-      skills: [],
-      description: '',
-      totalTests: 0,
-    };
-    
-    // Safely access nested price object
-    const price = data.price || {};
-    const discountedPrice = price.discounted || 0;
-    const actualPrice = price.actual || 0;
-    
+  // Prefer navigation state then id
+  const stateTest = useMemo(() => {
+    const s = location.state || {};
+    return s.test || s.item || s.data || null;
+  }, [location.state]);
+
+  const effectiveId = useMemo(() => {
+    return (stateTest?.id != null && String(stateTest.id)) || queryId || paramsId || null;
+  }, [stateTest, queryId, paramsId]);
+
+  // Load from backend if id exists; also have mock fallback
+  useEffect(() => {
+    if (effectiveId && !stateTest) {
+      dispatch(fetchTestById(effectiveId));
+    }
+  }, [dispatch, effectiveId, stateTest]);
+
+  const mockTest = useMemo(() => {
+    if (!effectiveId) return null;
+    return MOCK_TESTS.find((t) => String(t.id) === String(effectiveId)) || null;
+  }, [effectiveId]);
+
+  const base = stateTest || testDetails || mockTest;
+
+  const formatted = useMemo(() => {
+    if (!base) return null;
+    const price = base.price || {};
+    const discountedPrice = price.discounted ?? base.discountedPrice ?? 0;
+    const actualPrice = price.actual ?? base.actualPrice ?? 0;
     return {
-      title: data.title || '',
-      company: data.company || '',
-      duration: `${data.duration || 0} minutes`,
-      questions: data.numberOfQuestions || 0,
-      hasCertificate: data.certificate !== undefined ? data.certificate : true,
-      level: data.level || '',
-      rating: data.averageRating || 0,
-      reviews: data.totalReviews || 0,
+      id: base.id,
+      title: base.title || '',
+      company: base.company || '',
+      duration: `${base.durationMinutes ?? base.duration ?? 0} minutes`,
+      durationRaw: base.durationMinutes ?? base.duration ?? 0,
+      questions: base.numberOfQuestions ?? base.questions ?? 0,
+      hasCertificate: base.certificate !== undefined ? base.certificate : true,
+      level: base.level || 'Beginner',
+      rating: Array.isArray(base.ratings) && base.ratings.length
+        ? (base.ratings.reduce((s, r) => s + (r.rating || 0), 0) / base.ratings.length).toFixed(1)
+        : 0,
+      reviews: Array.isArray(base.ratings) ? base.ratings.length : 0,
       price: discountedPrice,
       originalPrice: actualPrice,
-      discount: `${Math.round((1 - (discountedPrice / (actualPrice || 1))) * 100)}% OFF`,
-      benefits: Array.isArray(data.features) ? data.features : [],
-      skills: Array.isArray(data.skills) ? data.skills : [],
-      description: data.description || '',
-      totalTests: 350,
+      discount: actualPrice ? `${Math.round(((actualPrice - discountedPrice) / actualPrice) * 100)}% OFF` : '0% OFF',
+      benefits: Array.isArray(base.features) ? base.features : [],
+      skills: Array.isArray(base.skills) ? base.skills : [],
+      description: base.description || '',
+      includes: Array.isArray(base.includes) ? base.includes : [
+        'Instant results',
+        'Detailed solutions',
+        'Topic-wise analytics',
+        '1 free reattempt',
+      ],
     };
-  };
+  }, [base]);
 
-  const testData = formatTestData(testDetails);
+  const [activeTab, setActiveTab] = useState('Tests');
 
   useEffect(() => {
-    if (!id) {
-      return;
+    if (effectiveId) {
+      dispatch(checkItemInCart({ itemId: effectiveId, itemType: 'test' }));
     }
-    dispatch(fetchTestById(id));
-  }, [dispatch, id]);
-
-
- 
+  }, [dispatch, effectiveId]);
 
   const handleAddToCart = () => {
-    dispatch(addToCart({ itemId: id, itemType: "test" }))
+    if (!effectiveId) return;
+    dispatch(addToCart({ itemId: effectiveId, itemType: 'test' }))
       .unwrap()
       .then(() => {
-        toast.success("Added to cart!");
-        dispatch(checkItemInCart({ itemId: id, itemType: "test" })); // ✅ Re-check
+        toast.success('Added to cart!');
+        dispatch(checkItemInCart({ itemId: effectiveId, itemType: 'test' }));
       })
       .catch((err) => {
-        toast.error(err || "Failed to add to cart.");
+        toast.error(err || 'Failed to add to cart.');
       });
   };
-
-  useEffect(() => {
-    dispatch(checkItemInCart({ itemId: id, itemType: "test" }));
-  }, [dispatch, id]);
-
 
   const handleBuyNow = async (testId) => {
     try {
-      if (!token){
-        return toast.error("Please login to continue.");
+      if (!token) {
+        return toast.error('Please login to continue.');
       }
-      // 1️⃣ Create Razorpay order
-      const { data } = await axios.post(USERENDPOINTS.CREATE_PAYMENT, { testId }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-  
+      const { data } = await axios.post(
+        USERENDPOINTS.CREATE_PAYMENT,
+        { testId },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       const { order, paymentId } = data;
-  
-      // 2️⃣ Open Razorpay popup
       const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID, // or process.env.REACT_APP_RAZORPAY_KEY
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
         amount: order.amount,
-        currency: "INR",
-        name: "Test Purchase",
-        description: "Buying a test",
+        currency: 'INR',
+        name: 'Test Purchase',
+        description: 'Buying a test',
         order_id: order.id,
         handler: async function (response) {
           const verifyBody = {
@@ -127,286 +127,169 @@ const TestDetailsPage = () => {
             razorpay_signature: response.razorpay_signature,
             paymentId,
           };
-  
-          // 3️⃣ Verify payment on backend
-          const verifyRes = await axios.post(USERENDPOINTS.VERIFY_PAYMENT, verifyBody, {
-            headers: { Authorization: `Bearer ${token}` }
-          });
-  
+          const verifyRes = await axios.post(USERENDPOINTS.VERIFY_PAYMENT, verifyBody, { headers: { Authorization: `Bearer ${token}` } });
           if (verifyRes.data.success) {
-            toast.success("Payment successful! Test enrolled ✅");
-            dispatch(fetchTestById(id));
+            toast.success('Payment successful! Test enrolled ✅');
+            if (effectiveId) dispatch(fetchTestById(effectiveId));
           } else {
-            toast.error("Payment verification failed ❌");
+            toast.error('Payment verification failed ❌');
           }
         },
-        prefill: {
-          name: user?.name,
-          email: user?.email,
-        },
-        theme: {
-          color: "#6366f1",
-        },
+        prefill: { name: user?.name, email: user?.email },
+        theme: { color: '#6366f1' },
       };
-  
       const razor = new window.Razorpay(options);
       razor.open();
     } catch (error) {
       console.error(error);
-      toast.error("Payment failed or cancelled.");
+      toast.error('Payment failed or cancelled.');
     }
   };
-  
 
-
-
-  if (!id) {
+  if (!formatted) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
-        <div className="text-red-500 text-center">
-          <p className="text-xl font-semibold mb-2">Invalid Test ID</p>
-          <p className="text-gray-600">Please select a valid test to view details.</p>
+        <div className="text-gray-500 text-center">
+          <p className="text-xl font-semibold mb-2">No Test Details Found</p>
+          <p className="text-gray-600">The requested test could not be found.</p>
         </div>
       </div>
     );
   }
 
-  if (loading) return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50">
-      <div className="w-12 h-12 border-4 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
-    </div>
-  );
-  
-  if (error) return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50">
-      <div className="text-red-500 text-center">
-        <p className="text-xl font-semibold mb-2">Error Loading Test Details</p>
-        <p className="text-gray-600">{error}</p>
-      </div>
-    </div>
-  );
-
-  if (!testDetails) return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50">
-      <div className="text-gray-500 text-center">
-        <p className="text-xl font-semibold mb-2">No Test Details Found</p>
-        <p className="text-gray-600">The requested test could not be found.</p>
-      </div>
-    </div>
-  );
-
-  const relatedTests = [
-    {
-      id: 1,
-      title: "CSS Advanced level Test One",
-      questions: 40,
-      duration: "60 Minutes",
-      rating: 4.8,
-      reviews: 790
-    },
-    {
-      id: 2,
-      title: "CSS Advanced level Test Two",
-      questions: 40,
-      duration: "60 Minutes",
-      rating: 4.8,
-      reviews: 790
-    },
-    {
-      id: 3,
-      title: "CSS Advanced level Test Three",
-      questions: 30,
-      duration: "45 Minutes",
-      rating: 4.7,
-      reviews: 750
-    },
-    {
-      id: 4,
-      title: "CSS Advanced level Test Four",
-      questions: 35,
-      duration: "55 Minutes",
-      rating: 4.8,
-      reviews: 750
-    }
-  ];
-
-  const StarRating = ({ rating }) => {
-    return (
-      <div className="flex text-yellow-400">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <span key={star}>
-            {star <= Math.floor(rating) ? "★" : star - 0.5 <= rating ? "★" : "☆"}
-          </span>
-        ))}
-      </div>
-    );
-  };
-
   return (
-    <div className="bg-gray-50">
-      
-      {/* Main content */}
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Left section - Test details */}
-          <div className="flex-1">
-            <div className="mb-6">
-              <h1 className="text-2xl font-semibold mb-1">{testData.title}</h1>
-              <p className="text-gray-600">{testData.company}</p>
-              
-              <div className="flex flex-wrap gap-6 mt-4">
-                <div className="flex items-center text-gray-600">
-                  <Clock size={18} className="mr-2" />
-                  <span>{testData.duration}</span>
-                </div>
-                <div className="flex items-center text-gray-600">
-                  <FileText size={18} className="mr-2" />
-                  <span>{testData.questions} Questions</span>
-                </div>
-                {testData.hasCertificate && (
-                  <div className="flex items-center text-gray-600">
-                    <Award size={18} className="mr-2" />
-                    <span>Certificate</span>
-                  </div>
-                )}
-                <div className="flex items-center text-gray-600">
-                  <BarChart2 size={18} className="mr-2" />
-                  <span>{testData.level}</span>
-                </div>
-                <div className="flex items-center">
-                  <span className="font-semibold mr-2">{testData.rating}</span>
-                  <span className="text-gray-600">({testData.reviews})</span>
-                </div>
+    <div className="bg-gray-50 min-h-screen">
+      {/* Top Tabs */}
+      <div className="bg-white border-b">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex items-center gap-6 h-12">
+            <button onClick={() => setActiveTab('Courses')} className={`relative text-sm font-medium ${activeTab === 'Courses' ? 'text-blue-600' : 'text-gray-600 hover:text-gray-900'}`}>
+              Courses <span className="ml-2 text-[10px] bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full align-middle">{0} courses</span>
+              {activeTab === 'Courses' && <span className="absolute -bottom-3 left-0 w-full h-0.5 bg-blue-600"></span>}
+            </button>
+            <button onClick={() => setActiveTab('Jobs')} className={`relative text-sm font-medium ${activeTab === 'Jobs' ? 'text-blue-600' : 'text-gray-600 hover:text-gray-900'}`}>
+              Jobs <span className="ml-2 text-[10px] bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full align-middle">45 jobs</span>
+              {activeTab === 'Jobs' && <span className="absolute -bottom-3 left-0 w-full h-0.5 bg-blue-600"></span>}
+            </button>
+            <button onClick={() => setActiveTab('Tests')} className={`relative text-sm font-medium ${activeTab === 'Tests' ? 'text-blue-600' : 'text-gray-600 hover:text-gray-900'}`}>
+              Tests <span className="ml-2 text-[10px] bg-gray-900 text-white px-2 py-0.5 rounded-full align-middle">{MOCK_TESTS.length} tests</span>
+              {activeTab === 'Tests' && <span className="absolute -bottom-3 left-0 w-full h-0.5 bg-blue-600"></span>}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Hero */}
+      <div className="bg-blue-600 text-white">
+        <div className="max-w-7xl mx-auto px-4 py-12">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2">
+              <div className="mb-2">
+                <span className="text-sm font-medium bg-white/20 px-3 py-1 rounded-full">{formatted.level}</span>
               </div>
-            </div>
-            
-            <div className="mb-8">
-              <h2 className="text-lg font-semibold mb-4">What You'll Get</h2>
-              <ul className="space-y-3">
-                {testData.benefits.map((benefit, index) => (
-                  <li key={index} className="flex items-start">
-                    <div className="mt-1 mr-3 w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center">
-                      <span className="text-gray-600">✓</span>
+              <h1 className="text-3xl lg:text-4xl font-bold mb-2">{formatted.title}</h1>
+              <p className="text-blue-100 text-sm mb-4">{formatted.company}</p>
+
+              <div className="flex flex-wrap gap-6 items-center text-xs lg:text-sm mb-2">
+                <div className="flex items-center gap-2"><Clock className="w-4 h-4" /><span className="font-semibold">{formatted.duration}</span></div>
+                <div className="flex items-center gap-2"><FileText className="w-4 h-4" /><span className="font-semibold">{formatted.questions} Questions</span></div>
+                <div className="flex items-center gap-2"><Award className="w-4 h-4" /><span className="font-semibold">Certificate</span></div>
+                <div className="flex items-center gap-2"><Star className="w-4 h-4 text-yellow-300 fill-yellow-300" /><span className="font-semibold">{formatted.rating}</span><span>({formatted.reviews} rated)</span></div>
+              </div>
+
+              {/* Compact lists */}
+              <div className="mt-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+                  <div>
+                    <h3 className="text-sm font-semibold text-white mb-2">What you'll get</h3>
+                    <div className="space-y-2">
+                      {(formatted.benefits.slice(0, 6).length ? formatted.benefits.slice(0, 6) : ['Analytics report', 'Solutions', 'Auto grading']).map((item, idx) => (
+                        <div key={idx} className="flex items-start gap-2">
+                          <CheckCircle className="w-4 h-4 text-white mt-0.5 flex-shrink-0" />
+                          <span className="text-xs text-blue-100 leading-5">{item}</span>
+                        </div>
+                      ))}
                     </div>
-                    <span className="text-gray-600">{benefit}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            
-            <div className="mb-8">
-              <h2 className="text-lg font-semibold mb-4">Key Skills</h2>
-              <div className="flex flex-wrap gap-2">
-                {testData.skills.map((skill, index) => (
-                  <span key={index} className="px-4 py-1.5 bg-gray-100 text-gray-800 rounded-full">
-                    {skill}
-                  </span>
-                ))}
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-white mb-2">This test includes</h3>
+                    <div className="space-y-2">
+                      {formatted.includes.slice(0, 4).map((inc, idx) => (
+                        <div key={idx} className="flex items-start gap-2">
+                          <CheckCircle className="w-4 h-4 text-white mt-0.5 flex-shrink-0" />
+                          <span className="text-xs text-blue-100 leading-5">{inc}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-            
-            <div className="mb-10">
-              <h2 className="text-lg font-semibold mb-3">About this test</h2>
-              <p className="text-gray-600 leading-relaxed">{testData.description}</p>
             </div>
 
-            <div>
-              <h2 className="text-lg font-semibold mb-6 flex justify-between items-center">
-                <span>More CSS Tests</span>
-                <span className="text-sm text-gray-600">{testData.totalTests} Tests</span>
-              </h2>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {relatedTests.map((test) => (
-                  <div key={test.id} className="border rounded-lg p-4 bg-white hover:shadow-md transition-shadow">
-                    <h3 className="font-medium mb-2">{test.title}</h3>
-                    <div className="flex gap-4 text-sm text-gray-600 mb-3">
-                      <span>{test.questions} Questions</span>
-                      <span>{test.duration}</span>
+            {/* Sticky purchase card */}
+            <div className="lg:col-span-1">
+              <div className="sticky top-4 md:top-20 bg-white rounded-lg overflow-hidden shadow-lg">
+                <div className="p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-baseline">
+                      <span className="text-2xl font-semibold">₹{formatted.price}</span>
+                      {formatted.originalPrice ? (
+                        <span className="text-gray-400 text-sm line-through ml-2">₹{formatted.originalPrice}</span>
+                      ) : null}
                     </div>
-                    <div className="flex items-center mb-4">
-                      <StarRating rating={test.rating} />
-                      <span className="text-sm text-gray-600 ml-2">
-                        {test.rating} ({test.reviews})
-                      </span>
-                    </div>
-                    <button className="w-full bg-gray-800 text-white py-2 rounded-md hover:bg-gray-700 transition-colors">
-                      Get Test
-                    </button>
+                    <span className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-md">{formatted.discount}</span>
                   </div>
-                ))}
+
+                  {user?.name ? (
+                    isInCart ? (
+                      <button onClick={() => navigate('/student/cart')} className="w-full bg-gray-800 text-white py-3 rounded-md mb-3 hover:bg-gray-700 transition-colors font-medium">Go to Cart</button>
+                    ) : (
+                      <button onClick={handleAddToCart} className="w-full bg-gray-800 text-white py-3 rounded-md mb-3 hover:bg-gray-700 transition-colors font-medium">Add to Cart</button>
+                    )
+                  ) : (
+                    <button onClick={handleAddToCart} className="w-full bg-gray-800 text-white py-3 rounded-md mb-3 hover:bg-gray-700 transition-colors font-medium">Add to Cart</button>
+                  )}
+
+                  <button className="w-full bg-white text-gray-800 border border-gray-300 py-3 rounded-md hover:bg-gray-50 transition-colors font-medium" onClick={() => handleBuyNow(formatted.id)}>
+                    Buy Now
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-          
-          {/* Right section - Pricing */}
-          <div className="lg:w-80">
-            <div className="bg-white border rounded-lg p-5 sticky top-24">
-              <div className="flex items-center justify-between mb-5">
-                <div className="flex items-baseline">
-                  <span className="text-2xl font-semibold">₹{testData.price}</span>
-                  <span className="text-gray-400 text-sm line-through ml-2">₹{testData.originalPrice}</span>
-                </div>
-                <span className="bg-gray-100 text-gray-800 text-sm px-3 py-1 rounded-md">{testData.discount}</span>
+        </div>
+      </div>
+
+      {/* Main Section */}
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 space-y-8">
+            <div className="bg-white rounded-lg p-6 shadow-sm">
+              <h2 className="text-xl font-bold text-gray-900 mb-4">Key Skills</h2>
+              <div className="flex flex-wrap gap-2">
+                {formatted.skills.map((skill, index) => (
+                  <span key={index} className="px-4 py-1.5 bg-gray-100 text-gray-800 rounded-full">{skill}</span>
+                ))}
               </div>
+            </div>
 
+            <div className="bg-white rounded-lg p-6 shadow-sm">
+              <h2 className="text-xl font-bold text-gray-900 mb-4">About this test</h2>
+              <p className="text-gray-700 leading-relaxed text-sm">{formatted.description}</p>
+            </div>
+          </div>
 
- {user.name ? (
-  isEnrolled ? (
-    // ✅ User is logged in AND enrolled — Show Take Test
-    <Link to={`/course-player?id=${courseDetails._id}`}>
-      <button className="w-full bg-white text-gray-800 border border-gray-300 py-3 rounded-md hover:bg-gray-50 transition-colors font-medium mt-3">
-       Go To Course
-      </button>
-    </Link>
-  ) : (
-    <>
-      {/* 🛒 Cart Logic for logged-in but not enrolled */}
-      {isInCart ? (
-        <button
-          onClick={() => navigate("/student/cart")}
-          className="w-full bg-gray-800 text-white py-3 rounded-md mb-3 hover:bg-gray-700 transition-colors font-medium"
-        >
-          Go to Cart
-        </button>
-      ) : (
-        <button
-          onClick={() => handleAddToCart(id)}
-          className="w-full bg-gray-800 text-white py-3 rounded-md mb-3 hover:bg-gray-700 transition-colors font-medium"
-        >
-          Add to Cart
-        </button>
-      )}
-
-      {/* 💳 Buy Now for logged-in user */}
-      <button
-        className="w-full bg-white text-gray-800 border border-gray-300 py-3 rounded-md hover:bg-gray-50 transition-colors font-medium"
-        onClick={() => handleBuyNow(courseDetails._id)}
-      >
-        Buy Now
-      </button>
-    </>
-  )
-) : (
-  <>
-    {/* 🚫 Not logged in — allow Add to Cart & Buy Now */}
-    <button
-      onClick={() => handleAddToCart(id)}
-      className="w-full bg-gray-800 text-white py-3 rounded-md mb-3 hover:bg-gray-700 transition-colors font-medium"
-    >
-      Add to Cart
-    </button>
-
-    <button
-      className="w-full bg-white text-gray-800 border border-gray-300 py-3 rounded-md hover:bg-gray-50 transition-colors font-medium"
-      onClick={() => handleBuyNow(courseDetails._id)}
-    >
-      Buy Now
-    </button>
-  </>
-)}
-
-
+          <div className="lg:col-span-1">
+            <div className="space-y-6 sticky top-8">
+              <div className="bg-white rounded-lg p-6 shadow-sm">
+                <h3 className="text-lg font-bold text-gray-900 mb-4">Test Stats</h3>
+                <div className="grid grid-cols-2 gap-3 text-sm text-gray-700">
+                  <div className="flex items-center gap-2"><Clock className="w-4 h-4" />{formatted.duration}</div>
+                  <div className="flex items-center gap-2"><FileText className="w-4 h-4" />{formatted.questions} Qs</div>
+                  <div className="flex items-center gap-2"><BarChart2 className="w-4 h-4" />{formatted.level}</div>
+                  <div className="flex items-center gap-2"><Star className="w-4 h-4 text-yellow-300 fill-yellow-300" />{formatted.rating}</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

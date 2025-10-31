@@ -230,7 +230,7 @@ export default function Category() {
                 key={course.id}
                 className="bg-white rounded-md border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow"
               >
-                <Link to="/course-details">
+                <Link to={`/learn/details/${course.id}`}>
             
                 <div className="relative">
                   <img

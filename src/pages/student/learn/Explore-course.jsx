@@ -342,7 +342,7 @@ const ExploreCourses = ({ searchQuery, activeTopic }) => {
           {/* Course Cards Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
             {paginatedCourses.map((course) => (
-              <Link to={`/course-details?id=${course._id || course.id}`} key={course._id || course.id}>
+              <Link to={`/learn/details/${course._id || course.id}`} key={course._id || course.id}>
                 <CourseCard
                   image={course.imageUrl}
                   title={course.title}

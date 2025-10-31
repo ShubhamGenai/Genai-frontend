@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Star, Users, Clock, ChevronRight, ChevronDown, Check, Loader, Folder, FolderOpen } from 'lucide-react';
 
 const LearningPlatform = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const navigate = useNavigate();
   const [expandedCategories, setExpandedCategories] = useState({
     allCategories: true
   });
@@ -542,6 +544,7 @@ const LearningPlatform = () => {
                 {filteredCourses.map(course => (
                   <div
                     key={course.id}
+                    onClick={() => navigate(`/learn/details/${course.id}`)}
                     className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-xl transition-all duration-300 group cursor-pointer flex flex-col"
                   >
                     {/* Course Image */}
