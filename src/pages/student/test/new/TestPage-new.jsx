@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Star, Users, Clock, ChevronRight, ChevronDown, Award, FileText, Timer, Folder, FolderOpen, BookOpen, Loader } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
 
 const TestPlatform = () => {
+  const location = useLocation();
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [expandedCategories, setExpandedCategories] = useState({
     allCategories: true
@@ -10,6 +12,10 @@ const TestPlatform = () => {
   const [categoryStructure, setCategoryStructure] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Determine if we're in student routes or public routes
+  const isStudentRoute = location.pathname.startsWith('/student');
+  const testDetailsPath = isStudentRoute ? '/student/test-details' : '/test-details';
 
   // Simulate API fetch
   useEffect(() => {
@@ -513,72 +519,85 @@ const TestPlatform = () => {
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredTests.map(test => (
-                  <div
-                    key={test.id}
-                    className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-xl transition-all duration-300 group cursor-pointer flex flex-col"
-                  >
-                    {/* Test Image */}
-                    <div className="relative overflow-hidden">
-                      <img
-                        src={test.image}
-                        alt={test.title}
-                        className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
-                        loading="lazy"
-                      />
-                      {/* Badges */}
-                      <div className="absolute top-3 left-3 flex flex-wrap gap-2">
-                        {test.isPremium && (
-                          <span className="bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-xs font-bold shadow-md flex items-center gap-1">
-                            <Award className="w-3 h-3" />
-                            Premium
+                {filteredTests.map(test => {
+                  // Ensure test data has all required fields for details page
+                  const testWithDefaults = {
+                    ...test,
+                    price: test.price || { actual: 999, discounted: 499 },
+                    features: test.features || [],
+                    skills: test.skills || [],
+                    includes: test.includes || [],
+                  };
+                  
+                  return (
+                    <Link
+                      key={test.id}
+                      to={`${testDetailsPath}?id=${test.id}`}
+                      state={{ test: testWithDefaults }}
+                      className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-xl transition-all duration-300 group cursor-pointer flex flex-col block"
+                    >
+                      {/* Test Image */}
+                      <div className="relative overflow-hidden">
+                        <img
+                          src={test.image}
+                          alt={test.title}
+                          className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
+                          loading="lazy"
+                        />
+                        {/* Badges */}
+                        <div className="absolute top-3 left-3 flex flex-wrap gap-2">
+                          {test.isPremium && (
+                            <span className="bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-xs font-bold shadow-md flex items-center gap-1">
+                              <Award className="w-3 h-3" />
+                              Premium
+                            </span>
+                          )}
+                          <span className="bg-blue-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-md">
+                            {test.type}
                           </span>
-                        )}
-                        <span className="bg-blue-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-md">
-                          {test.type}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Test Content */}
-                    <div className="p-5 flex flex-col flex-grow">
-                      {/* Title & Description */}
-                      <div className="flex-grow">
-                        <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors leading-snug">
-                          {test.title}
-                        </h3>
-                        <p className="text-sm text-gray-600 mb-4 line-clamp-2">{test.description}</p>
-                      </div>
-
-                      {/* Test Stats */}
-                      <div className="flex items-center flex-wrap gap-x-4 gap-y-2 mb-4 text-sm">
-                        <div className="flex items-center gap-1 text-gray-700">
-                          <FileText className="w-4 h-4" />
-                          <span className="font-semibold">{test.questions}</span>
-                        </div>
-                        <div className="flex items-center gap-1 text-gray-600">
-                          <Clock className="w-4 h-4" />
-                          <span>{formatDuration(test.duration)}</span>
-                        </div>
-                        <div className="flex items-center gap-1 text-gray-700">
-                          <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                          <span className="font-semibold">{test.rating}</span>
                         </div>
                       </div>
 
-                      {/* Attempts & Level */}
-                      <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                        <div className="flex items-center gap-1 text-gray-600">
-                          <Users className="w-4 h-4" />
-                          <span className="text-sm">{formatAttempts(test.attempts)} attempts</span>
+                      {/* Test Content */}
+                      <div className="p-5 flex flex-col flex-grow">
+                        {/* Title & Description */}
+                        <div className="flex-grow">
+                          <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors leading-snug">
+                            {test.title}
+                          </h3>
+                          <p className="text-sm text-gray-600 mb-4 line-clamp-2">{test.description}</p>
                         </div>
-                        <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-xs font-semibold">
-                          {test.level}
-                        </span>
+
+                        {/* Test Stats */}
+                        <div className="flex items-center flex-wrap gap-x-4 gap-y-2 mb-4 text-sm">
+                          <div className="flex items-center gap-1 text-gray-700">
+                            <FileText className="w-4 h-4" />
+                            <span className="font-semibold">{test.questions}</span>
+                          </div>
+                          <div className="flex items-center gap-1 text-gray-600">
+                            <Clock className="w-4 h-4" />
+                            <span>{formatDuration(test.duration)}</span>
+                          </div>
+                          <div className="flex items-center gap-1 text-gray-700">
+                            <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                            <span className="font-semibold">{test.rating}</span>
+                          </div>
+                        </div>
+
+                        {/* Attempts & Level */}
+                        <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                          <div className="flex items-center gap-1 text-gray-600">
+                            <Users className="w-4 h-4" />
+                            <span className="text-sm">{formatAttempts(test.attempts)} attempts</span>
+                          </div>
+                          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-xs font-semibold">
+                            {test.level}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                ))}
+                    </Link>
+                  );
+                })}
               </div>
             )}
           </div>

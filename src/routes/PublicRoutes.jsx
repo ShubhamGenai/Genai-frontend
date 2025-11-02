@@ -18,7 +18,7 @@ import ContentLogin from "../pages/auth-pages/content-auth/Content-login";
 import CoursePlayer from "../pages/student/learn/course-player/Course-Player";
 import AdaptiveLayout from "../component/layout/AdaptiveLayout";
 import TestPage from "../pages/student/test/TestPage";
-import TestDetailsPage from "../pages/student/test/testDetails/TestDetails";
+import TestDetailsPage from "../pages/student/test/testDetails/TestDetailsNew";
 import LibraryPage from "../pages/student/library/LibraryPage";
 import CommunityPage from "../pages/student/community/CommunityPage";
 import CollegeCommunityPage from "../pages/student/community/CollegeCommunityPage";

@@ -31,20 +31,36 @@ const TestDetailsPage = () => {
   }, [location.state]);
 
   const effectiveId = useMemo(() => {
-    return (stateTest?.id != null && String(stateTest.id)) || queryId || paramsId || null;
-  }, [stateTest, queryId, paramsId]);
-
-  // Load from backend if id exists; also have mock fallback
-  useEffect(() => {
-    if (effectiveId && !stateTest) {
-      dispatch(fetchTestById(effectiveId));
+    // Priority: stateTest.id > queryId > paramsId
+    if (stateTest?.id != null) {
+      return String(stateTest.id);
     }
-  }, [dispatch, effectiveId, stateTest]);
+    if (queryId) {
+      return String(queryId);
+    }
+    if (paramsId) {
+      return String(paramsId);
+    }
+    return null;
+  }, [stateTest, queryId, paramsId]);
 
   const mockTest = useMemo(() => {
     if (!effectiveId) return null;
-    return MOCK_TESTS.find((t) => String(t.id) === String(effectiveId)) || null;
+    // Try to find by matching ID (handle both string and number)
+    const found = MOCK_TESTS.find((t) => 
+      String(t.id) === String(effectiveId) || 
+      Number(t.id) === Number(effectiveId)
+    );
+    return found || null;
   }, [effectiveId]);
+
+  // Load from backend if id exists and no state data; also have mock fallback
+  useEffect(() => {
+    if (effectiveId && !stateTest && !mockTest) {
+      // Only fetch from backend if we don't have state or mock data
+      dispatch(fetchTestById(effectiveId));
+    }
+  }, [dispatch, effectiveId, stateTest, mockTest]);
 
   const base = stateTest || testDetails || mockTest;
 
@@ -53,19 +69,33 @@ const TestDetailsPage = () => {
     const price = base.price || {};
     const discountedPrice = price.discounted ?? base.discountedPrice ?? 0;
     const actualPrice = price.actual ?? base.actualPrice ?? 0;
+    
+    // Handle rating - could be a number or an array
+    let ratingValue = '0.0';
+    let reviewsCount = 0;
+    if (typeof base.rating === 'number' && base.rating > 0) {
+      ratingValue = base.rating.toFixed(1);
+      reviewsCount = base.attempts || 0; // Use attempts as reviews if no ratings array
+    } else if (Array.isArray(base.ratings) && base.ratings.length) {
+      const avg = base.ratings.reduce((s, r) => s + (r.rating || 0), 0) / base.ratings.length;
+      ratingValue = avg > 0 ? avg.toFixed(1) : '0.0';
+      reviewsCount = base.ratings.length;
+    } else if (base.attempts) {
+      reviewsCount = base.attempts;
+    }
+    
     return {
       id: base.id,
       title: base.title || '',
       company: base.company || '',
+      subject: base.subject || '',
       duration: `${base.durationMinutes ?? base.duration ?? 0} minutes`,
       durationRaw: base.durationMinutes ?? base.duration ?? 0,
       questions: base.numberOfQuestions ?? base.questions ?? 0,
       hasCertificate: base.certificate !== undefined ? base.certificate : true,
       level: base.level || 'Beginner',
-      rating: Array.isArray(base.ratings) && base.ratings.length
-        ? (base.ratings.reduce((s, r) => s + (r.rating || 0), 0) / base.ratings.length).toFixed(1)
-        : 0,
-      reviews: Array.isArray(base.ratings) ? base.ratings.length : 0,
+      rating: ratingValue,
+      reviews: reviewsCount,
       price: discountedPrice,
       originalPrice: actualPrice,
       discount: actualPrice ? `${Math.round(((actualPrice - discountedPrice) / actualPrice) * 100)}% OFF` : '0% OFF',
@@ -78,6 +108,8 @@ const TestDetailsPage = () => {
         'Topic-wise analytics',
         '1 free reattempt',
       ],
+      image: base.image || base.imageUrl || '',
+      imageUrl: base.image || base.imageUrl || '',
     };
   }, [base]);
 
@@ -146,12 +178,31 @@ const TestDetailsPage = () => {
     }
   };
 
+  // Show loading state while fetching from backend
+  if (loading && !stateTest && !mockTest) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-gray-300 border-t-blue-600 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading test details...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (!formatted) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
-        <div className="text-gray-500 text-center">
-          <p className="text-xl font-semibold mb-2">No Test Details Found</p>
-          <p className="text-gray-600">The requested test could not be found.</p>
+        <div className="text-gray-500 text-center max-w-md p-6 bg-white rounded-lg shadow-sm">
+          <p className="text-xl font-semibold mb-2">Test Not Found</p>
+          <p className="text-gray-600 mb-4">The requested test could not be found.</p>
+          <p className="text-sm text-gray-500 mb-4">ID: {effectiveId || 'No ID provided'}</p>
+          <button 
+            onClick={() => navigate('/student/tests')} 
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Go Back to Tests
+          </button>
         </div>
       </div>
     );
@@ -188,7 +239,18 @@ const TestDetailsPage = () => {
                 <span className="text-sm font-medium bg-white/20 px-3 py-1 rounded-full">{formatted.level}</span>
               </div>
               <h1 className="text-3xl lg:text-4xl font-bold mb-2">{formatted.title}</h1>
-              <p className="text-blue-100 text-sm mb-4">{formatted.company}</p>
+              <p className="text-blue-100 text-sm mb-4">{formatted.company || formatted.subject || ''}</p>
+              
+              {/* Test Preview Image if available */}
+              {formatted.image && (
+                <div className="mb-4 rounded-lg overflow-hidden max-w-md">
+                  <img 
+                    src={formatted.image} 
+                    alt={formatted.title} 
+                    className="w-full h-48 object-cover"
+                  />
+                </div>
+              )}
 
               <div className="flex flex-wrap gap-6 items-center text-xs lg:text-sm mb-2">
                 <div className="flex items-center gap-2"><Clock className="w-4 h-4" /><span className="font-semibold">{formatted.duration}</span></div>

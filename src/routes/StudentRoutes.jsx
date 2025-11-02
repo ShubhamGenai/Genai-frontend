@@ -11,7 +11,7 @@ import TestPage from "../pages/student/test/TestPage";
 import JobsPage from "../pages/student/jobs/JobsMain";
 import LeaderBoardPage from "../pages/student/leaderBoard/LeaderBoard";
 import { CourseDetails } from "../pages/coursespage/course-details-page/course-details-main";
-import TestDetailsPage from "../pages/student/test/testDetails/TestDetails";
+import TestDetailsPage from "../pages/student/test/testDetails/TestDetailsNew";
 import TestPlayer from "../pages/student/test/testDetails/Test-Player";
 import JobDetails from "../pages/student/jobs/JobDetails";
 import CoursePlayer from "../pages/student/learn/course-player/Course-Player";
