@@ -19,6 +19,7 @@ import CoursePlayer from "../pages/student/learn/course-player/Course-Player";
 import AdaptiveLayout from "../component/layout/AdaptiveLayout";
 import TestPage from "../pages/student/test/TestPage";
 import TestDetailsPage from "../pages/student/test/testDetails/TestDetailsNew";
+import TestTakingPage from "../pages/student/test/TestTakingPage";
 import LibraryPage from "../pages/student/library/LibraryPage";
 import CommunityPage from "../pages/student/community/CommunityPage";
 import CollegeCommunityPage from "../pages/student/community/CollegeCommunityPage";
@@ -168,6 +169,8 @@ const PublicRoutes = () => {
       <Route path="test-details" element={<AdaptiveLayout />}>
         <Route index element={<TestDetailsPage />} />
       </Route>
+      
+      <Route path="test-taking" element={<TestTakingPage />} />
 
       <Route path="leaderboard" element={<AdaptiveLayout />}>
         <Route index element={<LeaderBoardPage />} />

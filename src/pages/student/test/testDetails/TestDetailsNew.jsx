@@ -7,6 +7,10 @@ const TestDetailsNew = () => {
   const navigate = useNavigate();
   const location = useLocation();
   
+  // Determine if we're in student routes or public routes
+  const isStudentRoute = location.pathname.startsWith('/student');
+  const testTakingPath = isStudentRoute ? '/student/test-taking' : '/test-taking';
+  
   // Get test ID from URL query params or navigation state
   const queryParams = new URLSearchParams(location.search);
   const testIdFromQuery = queryParams.get('id');
@@ -457,7 +461,10 @@ const TestDetailsNew = () => {
                       </div>
                     )}
                   </div>
-                  <button className="w-full bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium mt-6">
+                  <button 
+                    onClick={() => navigate(testTakingPath, { state: { test: test } })}
+                    className="w-full bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium mt-6"
+                  >
                     Start Test
                   </button>
                 </div>

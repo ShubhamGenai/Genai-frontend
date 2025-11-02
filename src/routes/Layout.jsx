@@ -16,7 +16,8 @@ const Layout = ({ children }) => {
   const { user } = useContext(mainContext);
   const location = useLocation();
 
-  const hideNavAndFooterRoutes = ["/signup", "/login","/employer-signup","/employer-signin","/admin","/test-player","/content-login", ];
+  // Routes that should hide both navbar and footer
+  const hideNavAndFooterRoutes = ["/signup", "/login","/employer-signup","/employer-signin","/admin","/test-player","/content-login"];
   const hideOnlyFooterRoutes = ["/login-landing",];
   const hideNavForStudentRoutes = location.pathname.startsWith("/student");
   
@@ -27,12 +28,19 @@ const Layout = ({ children }) => {
                                      location.pathname.startsWith("/library") ||
                                      location.pathname.startsWith("/community") ||
                                      location.pathname.startsWith("/test-details") || 
+                                     location.pathname.startsWith("/test-taking") ||
                                      location.pathname.startsWith("/course-details") || 
                                      location.pathname.startsWith("/job-details") ||
                                      location.pathname.startsWith("/leaderboard") ||
                                      location.pathname.startsWith("/testss");
 
-  const hideNavAndFooter = hideNavAndFooterRoutes.includes(location.pathname);
+  // Check if current path should hide nav and footer (exact match or starts with)
+  const isTestTakingRoute = location.pathname === "/test-taking" || 
+                            location.pathname.startsWith("/test-taking/") ||
+                            location.pathname === "/student/test-taking" ||
+                            location.pathname.startsWith("/student/test-taking/");
+  
+  const hideNavAndFooter = hideNavAndFooterRoutes.includes(location.pathname) || isTestTakingRoute;
   const hideFooter = hideOnlyFooterRoutes.includes(location.pathname);
 
   const getNavBar = () => {

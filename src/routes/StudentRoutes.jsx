@@ -13,6 +13,7 @@ import LeaderBoardPage from "../pages/student/leaderBoard/LeaderBoard";
 import { CourseDetails } from "../pages/coursespage/course-details-page/course-details-main";
 import TestDetailsPage from "../pages/student/test/testDetails/TestDetailsNew";
 import TestPlayer from "../pages/student/test/testDetails/Test-Player";
+import TestTakingPage from "../pages/student/test/TestTakingPage";
 import JobDetails from "../pages/student/jobs/JobDetails";
 import CoursePlayer from "../pages/student/learn/course-player/Course-Player";
 import LearnDetails from "../pages/student/learn/LearnDetails";
@@ -20,6 +21,16 @@ import LearnDetails from "../pages/student/learn/LearnDetails";
 const StudentRoutes = () => {
   return (
     <Routes>
+      {/* Test Taking - Full Screen, No Layout */}
+      <Route
+        path="test-taking"
+        element={
+          <ProtectedRoute allowedRoles={["student"]}>
+            <TestTakingPage />
+          </ProtectedRoute>
+        }
+      />
+      
       {/* Dashboard Layout Wrapper */}
       <Route
         path="/"
