@@ -381,14 +381,14 @@ const TestPlatform = () => {
             {hasChildren && (
               <>
                 {isExpanded ? (
-                  <ChevronDown className="w-4 h-4 flex-shrink-0" />
+                  <ChevronDown className="w-4 h-4 flex-shrink-0 text-black" />
                 ) : (
                   <ChevronRight className="w-4 h-4 flex-shrink-0" />
                 )}
                 {isExpanded ? (
                   <FolderOpen className="w-4 h-4 flex-shrink-0 text-blue-500" />
                 ) : (
-                  <Folder className="w-4 h-4 flex-shrink-0 text-gray-400 group-hover:text-blue-500" />
+                  <Folder className="w-4 h-4 flex-shrink-0 text-black group-hover:text-blue-500" />
                 )}
               </>
             )}
@@ -476,9 +476,9 @@ const TestPlatform = () => {
                       <span className="text-xs">All Categories</span>
                     </div>
                     {expandedCategories.allCategories ? (
-                      <ChevronDown className="w-4 h-4" />
+                      <ChevronDown className="w-4 h-4 text-black" />
                     ) : (
-                      <ChevronRight className="w-4 h-4" />
+                      <ChevronRight className="w-4 h-4 text-black" />
                     )}
                   </button>
 
@@ -567,7 +567,7 @@ const TestPlatform = () => {
                           <h3 className="text-base font-light text-black mb-1.5 line-clamp-2 group-hover:text-blue-600 transition-colors leading-snug">
                             {test.title}
                           </h3>
-                          <p className="text-sm text-black mb-3 line-clamp-2">{test.description}</p>
+                          <p className="text-xs text-gray-600 mb-3 line-clamp-2">{test.description}</p>
                         </div>
 
                         {/* Test Stats */}

@@ -303,14 +303,14 @@ const LearningPlatform = () => {
             {hasChildren && (
               <>
                 {isExpanded ? (
-                  <ChevronDown className="w-4 h-4 flex-shrink-0 text-gray-500" />
+                  <ChevronDown className="w-4 h-4 flex-shrink-0 text-black" />
                 ) : (
-                  <ChevronRight className="w-4 h-4 flex-shrink-0 text-gray-500" />
+                  <ChevronRight className="w-4 h-4 flex-shrink-0 text-black" />
                 )}
                 {isExpanded ? (
-                  <FolderOpen className="w-4 h-4 flex-shrink-0 text-gray-500" />
+                  <FolderOpen className="w-4 h-4 flex-shrink-0 text-black" />
                 ) : (
-                  <Folder className="w-4 h-4 flex-shrink-0 text-gray-500" />
+                  <Folder className="w-4 h-4 flex-shrink-0 text-black" />
                 )}
               </>
             )}
