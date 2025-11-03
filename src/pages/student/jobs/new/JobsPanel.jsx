@@ -250,10 +250,10 @@ const JobsPlatform = () => {
           <div className="flex flex-col lg:flex-row items-start lg:items-center gap-8">
             {/* Left Section - Text */}
             <div className="flex-1">
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-medium mb-3 text-white">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-light mb-3 text-white">
                 Explore Career Opportunities
               </h1>
-              <p className="text-base sm:text-lg text-white font-normal max-w-2xl">
+              <p className="text-sm sm:text-base text-white font-light max-w-2xl">
                 Discover your dream job with AI-powered matching, personalized recommendations, and comprehensive job listings across industries.
               </p>
             </div>
@@ -300,13 +300,13 @@ const JobsPlatform = () => {
       {/* Job Categories */}
       <div className="bg-white py-6 px-4 sm:px-6 lg:px-8 border-b">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Popular Jobs Categories</h2>
+          <h2 className="text-base font-light text-gray-900 mb-3">Popular Jobs Categories</h2>
           <div className="flex flex-wrap gap-3">
             {jobCategories.map(category => (
               <button
                 key={category.id}
                 onClick={() => setSelectedCategory(category.id)}
-                className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${
+                className={`px-5 py-1.5 rounded-full text-xs font-light transition-all ${
                   selectedCategory === category.id
                     ? 'bg-gray-800 text-white'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -323,39 +323,39 @@ const JobsPlatform = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Sidebar Filters */}
-          <div className="w-full lg:w-80 flex-shrink-0">
-            <div className="bg-white rounded-lg shadow-sm p-6 sticky top-6">
-              <div className="flex items-center gap-2 mb-6">
-                <Filter className="w-5 h-5 text-gray-600" />
-                <h2 className="text-xl font-bold text-gray-900">All Filters</h2>
+          <div className="w-full lg:w-52 flex-shrink-0">
+            <div className="bg-white rounded-lg shadow- border border-gray-200 p-4 sticky top-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Filter className="w-4 h-4 text-gray-600" />
+                <h2 className="text-base font-light text-black">All Filters</h2>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {/* Job Profile Filter */}
-                <div className="border-b pb-4">
+                <div className="border-b border-gray-200 pb-2">
                   <button
                     onClick={() => toggleFilter('jobProfile')}
-                    className="flex items-center justify-between w-full text-left font-semibold text-gray-900 hover:text-blue-600 transition-colors py-2"
+                    className="flex items-center justify-between w-full text-left text-sm font-light text-black hover:text-blue-600 transition-colors py-1.5"
                   >
-                    <span>Job Profile</span>
+                    <span className="text-xs">Job Profile</span>
                     {expandedFilters.jobProfile ? (
-                      <ChevronUp className="w-5 h-5" />
+                      <ChevronUp className="w-4 h-4" />
                     ) : (
-                      <ChevronDown className="w-5 h-5" />
+                      <ChevronDown className="w-4 h-4" />
                     )}
                   </button>
                   
                   {expandedFilters.jobProfile && (
-                    <div className="mt-3 space-y-2">
-                      <label className="flex items-center gap-2 text-sm">
+                    <div className="mt-1 space-y-1.5">
+                      <label className="flex items-center gap-2 text-xs">
                         <input type="checkbox" className="rounded" />
                         <span>UI/UX Designer</span>
                       </label>
-                      <label className="flex items-center gap-2 text-sm">
+                      <label className="flex items-center gap-2 text-xs">
                         <input type="checkbox" className="rounded" />
                         <span>Product Designer</span>
                       </label>
-                      <label className="flex items-center gap-2 text-sm">
+                      <label className="flex items-center gap-2 text-xs">
                         <input type="checkbox" className="rounded" />
                         <span>Visual Designer</span>
                       </label>
@@ -364,34 +364,34 @@ const JobsPlatform = () => {
                 </div>
 
                 {/* Experience Filter */}
-                <div className="border-b pb-4">
+                <div className="border-b border-gray-200 pb-2">
                   <button
                     onClick={() => toggleFilter('experience')}
-                    className="flex items-center justify-between w-full text-left font-semibold text-gray-900 hover:text-blue-600 transition-colors py-2"
+                    className="flex items-center justify-between w-full text-left text-sm font-light text-black hover:text-blue-600 transition-colors py-1.5"
                   >
-                    <span>Experience</span>
+                    <span className="text-xs">Experience</span>
                     {expandedFilters.experience ? (
-                      <ChevronUp className="w-5 h-5" />
+                      <ChevronUp className="w-4 h-4" />
                     ) : (
-                      <ChevronDown className="w-5 h-5" />
+                      <ChevronDown className="w-4 h-4" />
                     )}
                   </button>
                   
                   {expandedFilters.experience && (
-                    <div className="mt-3 space-y-2">
-                      <label className="flex items-center gap-2 text-sm">
+                    <div className="mt-1 space-y-1.5">
+                      <label className="flex items-center gap-2 text-xs">
                         <input type="checkbox" className="rounded" />
                         <span>0-1 years</span>
                       </label>
-                      <label className="flex items-center gap-2 text-sm">
+                      <label className="flex items-center gap-2 text-xs">
                         <input type="checkbox" className="rounded" />
                         <span>1-3 years</span>
                       </label>
-                      <label className="flex items-center gap-2 text-sm">
+                      <label className="flex items-center gap-2 text-xs">
                         <input type="checkbox" className="rounded" />
                         <span>3-5 years</span>
                       </label>
-                      <label className="flex items-center gap-2 text-sm">
+                      <label className="flex items-center gap-2 text-xs">
                         <input type="checkbox" className="rounded" />
                         <span>5+ years</span>
                       </label>
@@ -403,31 +403,31 @@ const JobsPlatform = () => {
                 <div>
                   <button
                     onClick={() => toggleFilter('duration')}
-                    className="flex items-center justify-between w-full text-left font-semibold text-gray-900 hover:text-blue-600 transition-colors py-2"
+                    className="flex items-center justify-between w-full text-left text-sm font-light text-black hover:text-blue-600 transition-colors py-1.5"
                   >
-                    <span>Duration</span>
+                    <span className="text-xs">Duration</span>
                     {expandedFilters.duration ? (
-                      <ChevronUp className="w-5 h-5" />
+                      <ChevronUp className="w-4 h-4" />
                     ) : (
-                      <ChevronDown className="w-5 h-5" />
+                      <ChevronDown className="w-4 h-4" />
                     )}
                   </button>
                   
                   {expandedFilters.duration && (
-                    <div className="mt-3 space-y-2">
-                      <label className="flex items-center gap-2 text-sm">
+                    <div className="mt-1 space-y-1.5">
+                      <label className="flex items-center gap-2 text-xs">
                         <input type="checkbox" className="rounded" />
                         <span>Full-time</span>
                       </label>
-                      <label className="flex items-center gap-2 text-sm">
+                      <label className="flex items-center gap-2 text-xs">
                         <input type="checkbox" className="rounded" />
                         <span>Part-time</span>
                       </label>
-                      <label className="flex items-center gap-2 text-sm">
+                      <label className="flex items-center gap-2 text-xs">
                         <input type="checkbox" className="rounded" />
                         <span>Contract</span>
                       </label>
-                      <label className="flex items-center gap-2 text-sm">
+                      <label className="flex items-center gap-2 text-xs">
                         <input type="checkbox" className="rounded" />
                         <span>Internship</span>
                       </label>
@@ -442,15 +442,15 @@ const JobsPlatform = () => {
           <div className="flex-1 min-w-0">
             {/* Results Header */}
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-gray-900">
+              <h2 className="text-sm font-light text-gray-600">
                 {jobs.length} results for Data Analyst Jobs
               </h2>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">Sort by</span>
+                <span className="text-xs text-gray-600">Sort by</span>
                 <select 
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="border border-gray-300 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="most-popular">Most Popular</option>
                   <option value="newest">Newest</option>
@@ -463,7 +463,7 @@ const JobsPlatform = () => {
             {/* Job Cards */}
             <div className="space-y-4">
               {jobs.map(job => (
-                <div key={job.id} className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-all duration-200 border border-gray-100">
+                <div key={job.id} className="bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-all duration-200 border border-gray-100">
                   <div className="flex items-start justify-between">
                     {/* Left Section */}
                     <div className="flex items-start gap-4 flex-1">
@@ -474,34 +474,34 @@ const JobsPlatform = () => {
 
                       {/* Job Details */}
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-start gap-2 mb-2">
-                          <h3 className="text-lg font-bold text-gray-900">{job.title}</h3>
+                        <div className="flex items-start gap-2 mb-1.5">
+                          <h3 className="text-base font-light text-black">{job.title}</h3>
                           {job.isPremium && (
-                            <span className="bg-gray-800 text-white px-3 py-1 rounded-full text-xs font-medium">
+                            <span className="bg-gray-800 text-white px-2 py-0.5 rounded-full text-xs font-light">
                               premium
                             </span>
                           )}
                         </div>
                         
-                        <p className="text-gray-600 mb-3">{job.company}</p>
+                        <p className="text-black text-sm mb-2">{job.company}</p>
                         
-                        <div className="flex items-center gap-6 text-sm text-gray-600 mb-3">
+                        <div className="flex items-center gap-4 text-xs text-black mb-2">
                           <div className="flex items-center gap-1">
-                            <MapPin className="w-4 h-4" />
+                            <MapPin className="w-3 h-3" />
                             <span>{job.location}</span>
                           </div>
                           <div className="flex items-center gap-1">
-                            <Briefcase className="w-4 h-4" />
+                            <Briefcase className="w-3 h-3" />
                             <span>{job.experience}</span>
                           </div>
                           <div className="flex items-center gap-1">
-                            <DollarSign className="w-4 h-4" />
+                            <DollarSign className="w-3 h-3" />
                             <span>{formatSalary(job.salary)}</span>
                           </div>
                         </div>
                         
-                        <div className="flex items-center gap-1 text-sm text-gray-500">
-                          <Calendar className="w-4 h-4" />
+                        <div className="flex items-center gap-1 text-xs text-black">
+                          <Calendar className="w-3 h-3" />
                           <span>{job.postedTime}</span>
                         </div>
                       </div>
@@ -510,8 +510,8 @@ const JobsPlatform = () => {
                     {/* Right Section - Match Indicator */}
                     <div className="flex flex-col items-center gap-3 ml-6">
                       {/* Circular Progress */}
-                      <div className="relative w-16 h-16">
-                        <svg className="w-16 h-16 transform -rotate-90" viewBox="0 0 36 36">
+                      <div className="relative w-14 h-14">
+                        <svg className="w-14 h-14 transform -rotate-90" viewBox="0 0 36 36">
                           <path
                             className="stroke-gray-200"
                             fill="none"
@@ -532,20 +532,20 @@ const JobsPlatform = () => {
                           />
                         </svg>
                         <div className="absolute inset-0 flex items-center justify-center">
-                          <span className={`text-sm font-bold ${getMatchColor(job.matchPercentage)}`}>
+                          <span className={`text-xs font-light ${getMatchColor(job.matchPercentage)}`}>
                             {job.matchPercentage}%
                           </span>
                         </div>
                       </div>
                       
                       <div className="text-center">
-                        <div className={`text-sm font-semibold ${getMatchColor(job.matchPercentage)}`}>
+                        <div className={`text-[11px] font-light ${getMatchColor(job.matchPercentage)}`}>
                           {job.matchLevel}
                         </div>
-                        <div className="text-xs text-gray-500 mt-1">
+                        <div className="text-[10px] text-gray-500 mt-1">
                           Complete profile for better match
                         </div>
-                        <button className="text-xs text-blue-600 hover:text-blue-700 font-medium mt-1">
+                        <button className="text-[11px] text-blue-600 hover:text-blue-700 font-light mt-1">
                           Complete here
                         </button>
                       </div>

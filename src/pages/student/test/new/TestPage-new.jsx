@@ -371,12 +371,12 @@ const TestPlatform = () => {
         <div key={item.id} className="select-none">
           <button
             onClick={() => handleCategoryClick(item)}
-            className={`flex items-center gap-2 w-full text-left py-2.5 px-3 rounded-md transition-all group ${
+            className={`flex items-center gap-2 w-full text-left py-2 px-2 rounded-md transition-all group ${
               isSelected
-                ? 'bg-blue-50 text-blue-700 font-medium'
-                : 'text-gray-700 hover:bg-gray-50'
+                ? 'bg-blue-50 text-blue-700 font-light'
+                : 'text-black hover:bg-gray-50'
             }`}
-            style={{ paddingLeft: `${level * 16 + 12}px` }}
+            style={{ paddingLeft: `${level * 16 + 8}px` }}
           >
             {hasChildren && (
               <>
@@ -398,10 +398,10 @@ const TestPlatform = () => {
                 <FileText className="w-4 h-4 flex-shrink-0 text-blue-500" />
               </>
             )}
-            <span className="text-sm">{item.label}</span>
+            <span className="text-xs">{item.label}</span>
           </button>
           {hasChildren && isExpanded && (
-            <div className="mt-1">
+            <div className="mt-0.5">
               {renderCategoryTree(item.children, level + 1)}
             </div>
           )}
@@ -447,7 +447,7 @@ const TestPlatform = () => {
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white py-10 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-2xl sm:text-2xl lg:text-3xl font-medium mb-4">Test Your Skills</h1>
+          <h1 className="text-2xl sm:text-2xl lg:text-3xl font-light mb-4">Test Your Skills</h1>
           <p className="text-xs sm:text-xl text-blue-100 font-light max-w-3xl">
             Take practice tests and mock exams to evaluate your knowledge and track your progress.
           </p>
@@ -458,32 +458,32 @@ const TestPlatform = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
         <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
           {/* Sidebar */}
-          <div className="w-full lg:w-80 flex-shrink-0">
-            <div className="bg-white rounded-lg shadow-sm p-6 sticky top-6">
-              <h2 className="text-xl font-bold mb-6 text-gray-900">Categories</h2>
+          <div className="w-full lg:w-56 flex-shrink-0">
+            <div className="bg-white rounded-lg shadow- border border-gray-200 p-4 sticky top-6">
+              <h2 className="text-base font-light mb-4 text-black">Categories</h2>
 
-              <div className="space-y-1">
+              <div className="space-y-0.5">
                 {/* All Categories Folder */}
-                <div className="border-b pb-3 mb-3">
+                <div className="border-b border-gray-200 pb-2 mb-2">
                   <button
                     onClick={() => toggleCategory('allCategories')}
-                    className="flex items-center justify-between w-full text-left font-semibold text-gray-900 hover:text-blue-600 transition-colors py-2"
+                    className="flex items-center justify-between w-full text-left text-sm font-light text-black hover:text-blue-600 transition-colors py-1.5"
                   >
                     <div className="flex items-center gap-2">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                       </svg>
-                      <span>All Categories</span>
+                      <span className="text-xs">All Categories</span>
                     </div>
                     {expandedCategories.allCategories ? (
-                      <ChevronDown className="w-5 h-5" />
+                      <ChevronDown className="w-4 h-4" />
                     ) : (
-                      <ChevronRight className="w-5 h-5" />
+                      <ChevronRight className="w-4 h-4" />
                     )}
                   </button>
 
                   {expandedCategories.allCategories && (
-                    <div className="mt-2 space-y-1">
+                    <div className="mt-1 space-y-0.5">
                       {renderCategoryTree(categoryStructure)}
                     </div>
                   )}
@@ -492,14 +492,14 @@ const TestPlatform = () => {
                 {/* All Tests Button */}
                 <button
                   onClick={() => setSelectedCategory('all')}
-                  className={`flex items-center gap-3 w-full text-left py-2.5 px-3 rounded-md transition-all ${
+                  className={`flex items-center gap-2 w-full text-left py-2 px-2 rounded-md transition-all ${
                     selectedCategory === 'all'
-                      ? 'bg-blue-50 text-blue-700 font-medium'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      ? 'bg-blue-50 text-blue-700 font-light'
+                      : 'text-black hover:bg-gray-50'
                   }`}
                 >
-                  <BookOpen className="w-5 h-5" />
-                  <span>All Tests</span>
+                  <BookOpen className="w-4 h-4 text-black" />
+                  <span className="text-xs">All Tests</span>
                 </button>
               </div>
             </div>
@@ -508,7 +508,7 @@ const TestPlatform = () => {
           {/* Tests Grid */}
           <div className="flex-1 min-w-0">
             <div className="mb-6">
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
+              <h2 className="text-sm sm:text-sm font-light text-gray-600">
                 Showing {filteredTests.length} test{filteredTests.length !== 1 ? 's' : ''}
               </h2>
             </div>
@@ -518,7 +518,7 @@ const TestPlatform = () => {
                 <p className="text-gray-500 text-lg">No tests found in this category.</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-6">
                 {filteredTests.map(test => {
                   // Ensure test data has all required fields for details page
                   const testWithDefaults = {
@@ -537,60 +537,62 @@ const TestPlatform = () => {
                       className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-xl transition-all duration-300 group cursor-pointer flex flex-col block"
                     >
                       {/* Test Image */}
-                      <div className="relative overflow-hidden">
+                      <div className="relative overflow-hidden ">
                         <img
                           src={test.image}
                           alt={test.title}
-                          className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
+                          className="w-full h-32 object-cover group-hover:scale-110 transition-transform duration-300"
                           loading="lazy"
                         />
                         {/* Badges */}
-                        <div className="absolute top-3 left-3 flex flex-wrap gap-2">
-                          {test.isPremium && (
-                            <span className="bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-xs font-bold shadow-md flex items-center gap-1">
+                        {test.isPremium && (
+                          <div className="absolute top-2 left-2">
+                            <span className="bg-yellow-400 text-yellow-900 px-2 py-0.5 rounded-full text-xs font-light shadow-md flex items-center gap-1">
                               <Award className="w-3 h-3" />
                               Premium
                             </span>
-                          )}
-                          <span className="bg-blue-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-md">
+                          </div>
+                        )}
+                        <div className="absolute top-2 right-2">
+                          <span className="bg-blue-500 text-white px-2 py-0.5 rounded-full text-xs font-light shadow-md">
                             {test.type}
                           </span>
                         </div>
                       </div>
 
                       {/* Test Content */}
-                      <div className="p-5 flex flex-col flex-grow">
+                      <div className="p-3 flex flex-col flex-grow">
                         {/* Title & Description */}
                         <div className="flex-grow">
-                          <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors leading-snug">
+                          <h3 className="text-base font-light text-black mb-1.5 line-clamp-2 group-hover:text-blue-600 transition-colors leading-snug">
                             {test.title}
                           </h3>
-                          <p className="text-sm text-gray-600 mb-4 line-clamp-2">{test.description}</p>
+                          <p className="text-sm text-black mb-3 line-clamp-2">{test.description}</p>
                         </div>
 
                         {/* Test Stats */}
-                        <div className="flex items-center flex-wrap gap-x-4 gap-y-2 mb-4 text-sm">
-                          <div className="flex items-center gap-1 text-gray-700">
-                            <FileText className="w-4 h-4" />
-                            <span className="font-semibold">{test.questions}</span>
+                        <div className="flex items-center flex-wrap gap-x-3 gap-y-1.5 mb-3 text-xs text-black">
+                          <div className="flex items-center gap-1">
+                            <FileText className="w-3 h-3" />
+                            <span className="font-light">{test.questions}</span>
                           </div>
-                          <div className="flex items-center gap-1 text-gray-600">
-                            <Clock className="w-4 h-4" />
+                          <div className="flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
                             <span>{formatDuration(test.duration)}</span>
                           </div>
-                          <div className="flex items-center gap-1 text-gray-700">
-                            <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                            <span className="font-semibold">{test.rating}</span>
+                          <div className="flex items-center gap-1">
+                            <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                            <span className="font-light">{test.rating}</span>
                           </div>
                         </div>
 
                         {/* Attempts & Level */}
-                        <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                          <div className="flex items-center gap-1 text-gray-600">
-                            <Users className="w-4 h-4" />
-                            <span className="text-sm">{formatAttempts(test.attempts)} attempts</span>
+                        <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+                          <div className="flex items-center gap-1 text-black text-xs">
+                            <Users className="w-3 h-3" />
+                            <span>{formatAttempts(test.attempts)} attempts</span>
                           </div>
-                          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-xs font-semibold">
+                          <span className="bg-gray-50 text-black px-2 py-0.5 rounded-md text-xs font-light border border-gray-200">
                             {test.level}
                           </span>
                         </div>

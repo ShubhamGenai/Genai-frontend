@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Star, Users, Clock, ChevronRight, ChevronDown, Check, Loader, Folder, FolderOpen } from 'lucide-react';
+import { Star, Users, Clock, ChevronRight, ChevronDown, Check, Loader, Folder, FolderOpen, Book } from 'lucide-react';
 
 const LearningPlatform = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -25,46 +25,17 @@ const LearningPlatform = () => {
     try {
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Mock category structure with nested folders
+      // Simplified category structure - only 2 levels (folders and categories)
       const mockCategoryStructure = [
         {
           id: 'academic',
           label: 'NCERT & School',
           type: 'folder',
           children: [
-            {
-              id: 'class-6-8',
-              label: 'Class 6-8',
-              type: 'folder',
-              parent: 'academic',
-              children: [
-                { id: 'class-6', label: 'Class 6', type: 'category', parent: 'class-6-8' },
-                { id: 'class-7', label: 'Class 7', type: 'category', parent: 'class-6-8' },
-                { id: 'class-8', label: 'Class 8', type: 'category', parent: 'class-6-8' }
-              ]
-            },
-            {
-              id: 'class-9-10',
-              label: 'Class 9-10',
-              type: 'folder',
-              parent: 'academic',
-              children: [
-                { id: 'class-9', label: 'Class 9', type: 'category', parent: 'class-9-10' },
-                { id: 'class-10', label: 'Class 10', type: 'category', parent: 'class-9-10' }
-              ]
-            },
-            {
-              id: 'class-11-12',
-              label: 'Class 11-12',
-              type: 'folder',
-              parent: 'academic',
-              children: [
-                { id: 'class-11-science', label: 'Class 11 Science', type: 'category', parent: 'class-11-12' },
-                { id: 'class-11-commerce', label: 'Class 11 Commerce', type: 'category', parent: 'class-11-12' },
-                { id: 'class-12-science', label: 'Class 12 Science', type: 'category', parent: 'class-11-12' },
-                { id: 'class-12-commerce', label: 'Class 12 Commerce', type: 'category', parent: 'class-11-12' }
-              ]
-            }
+            { id: 'class-11', label: 'Class 11', type: 'category', parent: 'academic' },
+            { id: 'class-12', label: 'Class 12', type: 'category', parent: 'academic' },
+            { id: 'class-10', label: 'Class 10', type: 'category', parent: 'academic' },
+            { id: 'class-9', label: 'Class 9', type: 'category', parent: 'academic' }
           ]
         },
         {
@@ -72,40 +43,10 @@ const LearningPlatform = () => {
           label: 'Competitive Exams',
           type: 'folder',
           children: [
-            {
-              id: 'medical',
-              label: 'Medical Entrance',
-              type: 'folder',
-              parent: 'competitive',
-              children: [
-                { id: 'neet', label: 'NEET', type: 'category', parent: 'medical' },
-                { id: 'aiims', label: 'AIIMS', type: 'category', parent: 'medical' },
-                { id: 'jipmer', label: 'JIPMER', type: 'category', parent: 'medical' }
-              ]
-            },
-            {
-              id: 'engineering',
-              label: 'Engineering Entrance',
-              type: 'folder',
-              parent: 'competitive',
-              children: [
-                { id: 'jee-main', label: 'JEE Main', type: 'category', parent: 'engineering' },
-                { id: 'jee-advanced', label: 'JEE Advanced', type: 'category', parent: 'engineering' },
-                { id: 'bitsat', label: 'BITSAT', type: 'category', parent: 'engineering' }
-              ]
-            },
-            {
-              id: 'government',
-              label: 'Government Jobs',
-              type: 'folder',
-              parent: 'competitive',
-              children: [
-                { id: 'upsc', label: 'UPSC', type: 'category', parent: 'government' },
-                { id: 'ssc', label: 'SSC', type: 'category', parent: 'government' },
-                { id: 'banking', label: 'Banking', type: 'category', parent: 'government' },
-                { id: 'railway', label: 'Railway', type: 'category', parent: 'government' }
-              ]
-            }
+            { id: 'neet', label: 'NEET', type: 'category', parent: 'competitive' },
+            { id: 'jee-main', label: 'JEE Main', type: 'category', parent: 'competitive' },
+            { id: 'jee-advanced', label: 'JEE Advanced', type: 'category', parent: 'competitive' },
+            { id: 'upsc', label: 'UPSC', type: 'category', parent: 'competitive' }
           ]
         },
         {
@@ -113,55 +54,12 @@ const LearningPlatform = () => {
           label: 'Professional Skills',
           type: 'folder',
           children: [
-            {
-              id: 'technology',
-              label: 'Technology & IT',
-              type: 'folder',
-              parent: 'professional',
-              children: [
-                { id: 'web-development', label: 'Web Development', type: 'category', parent: 'technology' },
-                { id: 'mobile-development', label: 'Mobile Development', type: 'category', parent: 'technology' },
-                { id: 'data-science', label: 'Data Science', type: 'category', parent: 'technology' },
-                { id: 'ai-ml', label: 'AI & Machine Learning', type: 'category', parent: 'technology' },
-                { id: 'cloud-computing', label: 'Cloud Computing', type: 'category', parent: 'technology' }
-              ]
-            },
-            {
-              id: 'business',
-              label: 'Business & Marketing',
-              type: 'folder',
-              parent: 'professional',
-              children: [
-                { id: 'digital-marketing', label: 'Digital Marketing', type: 'category', parent: 'business' },
-                { id: 'social-media', label: 'Social Media Marketing', type: 'category', parent: 'business' },
-                { id: 'business-analytics', label: 'Business Analytics', type: 'category', parent: 'business' },
-                { id: 'entrepreneurship', label: 'Entrepreneurship', type: 'category', parent: 'business' }
-              ]
-            },
-            {
-              id: 'design',
-              label: 'Design & Creative',
-              type: 'folder',
-              parent: 'professional',
-              children: [
-                { id: 'graphic-design', label: 'Graphic Design', type: 'category', parent: 'design' },
-                { id: 'ui-ux', label: 'UI/UX Design', type: 'category', parent: 'design' },
-                { id: 'video-editing', label: 'Video Editing', type: 'category', parent: 'design' },
-                { id: 'animation', label: 'Animation', type: 'category', parent: 'design' }
-              ]
-            },
-            {
-              id: 'finance',
-              label: 'Finance & Accounting',
-              type: 'folder',
-              parent: 'professional',
-              children: [
-                { id: 'stock-market', label: 'Stock Market', type: 'category', parent: 'finance' },
-                { id: 'accounting', label: 'Accounting', type: 'category', parent: 'finance' },
-                { id: 'taxation', label: 'Taxation', type: 'category', parent: 'finance' },
-                { id: 'financial-planning', label: 'Financial Planning', type: 'category', parent: 'finance' }
-              ]
-            }
+            { id: 'web-development', label: 'Web Development', type: 'category', parent: 'professional' },
+            { id: 'data-science', label: 'Data Science', type: 'category', parent: 'professional' },
+            { id: 'digital-marketing', label: 'Digital Marketing', type: 'category', parent: 'professional' },
+            { id: 'graphic-design', label: 'Graphic Design', type: 'category', parent: 'professional' },
+            { id: 'ui-ux', label: 'UI/UX Design', type: 'category', parent: 'professional' },
+            { id: 'stock-market', label: 'Stock Market', type: 'category', parent: 'professional' }
           ]
         }
       ];
@@ -346,7 +244,7 @@ const LearningPlatform = () => {
           level: "Intermediate",
           bestseller: false,
           enrolled: true,
-          category: "class-12-commerce"
+          category: "class-12"
         }
       ];
 
@@ -395,34 +293,34 @@ const LearningPlatform = () => {
         <div key={item.id} className="select-none">
           <button
             onClick={() => handleCategoryClick(item)}
-            className={`flex items-center gap-2 w-full text-left py-2.5 px- rounded-md transition-all group ${
+            className={`flex items-center gap-2 w-full text-left py-2 px-2 rounded-md transition-all group ${
               isSelected
-                ? 'bg-blue-50 text-blue-700 font-medium'
-                : 'text-gray-700 hover:bg-gray-50'
+                ? 'bg-blue-50 text-blue-700 font-light'
+                : 'text-black hover:bg-gray-50'
             }`}
-            style={{ paddingLeft: `${level * 16 + 12}px` }}
+            style={{ paddingLeft: `${level * 16 + 8}px` }}
           >
             {hasChildren && (
               <>
                 {isExpanded ? (
-                  <ChevronDown className="w-4 h-4 flex-shrink-0" />
+                  <ChevronDown className="w-4 h-4 flex-shrink-0 text-gray-500" />
                 ) : (
-                  <ChevronRight className="w-4 h-4 flex-shrink-0" />
+                  <ChevronRight className="w-4 h-4 flex-shrink-0 text-gray-500" />
                 )}
                 {isExpanded ? (
-                  <FolderOpen className="w-4 h-4 flex-shrink-0 text-blue-500" />
+                  <FolderOpen className="w-4 h-4 flex-shrink-0 text-gray-500" />
                 ) : (
-                  <Folder className="w-4 h-4 flex-shrink-0 text-gray-400 group-hover:text-blue-500" />
+                  <Folder className="w-4 h-4 flex-shrink-0 text-gray-500" />
                 )}
               </>
             )}
             {!hasChildren && (
-              <ChevronRight className="w-4 h-4 flex-shrink-0 opacity-50" />
+              <Book className="w-4 h-4 flex-shrink-0 text-gray-500" />
             )}
-            <span className="text-sm">{item.label}</span>
+            <span className="text-xs">{item.label}</span>
           </button>
           {hasChildren && isExpanded && (
-            <div className="mt-1">
+            <div className="mt-0.5">
               {renderCategoryTree(item.children, level + 1)}
             </div>
           )}
@@ -437,7 +335,7 @@ const LearningPlatform = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen  flex items-center justify-center">
         <div className="text-center">
           <Loader className="w-12 h-12 text-blue-600 animate-spin mx-auto mb-4" />
           <p className="text-gray-600 text-lg">Loading courses...</p>
@@ -463,11 +361,11 @@ const LearningPlatform = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen ">
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white py-10 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-2xl sm:text-2xl lg:text-3xl font-medium mb-4">Learn From The Best</h1>
+          <h1 className="text-2xl sm:text-2xl lg:text-3xl font-light mb-4">Learn From The Best</h1>
           <p className="text-xs sm:text-xl text-blue-100 font-light max-w-3xl">
             Access world-class courses taught by industry experts. Start learning today and achieve your goals.
           </p>
@@ -478,32 +376,34 @@ const LearningPlatform = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
         <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
           {/* Sidebar */}
-          <div className="w-full lg:w-80 flex-shrink-0">
-            <div className="bg-white rounded-lg shadow-sm p-6 sticky top-6">
-              <h2 className="text-xl font-bold mb-6 text-gray-900">Categories</h2>
+          <div className="w-full lg:w-56 flex-shrink-0">
+            <div className="bg-white rounded-lg shadow- border border-gray-200 p-4 sticky top-6">
+              <h2 className="text-base font-light mb-4 text-black">Categories</h2>
 
-              <div className="space-y-1">
+              <div className="space-y-0.5">
                 {/* All Categories Folder */}
-                <div className="border-b pb-3 mb-3">
+                <div className="border-b border-gray-200 pb-2 mb-2">
                   <button
                     onClick={() => toggleCategory('allCategories')}
-                    className="flex items-center justify-between w-full text-left font-semibold text-gray-900 hover:text-blue-600 transition-colors py-2"
+                    className="flex items-center justify-between w-full text-left text-sm font-medium text-black hover:text-blue-600 transition-colors py-1.5"
                   >
                     <div className="flex items-center gap-2">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                      </svg>
-                      <span>All Categories</span>
+                      {expandedCategories.allCategories ? (
+                        <ChevronDown className="w-4 h-4 text-black" />
+                      ) : (
+                        <ChevronRight className="w-4 h-4 text-black" />
+                      )}
+                      {expandedCategories.allCategories ? (
+                        <FolderOpen className="w-4 h-4 text-black" />
+                      ) : (
+                        <Folder className="w-4 h-4 text-black" />
+                      )}
+                      <span className="text-xs">All Categories</span>
                     </div>
-                    {expandedCategories.allCategories ? (
-                      <ChevronDown className="w-5 h-5" />
-                    ) : (
-                      <ChevronRight className="w-5 h-5" />
-                    )}
                   </button>
 
                   {expandedCategories.allCategories && (
-                    <div className="mt-2 space-y-1">
+                    <div className="mt-1 space-y-0.5 ">
                       {renderCategoryTree(categoryStructure)}
                     </div>
                   )}
@@ -512,16 +412,14 @@ const LearningPlatform = () => {
                 {/* All Courses Button */}
                 <button
                   onClick={() => setSelectedCategory('all')}
-                  className={`flex items-center gap-3 w-full text-left py-2.5 px-3 rounded-md transition-all ${
+                  className={`flex items-center gap-2 w-full text-left py-2 px-2 rounded-md transition-all ${
                     selectedCategory === 'all'
-                      ? 'bg-blue-50 text-blue-700 font-medium'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      ? 'bg-blue-50 text-blue-700 font-light'
+                      : 'text-black hover:bg-gray-50'
                   }`}
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                  </svg>
-                  <span>All Courses</span>
+                  <Book className="w-4 h-4 flex-shrink-0 text-black" />
+                  <span className="text-xs">All Courses</span>
                 </button>
               </div>
             </div>
@@ -530,7 +428,7 @@ const LearningPlatform = () => {
           {/* Course Grid */}
           <div className="flex-1 min-w-0">
             <div className="mb-6">
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
+              <h2 className="text-sm sm:text-sm font-light text-gray-600">
                 Showing {filteredCourses.length} courses
               </h2>
             </div>
@@ -540,7 +438,7 @@ const LearningPlatform = () => {
                 <p className="text-gray-500 text-lg">No courses found in this category.</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-6">
                 {filteredCourses.map(course => (
                   <div
                     key={course.id}
@@ -548,62 +446,64 @@ const LearningPlatform = () => {
                     className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-xl transition-all duration-300 group cursor-pointer flex flex-col"
                   >
                     {/* Course Image */}
-                    <div className="relative overflow-hidden">
+                    <div className="relative overflow-hidden ">
                       <img
                         src={course.image}
                         alt={course.title}
-                        className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
+                        className="w-full h-32 object-cover group-hover:scale-110 transition-transform duration-300"
                         loading="lazy"
                       />
                       {/* Badges */}
-                      <div className="absolute top-3 left-3 flex flex-wrap gap-2">
-                        {course.bestseller && (
-                          <span className="bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-xs font-bold shadow-md">
+                      {course.bestseller && (
+                        <div className="absolute top-2 left-2">
+                          <span className="bg-yellow-400 text-yellow-900 px-2 py-0.5 rounded-full text-xs font-light shadow-md">
                             Bestseller
                           </span>
-                        )}
-                        {course.enrolled && (
-                          <span className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-md">
+                        </div>
+                      )}
+                      {course.enrolled && (
+                        <div className="absolute top-2 right-2">
+                          <span className="bg-green-500 text-white px-2 py-0.5 rounded-full text-xs font-light flex items-center gap-1 shadow-md">
                             <Check className="w-3 h-3" />
                             Enrolled
                           </span>
-                        )}
-                      </div>
+                        </div>
+                      )}
                     </div>
 
                     {/* Course Content */}
-                    <div className="p-5 flex flex-col flex-grow">
+                    <div className="p-3 flex flex-col flex-grow">
                       {/* Title & Instructor */}
                       <div className="flex-grow">
-                        <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors leading-snug">
+                        <h3 className="text-base font-light text-black mb-1 line-clamp-2 group-hover:text-blue-600 transition-colors leading-snug">
                           {course.title}
                         </h3>
-                        <p className="text-sm text-gray-600 mb-4">{course.instructor}</p>
+                        <p className="text-sm text-black mb-2">{course.instructor}</p>
                       </div>
 
                       {/* Course Stats */}
-                      <div className="flex items-center flex-wrap gap-x-4 gap-y-2 mb-4 text-sm">
-                        <div className="flex items-center gap-1 text-gray-700">
-                          <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                          <span className="font-semibold">{course.rating}</span>
+                      <div className="flex items-center flex-wrap gap-x-2.5 gap-y-1.5 mb-2.5 text-xs text-black">
+                        <div className="flex items-center gap-1">
+                          <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                          <span className="font-light">{course.rating}</span>
                         </div>
-                        <div className="flex items-center gap-1 text-gray-600">
-                          <Users className="w-4 h-4" />
+                        <div className="flex items-center gap-1">
+                          <Users className="w-3 h-3" />
                           <span>{formatStudents(course.students)}</span>
                         </div>
-                        <div className="flex items-center gap-1 text-gray-600">
-                          <Clock className="w-4 h-4" />
+                        <div className="flex items-center gap-1">
+                          <Clock className="w-3 h-3" />
                           <span>{formatDuration(course.duration)}</span>
                         </div>
                       </div>
 
                       {/* Price & Level */}
-                      <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                      <div className="flex items-center justify-between pt-2 border-t border-gray-100">
                         <div className="flex items-baseline gap-2">
-                          <span className="text-2xl font-bold text-gray-900">₹{course.price}</span>
-                          <span className="text-sm text-gray-400 line-through">₹{course.originalPrice}</span>
+                          <span className="text-base font-light text-black">₹{course.price}</span>
+                          <span className="text-xs text-gray-500 line-through">₹{course.originalPrice}</span>
                         </div>
-                        <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-xs font-semibold">
+                        <span className="bg-gray-50 text-black px-2 py-0.5 rounded-md text-xs font-light border border-gray-200">
                           {course.level}
                         </span>
                       </div>
