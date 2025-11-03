@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Clock, FileText, Award, BarChart2, CheckCircle, Star, Users, Target, PlayCircle, ChevronDown, ChevronRight, X, Circle } from 'lucide-react';
+import { Clock, FileText, Award, BarChart2, CheckCircle, Star, Users, Target, PlayCircle, ChevronDown, ChevronRight, X, Circle, ShoppingCart } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { MOCK_TESTS } from '../mockTestCatalog';
 
@@ -56,13 +56,14 @@ const TestDetailsNew = () => {
 
   const [activeTab, setActiveTab] = useState('Tests');
   const [expandedSections, setExpandedSections] = useState({});
+  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
 
   // If no test found, show error
   if (!test) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="text-gray-500 text-center max-w-md p-6 bg-white rounded-lg shadow-sm">
-          <p className="text-xl font-semibold mb-2">Test Not Found</p>
+          <p className="text-xl font-light mb-2">Test Not Found</p>
           <p className="text-gray-600 mb-4">The requested test could not be found.</p>
           <p className="text-sm text-gray-500 mb-4">ID: {testIdFromQuery || 'No ID provided'}</p>
           <button 
@@ -90,8 +91,8 @@ const TestDetailsNew = () => {
     rating: typeof test.rating === 'number' ? test.rating.toFixed(1) : '0.0',
     reviews: test.attempts || 0,
     reviewsCount: test.reviewsCount || test.attempts || 0,
-    price: test.price?.discounted || test.price || 499,
-    originalPrice: test.price?.actual || test.price || 999,
+    price: typeof test.price === 'string' ? test.price : (test.price?.discounted ?? (typeof test.price === 'number' ? test.price : 499)),
+    originalPrice: typeof test.price === 'object' ? (test.price?.actual ?? 999) : (typeof test.price === 'number' ? test.price : 999),
     discount: test.price?.actual 
       ? `${Math.round(((test.price.actual - (test.price.discounted || test.price)) / test.price.actual) * 100)}% OFF`
       : '0% OFF',
@@ -113,6 +114,21 @@ const TestDetailsNew = () => {
     statistics: test.statistics || {},
   };
 
+  const isFree = useMemo(() => {
+    if (typeof formatted.price === 'string') {
+      return formatted.price.toString().toLowerCase() === 'free';
+    }
+    return Number(formatted.price) === 0;
+  }, [formatted.price]);
+
+  const discountPercent = useMemo(() => {
+    if (isFree) return null;
+    const p = Number(formatted.price);
+    const o = Number(formatted.originalPrice);
+    if (!o || isNaN(p) || isNaN(o) || p >= o) return null;
+    return Math.max(0, Math.round(100 - (p / o) * 100));
+  }, [formatted.price, formatted.originalPrice, isFree]);
+
   const toggleSection = (index) => {
     setExpandedSections(prev => ({
       ...prev,
@@ -128,21 +144,21 @@ const TestDetailsNew = () => {
           <div className="flex items-center gap-6 h-12">
             <button 
               onClick={() => setActiveTab('Courses')} 
-              className={`relative text-sm font-medium ${activeTab === 'Courses' ? 'text-blue-600' : 'text-gray-600 hover:text-gray-900'}`}
+              className={`relative text-sm font-light ${activeTab === 'Courses' ? 'text-blue-600' : 'text-black hover:text-blue-600'}`}
             >
               Courses <span className="ml-2 text-[10px] bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full align-middle">0 courses</span>
               {activeTab === 'Courses' && <span className="absolute -bottom-3 left-0 w-full h-0.5 bg-blue-600"></span>}
             </button>
             <button 
               onClick={() => setActiveTab('Jobs')} 
-              className={`relative text-sm font-medium ${activeTab === 'Jobs' ? 'text-blue-600' : 'text-gray-600 hover:text-gray-900'}`}
+              className={`relative text-sm font-light ${activeTab === 'Jobs' ? 'text-blue-600' : 'text-black hover:text-blue-600'}`}
             >
               Jobs <span className="ml-2 text-[10px] bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full align-middle">45 jobs</span>
               {activeTab === 'Jobs' && <span className="absolute -bottom-3 left-0 w-full h-0.5 bg-blue-600"></span>}
             </button>
             <button 
               onClick={() => setActiveTab('Tests')} 
-              className={`relative text-sm font-medium ${activeTab === 'Tests' ? 'text-blue-600' : 'text-gray-600 hover:text-gray-900'}`}
+              className={`relative text-sm font-light ${activeTab === 'Tests' ? 'text-blue-600' : 'text-black hover:text-blue-600'}`}
             >
               Tests <span className="ml-2 text-[10px] bg-gray-900 text-white px-2 py-0.5 rounded-full align-middle">{MOCK_TESTS.length} tests</span>
               {activeTab === 'Tests' && <span className="absolute -bottom-3 left-0 w-full h-0.5 bg-blue-600"></span>}
@@ -157,16 +173,16 @@ const TestDetailsNew = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
               <div className="mb-2">
-                <span className="text-xs font-medium bg-black/30 px-3 py-1 rounded-full">{formatted.type}</span>
+                <span className="text-xs font-light bg-black/30 px-3 py-1 rounded-full">{formatted.type}</span>
               </div>
-              <h1 className="text-2xl lg:text-3xl font-bold mb-2">{formatted.title}</h1>
-              <p className="text-blue-100 text-xs mb-4">{formatted.description}</p>
+              <h1 className="text-3xl lg:text-4xl font-light mb-2">{formatted.title}</h1>
+              <p className="text-blue-100 text-sm lg:text-base mb-4">{formatted.description}</p>
 
               {/* Statistics Row */}
               <div className="flex flex-wrap gap-6 items-center text-xs mb-6">
                 <div className="flex items-center gap-2">
                   <Star className="w-4 h-4 text-yellow-300 fill-yellow-300" />
-                  <span className="font-semibold">{formatted.rating}</span>
+                  <span className="font-light">{formatted.rating}</span>
                   <span className="text-blue-100">({formatted.reviewsCount.toLocaleString()} reviews)</span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -175,13 +191,13 @@ const TestDetailsNew = () => {
                 </div>
                 <div className="flex items-center gap-2">
                   <FileText className="w-4 h-4" />
-                  <span className="font-semibold">{formatted.questions} Questions</span>
+                  <span className="font-light">{formatted.questions} Questions</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Clock className="w-4 h-4" />
-                  <span className="font-semibold">{formatted.durationHours} hours</span>
+                  <span className="font-light">{formatted.durationHours} hours</span>
                 </div>
-                <button className="bg-blue-500 hover:bg-blue-400 px-4 py-1.5 rounded-lg text-sm font-medium transition-colors">
+                <button className="bg-blue-500 hover:bg-blue-400 px-4 py-1.5 rounded-lg text-sm font-light transition-colors">
                   {formatted.level}
                 </button>
               </div>
@@ -190,7 +206,7 @@ const TestDetailsNew = () => {
               <div className="mt-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
                   <div>
-                    <h3 className="text-xs font-semibold text-white mb-3">What you'll get</h3>
+                    <h3 className="text-xs font-light text-white mb-3">What you'll get</h3>
                     <div className="space-y-2">
                       {(formatted.benefits.length > 0 
                         ? formatted.benefits.slice(0, 4) 
@@ -203,7 +219,7 @@ const TestDetailsNew = () => {
                     </div>
                   </div>
                   <div>
-                    <h3 className="text-xs font-semibold text-white mb-3">Test format</h3>
+                    <h3 className="text-xs font-light text-white mb-3">Test format</h3>
                     <div className="space-y-2">
                       {(formatted.testFormat.length > 0 
                         ? formatted.testFormat 
@@ -228,59 +244,100 @@ const TestDetailsNew = () => {
 
             {/* Sticky Premium Card */}
             <div className="lg:col-span-1">
-              <div className="sticky top-4 md:top-20 bg-white rounded-lg overflow-hidden shadow-lg">
-                {/* Preview Image/Video */}
-                <div className="relative bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 h-48 flex items-center justify-center overflow-hidden">
-                  <div className="absolute inset-0 bg-black/20"></div>
-                  <div className="relative z-10 text-center">
-                    <div className="text-white/80 text-lg font-bold mb-2" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.5)' }}>
-                      Neural Works
-                    </div>
-                    <button className="bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full p-4 transition-all">
-                      <PlayCircle className="w-12 h-12 text-white" />
-                    </button>
-                    <div className="text-white/90 text-xs mt-2">Preview Questions</div>
-                  </div>
+              <div className="sticky top-4 md:top-20 bg-white rounded-xl overflow-hidden shadow-lg">
+                {/* Preview Image with play */}
+                <div className="relative">
+                  <img src={formatted.image} alt={formatted.title} className="w-full h-48 object-cover" />
+                  <button type="button" className="absolute inset-0 flex items-center justify-center group" aria-label="Preview Test">
+                    <span className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/90 shadow-md group-hover:scale-105 transition-transform">
+                      <PlayCircle className="w-8 h-8 text-blue-600" />
+                    </span>
+                  </button>
+                  <div className="absolute top-3 right-3 bg-black/60 text-white text-xs px-2 py-1 rounded">Preview Questions</div>
                 </div>
-                
+
                 <div className="p-4">
                   {formatted.isPremium && (
                     <>
-                      <div className="mb-3">
-                        <span className="inline-block bg-blue-600 text-white px-3 py-1 rounded-lg text-xs font-medium mb-2">
+                      <div className="mb-2 flex items-center justify-between">
+                        <span className="inline-block bg-blue-600 text-white px-3 py-1 rounded-lg text-xs font-light">
                           Premium Test
                         </span>
-                        <p className="text-gray-600 text-xs mt-2">Unlock with Premium Subscription</p>
+                        {discountPercent != null && (
+                          <span className="text-[10px] px-2.5 py-0.5 bg-blue-600 text-white rounded-full">{discountPercent}% OFF</span>
+                        )}
                       </div>
-                      <button className="w-full bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
-                        Upgrade to Premium
-                      </button>
+                      {(!isFree && Number(formatted.price) > 0) && (
+                        <div className="text-sm text-gray-900 mb-2">
+                          ₹{formatted.price}
+                          {Number(formatted.originalPrice) > Number(formatted.price) && (
+                            <span className="text-xs text-gray-500 line-through ml-2">₹{formatted.originalPrice}</span>
+                          )}
+                        </div>
+                      )}
+                      <div className="flex flex-col gap-2.5">
+                        <button className="w-full bg-white text-gray-900 py-2 rounded-lg font-light text-sm hover:bg-gray-50 transition-colors border border-gray-200 flex items-center justify-center gap-2">
+                          <ShoppingCart className="w-4 h-4" />
+                          Add To Cart
+                        </button>
+                        <button className="w-full bg-blue-600 text-white py-2 rounded-lg font-light text-sm hover:bg-blue-700 transition-colors" onClick={() => setShowPurchaseModal(true)}>
+                          Buy Now
+                        </button>
+                      </div>
                     </>
                   )}
                   
                   {!formatted.isPremium && (
                     <>
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-baseline">
-                          <span className="text-xl font-semibold">₹{formatted.price}</span>
-                          {formatted.originalPrice > formatted.price && (
-                            <span className="text-gray-400 text-xs line-through ml-2">₹{formatted.originalPrice}</span>
-                          )}
-                        </div>
-                        <span className="bg-gray-100 text-gray-800 text-[10px] px-2 py-1 rounded-md">{formatted.discount}</span>
-                      </div>
-                      <button className="w-full bg-gray-800 text-white py-2.5 rounded-md mb-3 hover:bg-gray-700 transition-colors text-sm font-medium">
-                        Add to Cart
-                      </button>
-                      <button className="w-full bg-white text-gray-800 border border-gray-300 py-2.5 rounded-md hover:bg-gray-50 transition-colors text-sm font-medium">
-                        Buy Now
-                      </button>
+                      {!isFree ? (
+                        <>
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="text-lg font-light text-gray-900">
+                              ₹{formatted.price}
+                              {Number(formatted.originalPrice) > Number(formatted.price) && (
+                                <span className="text-xs text-gray-500 line-through ml-2">₹{formatted.originalPrice}</span>
+                              )}
+                            </div>
+                            {discountPercent != null && (
+                              <span className="text-[10px] px-2.5 py-0.5 bg-blue-600 text-white rounded-full">{discountPercent}% OFF</span>
+                            )}
+                          </div>
+                          <div className="flex flex-col gap-2.5">
+                            <button className="w-full bg-white text-gray-900 py-2 rounded-lg font-light text-sm hover:bg-gray-50 transition-colors border border-gray-200 flex items-center justify-center gap-2">
+                              <ShoppingCart className="w-4 h-4" />
+                              Add To Cart
+                            </button>
+                            <button className="w-full bg-blue-600 text-white py-2 rounded-lg font-light text-sm hover:bg-blue-700 transition-colors" onClick={() => setShowPurchaseModal(true)}>
+                              Buy Now
+                            </button>
+                          </div>
+                        </>
+                      ) : (
+                        <button className="w-full bg-blue-600 text-white py-2 rounded-lg font-light text-sm hover:bg-blue-700 transition-colors" onClick={() => navigate(testTakingPath, { state: { test } })}>
+                          Start Test
+                        </button>
+                      )}
                     </>
                   )}
                 </div>
               </div>
             </div>
           </div>
+      {/* Purchase/Login Modal */}
+      {showPurchaseModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setShowPurchaseModal(false)}></div>
+          <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
+            <h3 className="text-base font-light text-gray-900 mb-2">Login Required</h3>
+            <p className="text-sm text-gray-600 mb-4">Please log in to purchase this test. Already have an account? Sign in or create a new account to continue.</p>
+            <div className="flex items-center justify-end gap-3">
+              <button className="px-4 py-2 rounded-md border border-gray-200 text-sm text-gray-700 hover:bg-gray-50" onClick={() => setShowPurchaseModal(false)}>Cancel</button>
+              <button className="px-4 py-2 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700" onClick={() => { window.location.href = '/login'; }}>Sign In</button>
+              <button className="px-4 py-2 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700" onClick={() => { window.location.href = '/signup'; }}>Sign Up</button>
+            </div>
+          </div>
+        </div>
+      )}
         </div>
       </div>
 
@@ -292,7 +349,7 @@ const TestDetailsNew = () => {
             {formatted.testSections.length > 0 && (
               <div className="bg-white rounded-lg p-6 shadow-sm">
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-lg font-bold text-gray-900">Test Sections</h2>
+                  <h2 className="text-lg font-light text-gray-900">Test Sections</h2>
                   <span className="text-xs text-gray-500">
                     {formatted.testSections.length} sections • {formatted.testSections.reduce((sum, s) => sum + (s.questions || 0), 0)} questions
                   </span>
@@ -305,7 +362,7 @@ const TestDetailsNew = () => {
                         className="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50 transition-colors"
                       >
                         <div className="flex items-center gap-3">
-                          <span className="font-medium text-gray-900">{section.subject} - {section.topic}</span>
+                          <span className="font-light text-gray-900">{section.subject} - {section.topic}</span>
                         </div>
                         <div className="flex items-center gap-3">
                           <span className="text-xs text-gray-500">{section.questions} questions • {section.duration} min</span>
@@ -337,7 +394,7 @@ const TestDetailsNew = () => {
             {/* What you'll get - Two Columns */}
             {formatted.benefits.length > 0 && (
               <div className="bg-white rounded-lg p-6 shadow-sm">
-                <h2 className="text-lg font-bold text-gray-900 mb-4">What you'll get</h2>
+                <h2 className="text-lg font-light text-gray-900 mb-4">What you'll get</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-3">
                     {formatted.benefits.slice(0, 4).map((benefit, idx) => (
@@ -362,7 +419,7 @@ const TestDetailsNew = () => {
             {/* Requirements */}
             {formatted.requirements.length > 0 && (
               <div className="bg-white rounded-lg p-6 shadow-sm">
-                <h2 className="text-lg font-bold text-gray-900 mb-4">Requirements</h2>
+                <h2 className="text-lg font-light text-gray-900 mb-4">Requirements</h2>
                 <ul className="space-y-2">
                   {formatted.requirements.map((req, idx) => (
                     <li key={idx} className="flex items-start gap-3">
@@ -377,10 +434,10 @@ const TestDetailsNew = () => {
             {/* Test Instructions */}
             {(formatted.instructions.general?.length > 0 || Object.keys(formatted.instructions.scoring || {}).length > 0) && (
               <div className="bg-white rounded-lg p-6 shadow-sm">
-                <h2 className="text-lg font-bold text-gray-900 mb-4">Test Instructions</h2>
+                <h2 className="text-lg font-light text-gray-900 mb-4">Test Instructions</h2>
                 
                 <div className="mb-6">
-                  <h3 className="text-base font-semibold text-gray-800 mb-3">General Instructions</h3>
+                  <h3 className="text-base font-light text-gray-800 mb-3">General Instructions</h3>
                   <ul className="space-y-2">
                     {formatted.instructions.general.map((instruction, idx) => (
                       <li key={idx} className="flex items-start gap-3">
@@ -393,7 +450,7 @@ const TestDetailsNew = () => {
 
                 {Object.keys(formatted.instructions.scoring || {}).length > 0 && (
                   <div className="bg-gray-50 rounded-lg p-4">
-                    <h3 className="text-base font-semibold text-gray-800 mb-3">Scoring System</h3>
+                    <h3 className="text-base font-light text-gray-800 mb-3">Scoring System</h3>
                     <div className="space-y-3">
                       {formatted.instructions.scoring.correct && (
                         <div className="flex items-center justify-between text-sm text-gray-700">
@@ -401,7 +458,7 @@ const TestDetailsNew = () => {
                             <CheckCircle className="w-4 h-4 text-green-600" />
                             <span>Correct answer:</span>
                           </div>
-                          <span className="font-semibold text-green-600">{formatted.instructions.scoring.correct}</span>
+                          <span className="font-light text-green-600">{formatted.instructions.scoring.correct}</span>
                         </div>
                       )}
                       {formatted.instructions.scoring.incorrect && (
@@ -410,7 +467,7 @@ const TestDetailsNew = () => {
                             <X className="w-4 h-4 text-red-600" />
                             <span>Incorrect answer:</span>
                           </div>
-                          <span className="font-semibold text-red-600">{formatted.instructions.scoring.incorrect}</span>
+                          <span className="font-light text-red-600">{formatted.instructions.scoring.incorrect}</span>
                         </div>
                       )}
                       {formatted.instructions.scoring.unanswered && (
@@ -419,7 +476,7 @@ const TestDetailsNew = () => {
                             <Circle className="w-4 h-4 text-gray-500" />
                             <span>Unanswered:</span>
                           </div>
-                          <span className="font-semibold text-gray-600">{formatted.instructions.scoring.unanswered}</span>
+                          <span className="font-light text-gray-600">{formatted.instructions.scoring.unanswered}</span>
                         </div>
                       )}
                     </div>
@@ -434,39 +491,41 @@ const TestDetailsNew = () => {
             <div className="sticky top-8 space-y-6">
               {Object.keys(formatted.statistics).length > 0 && (
                 <div className="bg-white rounded-lg p-6 shadow-sm">
-                  <h3 className="text-base font-bold text-gray-900 mb-4">Test Statistics</h3>
+                  <h3 className="text-base font-light text-gray-900 mb-4">Test Statistics</h3>
                   <div className="space-y-4">
                     {formatted.statistics.averageScore !== undefined && (
                       <div>
                         <div className="text-xs text-gray-600 mb-1">Average Score</div>
-                        <div className="text-xl font-bold text-gray-900">{formatted.statistics.averageScore}%</div>
+                        <div className="text-xl font-light text-gray-900">{formatted.statistics.averageScore}%</div>
                       </div>
                     )}
                     {formatted.statistics.passPercentage !== undefined && (
                       <div>
                         <div className="text-xs text-gray-600 mb-1">Pass Percentage</div>
-                        <div className="text-xl font-bold text-gray-900">{formatted.statistics.passPercentage}%</div>
+                        <div className="text-xl font-light text-gray-900">{formatted.statistics.passPercentage}%</div>
                       </div>
                     )}
                     {formatted.statistics.avgTimeTaken && (
                       <div>
                         <div className="text-xs text-gray-600 mb-1">Avg. Time Taken</div>
-                        <div className="text-xl font-bold text-gray-900">{formatted.statistics.avgTimeTaken}</div>
+                        <div className="text-xl font-light text-gray-900">{formatted.statistics.avgTimeTaken}</div>
                       </div>
                     )}
                     {formatted.statistics.highestScore !== undefined && (
                       <div>
                         <div className="text-xs text-gray-600 mb-1">Highest Score</div>
-                        <div className="text-xl font-bold text-gray-900">{formatted.statistics.highestScore}%</div>
+                        <div className="text-xl font-light text-gray-900">{formatted.statistics.highestScore}%</div>
                       </div>
                     )}
                   </div>
-                  <button 
-                    onClick={() => navigate(testTakingPath, { state: { test: test } })}
-                    className="w-full bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium mt-6"
-                  >
-                    Start Test
-                  </button>
+                  {(formatted.type?.toLowerCase().includes('mock') || !formatted.isPremium) && (
+                    <button 
+                      onClick={() => navigate(testTakingPath, { state: { test: test } })}
+                      className="w-full bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 transition-colors text-sm font-light mt-6"
+                    >
+                      Start Test
+                    </button>
+                  )}
                 </div>
               )}
             </div>
@@ -478,4 +537,5 @@ const TestDetailsNew = () => {
 };
 
 export default TestDetailsNew;
+
 

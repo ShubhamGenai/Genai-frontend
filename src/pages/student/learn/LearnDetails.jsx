@@ -1,10 +1,11 @@
 import React, { useMemo, useState } from 'react';
-import { Star, Users, Clock, Layers, PlayCircle, ChevronDown, CheckCircle, User } from 'lucide-react';
+import { Star, Users, Clock, Layers, PlayCircle, ChevronDown, CheckCircle, User, ShoppingCart } from 'lucide-react';
 import { useLocation, useParams } from 'react-router-dom';
 import { LEARN_COURSES } from './mockCatalog';
 
 const LearnDetails = () => {
   const [expandedModule, setExpandedModule] = useState(null);
+  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
   const [activeTab, setActiveTab] = useState('Courses');
 
   const location = useLocation();
@@ -59,6 +60,11 @@ const LearnDetails = () => {
 
   const priceActual = courseDetails?.price?.actual;
   const priceDiscounted = courseDetails?.price?.discounted ?? priceActual;
+  const discountPercent = useMemo(() => {
+    if (!priceActual || priceDiscounted == null) return null;
+    if (priceDiscounted >= priceActual) return null;
+    return Math.max(0, Math.round(100 - (priceDiscounted / priceActual) * 100));
+  }, [priceActual, priceDiscounted]);
 
   const learningBullets = courseDetails?.features || [];
   const whoShouldTake = courseDetails?.learningOutcomes || [];
@@ -92,7 +98,7 @@ const LearnDetails = () => {
           <div className="flex items-center gap-6 h-12">
             <button
               onClick={() => setActiveTab('Courses')}
-              className={`relative text-sm font-medium ${activeTab === 'Courses' ? 'text-blue-600' : 'text-gray-600 hover:text-gray-900'}`}
+              className={`relative text-sm font-light ${activeTab === 'Courses' ? 'text-blue-600' : 'text-black hover:text-blue-600'}`}
             >
               Courses
               <span className="ml-2 text-[10px] bg-gray-900 text-white px-2 py-0.5 rounded-full align-middle">{LEARN_COURSES.length} courses</span>
@@ -100,7 +106,7 @@ const LearnDetails = () => {
             </button>
             <button
               onClick={() => setActiveTab('Jobs')}
-              className={`relative text-sm font-medium ${activeTab === 'Jobs' ? 'text-blue-600' : 'text-gray-600 hover:text-gray-900'}`}
+              className={`relative text-sm font-light ${activeTab === 'Jobs' ? 'text-blue-600' : 'text-black hover:text-blue-600'}`}
             >
               Jobs
               <span className="ml-2 text-[10px] bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full align-middle">45 jobs</span>
@@ -108,7 +114,7 @@ const LearnDetails = () => {
             </button>
             <button
               onClick={() => setActiveTab('Tests')}
-              className={`relative text-sm font-medium ${activeTab === 'Tests' ? 'text-blue-600' : 'text-gray-600 hover:text-gray-900'}`}
+              className={`relative text-sm font-light ${activeTab === 'Tests' ? 'text-blue-600' : 'text-black hover:text-blue-600'}`}
             >
               Tests
               <span className="ml-2 text-[10px] bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full align-middle">28 tests</span>
@@ -126,8 +132,8 @@ const LearnDetails = () => {
               <div className="mb-4">
                 <span className="text-sm font-medium bg-white/20 px-3 py-1 rounded-full">{courseDetails?.category || 'Course'}</span>
               </div>
-              <h1 className="text-3xl lg:text-4xl font-bold mb-4">{courseDetails?.title || courseDetails?.name || 'Course Title'}</h1>
-              <p className="text-base lg:text-lg text-blue-100 mb-4 leading-relaxed">
+              <h1 className="text-3xl lg:text-4xl font-light mb-4">{courseDetails?.title || courseDetails?.name || 'Course Title'}</h1>
+              <p className="text-sm lg:text-base text-blue-100 mb-4 leading-relaxed">
                 {courseDetails?.description || courseDetails?.subtitle || '—'}
               </p>
               
@@ -135,18 +141,18 @@ const LearnDetails = () => {
               <div className="flex flex-wrap gap-6 items-center text-xs lg:text-sm">
                 <div className="flex items-center gap-2">
                   <Star className="w-4 h-4 text-yellow-300 fill-yellow-300" />
-                  <span className="font-semibold">{averageRating}</span>
+                  <span className="font-light">{averageRating}</span>
                   <span>({totalReviews} rated)</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Users className="w-4 h-4" />
-                  <span className="font-semibold">{enrolledCount} students</span>
+                  <span className="font-light">{enrolledCount} students</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Clock className="w-4 h-4" />
-                  <span className="font-semibold">{courseDetails?.duration || courseDetails?.time || '—'}</span>
+                  <span className="font-light">{courseDetails?.duration || courseDetails?.time || '—'}</span>
                 </div>
-                <div className="bg-white/20 text-white px-2 py-1 rounded text-[10px] lg:text-xs font-medium">
+                <div className="bg-white/20 text-white px-2 py-1 rounded text-[10px] lg:text-xs font-light">
                   {level}
                 </div>
               </div>
@@ -155,7 +161,7 @@ const LearnDetails = () => {
               <div className="mt-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
                   <div>
-                    <h3 className="text-sm font-semibold text-white mb-2">What you'll learn</h3>
+                    <h3 className="text-sm font-light text-white mb-2">What you'll learn</h3>
                     <div className="space-y-2">
                       {(learningBullets.slice(0, 6).length ? learningBullets.slice(0, 6) : ['Key concepts', 'Hands-on practice', 'Projects', 'Quizzes']).map((item, idx) => (
                         <div key={idx} className="flex items-start gap-2">
@@ -166,7 +172,7 @@ const LearnDetails = () => {
                     </div>
                   </div>
                   <div>
-                    <h3 className="text-sm font-semibold text-white mb-2">This course includes</h3>
+                    <h3 className="text-sm font-light text-white mb-2">This course includes</h3>
                     <div className="space-y-2">
                       {includesList.slice(0, 4).map((inc, idx) => (
                         <div key={idx} className="flex items-start gap-2">
@@ -182,32 +188,59 @@ const LearnDetails = () => {
 
             {/* Right Video/Preview */}
             <div className="lg:col-span-1">
-              <div className="sticky top-4 md:top-20 bg-white rounded-lg overflow-hidden shadow-lg">
+              <div className="sticky top-4 md:top-20 bg-white rounded-xl overflow-hidden shadow-lg">
                 <div className="relative">
                   <img 
                     src={courseDetails?.imageUrl || courseDetails?.image || courseDetails?.thumbnail} 
                     alt="Course Preview" 
                     className="w-full h-48 object-cover"
                   />
-                  <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
-                    <div className="bg-white bg-opacity-20 backdrop-blur-sm rounded-full p-3">
-                      <PlayCircle className="w-8 h-8 text-white" />
-                    </div>
-                  </div>
+                  <button
+                    type="button"
+                    className="absolute inset-0 flex items-center justify-center group"
+                    onClick={() => setShowPurchaseModal(true)}
+                    aria-label="Preview Course"
+                  >
+                    <span className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/90 shadow-md group-hover:scale-105 transition-transform">
+                      <PlayCircle className="w-8 h-8 text-blue-600" />
+                    </span>
+                  </button>
                   <div className="absolute top-3 right-3 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
                     Preview Course
                   </div>
                 </div>
                 <div className="p-4">
-                  <div className="text-2xl font-bold text-gray-900 mb-1">
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="text-lg font-light text-gray-900">
                     {priceDiscounted != null ? `₹${priceDiscounted}` : (courseDetails?.priceText || '—')}{' '}
                     {priceActual && priceDiscounted != null && priceDiscounted < priceActual && (
-                      <span className="text-lg text-gray-500 line-through">₹{priceActual}</span>
+                      <span className="text-xs text-gray-500 line-through ml-2">₹{priceActual}</span>
+                    )}
+                    </div>
+                    {discountPercent != null && (
+                      <span className="text-[10px] px-2.5 py-0.5 bg-blue-600 text-white rounded-full">
+                        {discountPercent}% OFF
+                      </span>
                     )}
                   </div>
-                  <button className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
-                    Buy now
-                  </button>
+                  <div className="flex flex-col gap-2.5">
+                    <button
+                      className="w-full bg-white text-gray-900 py-2 rounded-lg font-light text-sm hover:bg-gray-50 transition-colors border border-gray-200 flex items-center justify-center gap-2"
+                      onClick={() => {
+                        // Placeholder add-to-cart handler
+                        console.log('Added to cart', courseDetails?.id);
+                      }}
+                    >
+                      <ShoppingCart className="w-4 h-4" />
+                      Add To Cart
+                    </button>
+                    <button
+                      className="w-full bg-blue-600 text-white py-2 rounded-lg font-light text-sm hover:bg-blue-700 transition-colors"
+                      onClick={() => setShowPurchaseModal(true)}
+                    >
+                      Buy Now
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -224,7 +257,7 @@ const LearnDetails = () => {
             {/* Course Curriculum */}
             <div className="bg-white rounded-lg p-6 shadow-sm">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-gray-900">Course Curriculum</h2>
+                <h2 className="text-lg font-light text-gray-900">Course Curriculum</h2>
                 <span className="text-sm text-gray-500">
                   {modules.length} modules • {modules.reduce((a, m) => a + (m.lessons || 0), 0)} lessons
                 </span>
@@ -238,10 +271,10 @@ const LearnDetails = () => {
                       className="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50 transition-colors"
                     >
                       <div className="flex items-center gap-3">
-                        <span className="font-medium text-gray-900">{module.title}</span>
+                        <span className="font-light text-gray-900">{module.title}</span>
                       </div>
                       <div className="flex items-center gap-3">
-                        <span className="text-sm text-gray-500">{module.lessons} lessons</span>
+                        <span className="text-xs text-gray-500">{module.lessons} lessons</span>
                         <ChevronDown 
                           className={`w-4 h-4 text-gray-400 transition-transform ${
                             expandedModule === module.id ? 'rotate-180' : ''
@@ -269,13 +302,13 @@ const LearnDetails = () => {
 
             {/* Requirements */}
             <div className="bg-white rounded-lg p-6 shadow-sm">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Requirements</h2>
+              <h2 className="text-lg font-light text-gray-900 mb-4">Requirements</h2>
               <ul className="space-y-2">
                 {(courseDetails?.requirements || [
                   'No prior experience required',
                   'Basic knowledge of Excel recommended but not mandatory',
                 ]).map((req, idx) => (
-                  <li key={idx} className="flex items-start gap-3 text-sm text-gray-700">
+                  <li key={idx} className="flex items-start gap-3 text-sm text-gray-900">
                     <div className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
                     <span>{req}</span>
                   </li>
@@ -285,14 +318,14 @@ const LearnDetails = () => {
 
             {/* Who should take this course */}
             <div className="bg-white rounded-lg p-6 shadow-sm">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Who should take this course?</h2>
+              <h2 className="text-lg font-light text-gray-900 mb-4">Who should take this course?</h2>
               <ul className="space-y-2">
                 {(whoShouldTake.length ? whoShouldTake : [
                   'Anyone interested in this subject',
                   'Students & professionals looking for career growth',
                   'Entrepreneurs & business owners wanting data-driven strategies',
                 ]).map((item, idx) => (
-                  <li key={idx} className="flex items-start gap-3 text-sm text-gray-700">
+                  <li key={idx} className="flex items-start gap-3 text-sm text-gray-900">
                     <div className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
                     <span>{item}</span>
                   </li>
@@ -302,7 +335,7 @@ const LearnDetails = () => {
 
             {/* Student Reviews */}
             <div className="bg-white rounded-lg p-6 shadow-sm">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Student Reviews</h2>
+              <h2 className="text-lg font-light text-gray-900 mb-4">Student Reviews</h2>
               <div className="space-y-4">
                 {(courseDetails?.ratings || []).slice(0, 2).map((r, idx) => (
                   <div key={idx} className="border-b border-gray-100 pb-4">
@@ -312,7 +345,7 @@ const LearnDetails = () => {
                           <Star key={i} className={`w-4 h-4 ${i < Math.round(r?.rating || 0) ? 'fill-current' : ''}`} />
                         ))}
                       </div>
-                      <span className="font-medium text-gray-900">{r?.user?.name || 'Student'}</span>
+                      <span className="font-light text-gray-900">{r?.user?.name || 'Student'}</span>
                       {r?.date && <span className="text-sm text-gray-500">{new Date(r.date).toDateString()}</span>}
                     </div>
                     <p className="text-sm text-gray-700">{r?.comment || '—'}</p>
@@ -328,28 +361,28 @@ const LearnDetails = () => {
               
               {/* Instructor */}
               <div className="bg-white rounded-lg p-6 shadow-sm">
-                <h3 className="text-lg font-bold text-gray-900 mb-4">Instructor</h3>
+                <h3 className="text-base font-light text-gray-900 mb-4">Instructor</h3>
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
                     <User className="w-6 h-6 text-blue-600" />
                   </div>
                   <div>
-                    <div className="font-medium text-gray-900">{courseDetails?.instructor?.name || 'Instructor'}</div>
-                    <div className="text-sm text-gray-500">{courseDetails?.instructor?.title || 'Expert'}</div>
+                    <div className="font-light text-gray-900">{courseDetails?.instructor?.name || 'Instructor'}</div>
+                    <div className="text-xs text-gray-500">{courseDetails?.instructor?.title || 'Expert'}</div>
                   </div>
                 </div>
                 
                 <div className="grid grid-cols-3 gap-4 text-center text-sm">
                   <div>
-                    <div className="font-semibold text-gray-900">{averageRating}</div>
+                    <div className="font-light text-gray-900">{averageRating}</div>
                     <div className="text-gray-500">Instructor Rating</div>
                   </div>
                   <div>
-                    <div className="font-semibold text-gray-900">{enrolledCount}</div>
+                    <div className="font-light text-gray-900">{enrolledCount}</div>
                     <div className="text-gray-500">Students</div>
                   </div>
                   <div>
-                    <div className="font-semibold text-gray-900">{courseDetails?.instructor?.coursesCount || 0}</div>
+                    <div className="font-light text-gray-900">{courseDetails?.instructor?.coursesCount || 0}</div>
                     <div className="text-gray-500">Courses</div>
                   </div>
                 </div>
@@ -357,7 +390,7 @@ const LearnDetails = () => {
 
               {/* More Courses - placeholder */}
               <div className="bg-white rounded-lg overflow-hidden shadow-sm">
-                <h3 className="text-lg font-bold text-gray-900 p-6 pb-4">More from this category</h3>
+                <h3 className="text-base font-light text-gray-900 p-6 pb-4">More from this category</h3>
                 <div className="relative">
                   <img 
                     src={courseDetails?.imageUrl || courseDetails?.image || courseDetails?.thumbnail} 
@@ -369,7 +402,7 @@ const LearnDetails = () => {
                   </div>
                 </div>
                 <div className="p-4">
-                  <h4 className="font-medium text-gray-900 text-sm mb-1">{courseDetails?.title || courseDetails?.name || 'Course'}</h4>
+                  <h4 className="font-light text-gray-900 text-sm mb-1">{courseDetails?.title || courseDetails?.name || 'Course'}</h4>
                   <div className="flex items-center gap-2 text-xs text-gray-500">
                     <Star className="w-3 h-3 text-yellow-400 fill-current" />
                     <span>{averageRating}</span>
@@ -398,6 +431,38 @@ const LearnDetails = () => {
           </div>
         </div>
       </div>
+      {/* Purchase/Login Modal */}
+      {showPurchaseModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setShowPurchaseModal(false)}></div>
+          <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
+            <h3 className="text-base font-light text-gray-900 mb-2">Login Required</h3>
+            <p className="text-sm text-gray-600 mb-4">
+              Please log in to purchase this course. Already have an account? Sign in or create a new account to continue.
+            </p>
+            <div className="flex items-center justify-end gap-3">
+              <button
+                className="px-4 py-2 rounded-md border border-gray-200 text-sm text-gray-700 hover:bg-gray-50"
+                onClick={() => setShowPurchaseModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-4 py-2 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700"
+                onClick={() => { window.location.href = '/login'; }}
+              >
+                Sign In
+              </button>
+              <button
+                className="px-4 py-2 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700"
+                onClick={() => { window.location.href = '/signup'; }}
+              >
+                Sign Up
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
