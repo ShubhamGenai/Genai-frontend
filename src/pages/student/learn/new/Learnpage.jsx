@@ -478,11 +478,11 @@ const LearningPlatform = () => {
                         <h3 className="text-base font-light text-black mb-1 line-clamp-2 group-hover:text-blue-600 transition-colors leading-snug">
                           {course.title}
                         </h3>
-                        <p className="text-sm text-black mb-2">{course.instructor}</p>
+                        <p className="text-sm text-gray-600 mb-2">{course.instructor}</p>
                       </div>
 
                       {/* Course Stats */}
-                      <div className="flex items-center flex-wrap gap-x-2.5 gap-y-1.5 mb-2.5 text-xs text-black">
+                      <div className="flex items-center flex-wrap gap-x-2.5 gap-y-1.5 mb-2.5 text-xs text-gray-600">
                         <div className="flex items-center gap-1">
                           <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
                           <span className="font-light">{course.rating}</span>
