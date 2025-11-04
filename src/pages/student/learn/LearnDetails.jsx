@@ -1,11 +1,12 @@
 import React, { useMemo, useState } from 'react';
 import { Star, Users, Clock, Layers, PlayCircle, ChevronDown, CheckCircle, User, ShoppingCart } from 'lucide-react';
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import { LEARN_COURSES } from './mockCatalog';
 
 const LearnDetails = () => {
   const [expandedModule, setExpandedModule] = useState(null);
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('Courses');
 
   const location = useLocation();
@@ -65,6 +66,13 @@ const LearnDetails = () => {
     if (priceDiscounted >= priceActual) return null;
     return Math.max(0, Math.round(100 - (priceDiscounted / priceActual) * 100));
   }, [priceActual, priceDiscounted]);
+
+  const isFreeCourse = useMemo(() => {
+    if (typeof priceDiscounted === 'number') return priceDiscounted === 0;
+    if (typeof priceActual === 'number') return priceActual === 0;
+    const text = (courseDetails?.priceText || '').toString().toLowerCase();
+    return text.includes('free');
+  }, [priceDiscounted, priceActual, courseDetails]);
 
   const learningBullets = courseDetails?.features || [];
   const whoShouldTake = courseDetails?.learningOutcomes || [];
@@ -217,30 +225,41 @@ const LearnDetails = () => {
                       <span className="text-xs text-gray-500 line-through ml-2">₹{priceActual}</span>
                     )}
                     </div>
-                    {discountPercent != null && (
+                    {!isFreeCourse && discountPercent != null && (
                       <span className="text-[10px] px-2.5 py-0.5 bg-blue-600 text-white rounded-full">
                         {discountPercent}% OFF
                       </span>
                     )}
                   </div>
-                  <div className="flex flex-col gap-2.5">
-                    <button
-                      className="w-full bg-white text-gray-900 py-2 rounded-lg font-light text-sm hover:bg-gray-50 transition-colors border border-gray-200 flex items-center justify-center gap-2"
-                      onClick={() => {
-                        // Placeholder add-to-cart handler
-                        console.log('Added to cart', courseDetails?.id);
-                      }}
-                    >
-                      <ShoppingCart className="w-4 h-4" />
-                      Add To Cart
-                    </button>
-                    <button
-                      className="w-full bg-blue-600 text-white py-2 rounded-lg font-light text-sm hover:bg-blue-700 transition-colors"
-                      onClick={() => setShowPurchaseModal(true)}
-                    >
-                      Buy Now
-                    </button>
-                  </div>
+                  {isFreeCourse ? (
+                    <div className="flex flex-col gap-2.5">
+                      <button
+                        className="w-full bg-blue-600 text-white py-2 rounded-lg font-light text-sm hover:bg-blue-700 transition-colors"
+                        onClick={() => navigate(`/learn/course/${effectiveId || ''}`)}
+                      >
+                        Go To Course
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col gap-2.5">
+                      <button
+                        className="w-full bg-white text-gray-900 py-2 rounded-lg font-light text-sm hover:bg-gray-50 transition-colors border border-gray-200 flex items-center justify-center gap-2"
+                        onClick={() => {
+                          // Placeholder add-to-cart handler
+                          console.log('Added to cart', courseDetails?.id);
+                        }}
+                      >
+                        <ShoppingCart className="w-4 h-4" />
+                        Add To Cart
+                      </button>
+                      <button
+                        className="w-full bg-blue-600 text-white py-2 rounded-lg font-light text-sm hover:bg-blue-700 transition-colors"
+                        onClick={() => setShowPurchaseModal(true)}
+                      >
+                        Buy Now
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

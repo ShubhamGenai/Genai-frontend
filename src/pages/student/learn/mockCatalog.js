@@ -327,5 +327,41 @@ export const LEARN_COURSES = [
       { id: 'c12-bst', title: 'Business Studies', lessons: [ { title: 'Principles of Management' }, { title: 'Marketing' } ] },
       { id: 'c12-eco', title: 'Economics', lessons: [ { title: 'Microeconomics' }, { title: 'Macroeconomics' } ] }
     ]
+  },
+  {
+    id: 13,
+    category: 'web-development',
+    title: 'Introduction to Generative AI',
+    description: 'An introduction to the fascinating world of Generative AI, covering basic concepts, models, and applications.',
+    imageUrl: 'https://images.unsplash.com/photo-1620712948141-edc49a5f7e91?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    duration: '10 hours',
+    level: 'Beginner',
+    price: { actual: 1999, discounted: 0 },
+    ratings: [
+      { rating: 4, user: { name: 'Aditi' }, date: '2025-01-10', comment: 'Very insightful and easy to understand.' },
+      { rating: 5, user: { name: 'Samir' }, date: '2025-01-12', comment: 'Great examples and hands-on approach.' }
+    ],
+    enrolledStudents: 25000,
+    instructor: { name: 'Google AI', title: 'AI Research Team', coursesCount: 1 },
+    features: [
+      'Understand core Generative AI concepts',
+      'Explore various Generative models (GANs, VAEs, Transformers)',
+      'Learn about applications in art, text, and code generation',
+      'No prior AI experience required'
+    ],
+    learningOutcomes: [
+      'Gain foundational knowledge in Generative AI',
+      'Be able to differentiate between various Generative models',
+      'Understand the ethical considerations of Generative AI'
+    ],
+    requirements: [
+      'Basic computer literacy',
+      'Enthusiasm for AI and new technologies'
+    ],
+    modules: [
+      { id: 'genai-intro', title: 'Introduction to AI', lessons: [ { title: 'What is AI?' }, { title: 'History of AI' } ] },
+      { id: 'genai-models', title: 'Generative Models', lessons: [ { title: 'GANs' }, { title: 'VAEs' }, { title: 'Transformers' } ] },
+      { id: 'genai-apps', title: 'Applications', lessons: [ { title: 'Art Generation' }, { title: 'Text Generation' }, { title: 'Code Generation' } ] }
+    ]
   }
 ];

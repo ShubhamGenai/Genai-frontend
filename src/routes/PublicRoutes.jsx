@@ -11,8 +11,6 @@ import { CourseDetails } from "../pages/coursespage/course-details-page/course-d
 import EmployerRegistration from "../pages/auth-pages/employer-auth/Employer-Signup";
 import EmployerSignIn from "../pages/auth-pages/employer-auth/Employer-signin";
 import AdminLogin from "../pages/auth-pages/admin-auth/AdminLogin";
-import JobsPage from "../pages/student/jobs/JobsMain";
-import JobDetails from "../pages/student/jobs/JobDetails";
 import LearnMainPage from "../pages/student/learn/LearnMain";
 import ContentLogin from "../pages/auth-pages/content-auth/Content-login";
 import CoursePlayer from "../pages/student/learn/course-player/Course-Player";
@@ -31,8 +29,7 @@ import LearnDetails from "../pages/student/learn/LearnDetails";
 import TestPlatform from "../pages/student/test/new/TestPage-new";
 import LearningPlatform from "../pages/student/learn/new/Learnpage";
 import JobsPanel from "../pages/student/jobs/new/JobsPanel";
-import JobsPlatform from "../pages/student/jobs/new/JobsPanel";
-
+import JobDetailsPage from "../pages/student/jobs/new/JobDetailsPage"; // Import the new JobDetailsPage
 
 
 
@@ -83,7 +80,7 @@ const PublicRoutes = () => {
           <Route index element={<LearningPlatform />} />
         <Route path="tests" element={<TestPlatform/>}/>
 
-        <Route path="jobs" element={<JobsPlatform />} />
+        {/* <Route path="jobs" element={<JobsPage />} /> */}
         {/* Learn Details (nested under /learn) */}
         <Route path="details/:id" element={<LearnDetails />} />
         <Route path="library" element={<LibraryPage />} />
@@ -111,7 +108,7 @@ const PublicRoutes = () => {
       <Route path="tests" element={<AdaptiveLayout />}>
         <Route index element={<TestPlatform/>} />
         <Route path="learn" element={<LearningPlatform />} />
-        <Route path="jobs" element={<JobsPage />} />
+        <Route path="jobs" element={<JobsPanel />} />
         <Route path="library" element={<LibraryPage />} />
         <Route path="community" element={<CommunityPage />} />
         <Route path="community/all" element={<CommunityPage />} />
@@ -131,7 +128,7 @@ const PublicRoutes = () => {
         <Route path="articles" element={<LibraryPage />} />
         <Route path="learn" element={<LearnMainPage />} />
         <Route path="tests" element={<TestPage/>} />
-        <Route path="jobs" element={<JobsPage />} />
+        <Route path="jobs" element={<JobsPanel />} />
         <Route path="community" element={<CommunityPage />} />
         <Route path="community/all" element={<CommunityPage />} />
         <Route path="community/college" element={<CollegeCommunityPage />} />
@@ -150,11 +147,14 @@ const PublicRoutes = () => {
         <Route path="skills" element={<SkillsCommunityPage />} />
         <Route path="learn" element={<LearnMainPage />} />
         <Route path="tests" element={<TestPage/>} />
-        <Route path="jobs" element={<JobsPage />} />
+        <Route path="jobs" element={<JobsPanel />} />
         <Route path="library" element={<LibraryPage />} />
       </Route>
       
       {/* Details pages with adaptive layout - Works for both guest and authenticated users */}
+      <Route path="/jobs/:id" element={<AdaptiveLayout />}>
+        <Route index element={<JobDetailsPage />} />
+      </Route>
       <Route path="learn-details" element={<AdaptiveLayout />}>
         <Route path=":id" element={<LearnDetails />} />
       </Route>
@@ -163,7 +163,7 @@ const PublicRoutes = () => {
       </Route>
       
       <Route path="job-details" element={<AdaptiveLayout />}>
-        <Route index element={<JobDetails />} />
+        {/* <Route index element={<JobDetails />} /> */}
       </Route>
       
       <Route path="test-details" element={<AdaptiveLayout />}>

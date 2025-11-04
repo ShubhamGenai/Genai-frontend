@@ -363,10 +363,10 @@ const LearningPlatform = () => {
   return (
     <div className="min-h-screen ">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white py-10 px-4 sm:px-6 lg:px-8">
+      <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white py-2 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-2xl sm:text-2xl lg:text-3xl font-light mb-4">Learn From The Best</h1>
-          <p className="text-xs sm:text-xl text-blue-100 font-light max-w-3xl">
+          <h1 className="text-xl sm:text-xl lg:text-md font-medium mb-1">Learn From The Best</h1>
+          <p className="text-xs sm:text-md text-blue-100 font-light max-w-3xl">
             Access world-class courses taught by industry experts. Start learning today and achieve your goals.
           </p>
         </div>
@@ -475,14 +475,14 @@ const LearningPlatform = () => {
                     <div className="p-3 flex flex-col flex-grow">
                       {/* Title & Instructor */}
                       <div className="flex-grow">
-                        <h3 className="text-base font-light text-black mb-1 line-clamp-2 group-hover:text-blue-600 transition-colors leading-snug">
+                        <h3 className="text-sm font-light text-black mb-1 line-clamp-2 group-hover:text-blue-600 transition-colors leading-snug">
                           {course.title}
                         </h3>
-                        <p className="text-sm text-gray-600 mb-2">{course.instructor}</p>
+                        <p className="text-xs text-gray-600 mb-2">{course.instructor}</p>
                       </div>
 
                       {/* Course Stats */}
-                      <div className="flex items-center flex-wrap gap-x-2.5 gap-y-1.5 mb-2.5 text-xs text-gray-600">
+                      <div className="flex items-center flex-wrap gap-x-2.5 gap-y-1.5 mb-2.5 text-[0.65rem] text-gray-600">
                         <div className="flex items-center gap-1">
                           <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
                           <span className="font-light">{course.rating}</span>
@@ -500,10 +500,10 @@ const LearningPlatform = () => {
                       {/* Price & Level */}
                       <div className="flex items-center justify-between pt-2 border-t border-gray-100">
                         <div className="flex items-baseline gap-2">
-                          <span className="text-base font-light text-black">₹{course.price}</span>
-                          <span className="text-xs text-gray-500 line-through">₹{course.originalPrice}</span>
+                          <span className="text-sm font-light text-black">₹{course.price}</span>
+                          <span className="text-[0.65rem] text-gray-500 line-through">₹{course.originalPrice}</span>
                         </div>
-                        <span className="bg-gray-50 text-black px-2 py-0.5 rounded-md text-xs font-light border border-gray-200">
+                        <span className="bg-gray-50 text-black px-2 py-0.5 rounded-md text-[0.65rem] font-light border border-gray-200">
                           {course.level}
                         </span>
                       </div>

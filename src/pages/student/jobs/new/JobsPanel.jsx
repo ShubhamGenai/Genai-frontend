@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MapPin, Calendar, DollarSign, Building2, ChevronDown, ChevronUp, Filter, TrendingUp, Users, Briefcase, Search, Loader } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const JobsPlatform = () => {
   const [selectedCategory, setSelectedCategory] = useState('ui-ux-designer');
@@ -463,7 +464,7 @@ const JobsPlatform = () => {
             {/* Job Cards */}
             <div className="space-y-4">
               {jobs.map(job => (
-                <div key={job.id} className="bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-all duration-200 border border-gray-100">
+                <div key={job.id} onClick={() => navigate(`/jobs/job-details`)} className="bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-all duration-200 border border-gray-100 cursor-pointer">
                   <div className="flex items-start justify-between">
                     {/* Left Section */}
                     <div className="flex items-start gap-4 flex-1">
