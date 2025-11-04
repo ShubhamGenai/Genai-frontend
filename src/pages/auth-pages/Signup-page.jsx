@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import Particles from '../../component/ui/styles/Particles';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { API_BASE_URL } from '../../constants/ApiConstants';
@@ -100,62 +98,25 @@ const verifyOtp = async (e) => {
 
 
   return (
-    <div className="flex min-h-screen">
-      {/* Left Side - Animation */}
-      <div className="hidden lg:flex lg:w-2/2 relative bg-black items-center justify-">
-        <div className="absolute inset-0">
-          <Particles
-            particleColors={['#ffffff', '#ffffff']}
-            particleCount={200}
-            particleSpread={10}
-            speed={0.1}
-            particleBaseSize={100}
-            moveParticlesOnHover={true}
-            alphaParticles={false}
-            disableRotation={false}
-          />
-        </div>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="text- px-8 text-white z-10"
-        >
-          <h1 className="text-6xl font-bold mb-3">Welcome to</h1>
-          <h2 className="text-6xl font-bold mb-4">
-            Gen
-            <span className="bg-gradient-to-r from-[hsla(221,83%,53%,1)] to-[hsla(155,100%,31%,1)] text-transparent bg-clip-text">
-              Ai
-            </span> Community
-          </h2>
-          <p className="text-lg opacity-80 mb-4">Home to AI enthusiasts worldwide</p>
-          <button className="text-blue-400 hover:text-blue-600 transition-colors text-sm">
-            Learn more
-          </button>
-        </motion.div>
-      </div>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-[#F5F8FA]">
 
-      {/* Right Side - Sign Up Form */}
-      <div className="w-full lg:w-1/2 p-6 sm:p-10 flex items-center justify-center bg-white">
-      <div className="w-full max-w-sm">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-      >
-        <Link to="/" className="flex mb-6">
-          <img src="/logo.webp" alt="GenAI Logo" className="w-24 h-12" />
-        </Link>
+      <Link to="/" className="flex items-center justify-center mb-4">
+        <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold leading-tight tracking-tight">
+          Gen{' '}
+          <span className="bg-gradient-to-r from-blue-600 to-emerald-600 bg-clip-text text-transparent hover:from-blue-700 hover:to-emerald-700 transition-all duration-500">
+            AI
+          </span>
+        </h1>
+      </Link>
+      <p className="text-gray-600 text-center text-base mb-4">Create an account to start your learning journey</p>
 
+      <div className="bg-white p-6 rounded-xl shadow w-full max-w-sm">
         {step === 1 ? (
-          // Sign-up Form
-          <form className="space-y-3" onSubmit={registerUser}>
-            <h1 className="text-3xl text-blue-600 font-bold mb-1">Join us</h1>
-            <h2 className="text-lg mb-4">Create a GenAI account</h2>
-            <p className="text-gray-600 text-sm mb-6">
-              Be part of a growing community of AI enthusiasts and developers
+          <form className="space-y-4" onSubmit={registerUser}>
+            <h2 className="text-2xl font-semibold mb-2">Sign Up</h2>
+            <p className="text-gray-700 text-base mb-3">
+              Enter your details to create your account
             </p>
-          
 
             <input
               type="text"
@@ -203,29 +164,60 @@ const verifyOtp = async (e) => {
               </label>
             </div>
 
-            <button type="submit" className="w-full py-2 bg-blue-600 text-white rounded-lg flex items-center justify-center">
+            <button type="submit" className="w-full py-2 bg-[#212121] text-white rounded-lg flex items-center justify-center font-medium text-base">
                 {loading && <svg className="animate-spin h-5 w-5 mr-3 border-t-2 border-white rounded-full" viewBox="0 0 24 24"></svg>}
                 Sign up
               </button>
 
-          
+
+            <div className="relative my-5">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white text-gray-500">OR CONTINUE WITH</span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                className="px-3 py-2 border border-gray-300 rounded-lg flex items-center justify-center space-x-2 hover:bg-gray-50 transition text-sm">
+                <img src="/icons/gmail.png" alt="Google" className="w-4 h-4" />
+                <span>Google</span>
+              </button>
+              <button
+                type="button"
+                className="px-3 py-2 border border-gray-300 rounded-lg flex items-center justify-center space-x-2 hover:bg-gray-50 transition text-sm">
+                <img src="/icons/linkedin.png" alt="LinkedIn" className="w-4 h-4" />
+                <span>LinkedIn</span>
+              </button>
+            </div>
+            <p className="text-center text-sm text-gray-600 mt-3">
+              Already have an account?{" "}
+              <Link to="/login" className="text-blue-600 hover:underline">
+                Log in
+              </Link>
+            </p>
+
           </form>
         ) : (
           // OTP Verification Step
-          <form className="space-y-3" onSubmit={verifyOtp}>
-            <h1 className="text-2xl text-blue-600 font-bold mb-3">Verify OTP</h1>
-            <p className="text-gray-600 text-sm mb-4">Enter the OTP sent to {formData.email}</p>
+          <form className="space-y-4" onSubmit={verifyOtp}>
+            <h2 className="text-2xl font-semibold mb-2">Verify OTP</h2>
+            <p className="text-gray-700 text-base mb-3">Enter the OTP sent to {formData.email}</p>
 
             <input
               type="text"
               name="otp"
               placeholder="Enter OTP"
-              className="w-full px-3 py-2 border rounded-lg"
+              className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-200 outline-none transition-all text-sm"
               value={otp}
               onChange={(e) => setOtp(e.target.value)}
             />
 
-            <button type="submit" className="w-full py-2 bg-green-600 text-white rounded-lg">
+            <button type="submit" className="w-full py-2 bg-[#212121] text-white rounded-lg flex items-center justify-center font-medium text-base">
+              {loading && <svg className="animate-spin h-5 w-5 mr-3 border-t-2 border-white rounded-full" viewBox="0 0 24 24"></svg>}
               Verify OTP
             </button>
 
@@ -238,44 +230,12 @@ const verifyOtp = async (e) => {
             </p>
           </form>
         )}
-
-        {step === 1 && (
-          <>
-            <div className="relative my-5">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300"></div>
-              </div>
-              <div className="relative flex justify-center text-xs">
-                <span className="px-2 bg-white text-gray-500">or</span>
-              </div>
-            </div>
-
-            <button className="w-full px-3 py-2 border border-gray-300 rounded flex items-center justify-center space-x-2 mb-4  hover:bg-gray-50 transition text-sm">
-              <img src="/icons/chrome.png" alt="Google" className="w-4 h-4" />
-              <span>Continue with Google</span>
-            </button>
-
-            <div className="grid grid-cols-2 gap-2">
-              <button className="px-3 py-2 border border-gray-300 rounded flex items-center justify-center space-x-2 hover:bg-gray-50 transition text-sm">
-                <img src="/icons/github.png" alt="GitHub" className="w-4 h-4" />
-                <span>GitHub</span>
-              </button>
-              <button className="px-3 py-2 border border-gray-300 rounded flex items-center justify-center space-x-2 hover:bg-gray-50 transition text-sm">
-                <img src="/icons/linkedin.png" alt="LinkedIn" className="w-4 h-4" />
-                <span>LinkedIn</span>
-              </button>
-            </div>
-            <p className="text-center text-xs text-gray-600 mt-3">
-              Already have an account?{" "}
-              <Link to="/login" className="text-blue-600 hover:underline">
-                Log in
-              </Link>
-            </p>
-          </>
-        )}
-      </motion.div>
-    </div>
       </div>
+      <p className="text-center text-sm text-gray-500 mt-5">
+        <Link to="/" className="hover:underline text-sm">
+          ← Back to home
+        </Link>
+      </p>
     </div>
   );
 };
