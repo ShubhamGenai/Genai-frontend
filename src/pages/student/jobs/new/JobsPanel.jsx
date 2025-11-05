@@ -14,6 +14,7 @@ const JobsPlatform = () => {
     duration: false
   });
 
+  const navigate= useNavigate()
   // Job categories
   const jobCategories = [
     { id: 'ui-ux-designer', label: 'UI/UX Designer', active: true },
@@ -464,7 +465,7 @@ const JobsPlatform = () => {
             {/* Job Cards */}
             <div className="space-y-4">
               {jobs.map(job => (
-                <div key={job.id} onClick={() => navigate(`/jobs/job-details`)} className="bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-all duration-200 border border-gray-100 cursor-pointer">
+                <div key={job.id} onClick={() => navigate(`/jobs/jobDetails/${job.id}`)} className="bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-all duration-200 border border-gray-100 cursor-pointer">
                   <div className="flex items-start justify-between">
                     {/* Left Section */}
                     <div className="flex items-start gap-4 flex-1">

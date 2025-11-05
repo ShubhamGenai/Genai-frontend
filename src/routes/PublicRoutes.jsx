@@ -30,7 +30,7 @@ import TestPlatform from "../pages/student/test/new/TestPage-new";
 import LearningPlatform from "../pages/student/learn/new/Learnpage";
 import JobsPanel from "../pages/student/jobs/new/JobsPanel";
 import JobDetailsPage from "../pages/student/jobs/new/JobDetailsPage"; // Import the new JobDetailsPage
-
+import LibraryDetailsPage from "../pages/student/library/new/LibraryDetailsPage";
 
 
 // Authentication route components
@@ -94,6 +94,7 @@ const PublicRoutes = () => {
       
       <Route path="jobs" element={<AdaptiveLayout />}>
         <Route index element={<JobsPanel />} />
+        <Route path="jobDetails/:id" element={<JobDetailsPage />} />
         <Route path="learn" element={<LearningPlatform />} />
         <Route path="tests" element={<TestPlatform/>} />
         <Route path="library" element={<LibraryPage />} />
@@ -126,6 +127,7 @@ const PublicRoutes = () => {
         <Route path="books" element={<LibraryPage />} />
         <Route path="documents" element={<LibraryPage />} />
         <Route path="articles" element={<LibraryPage />} />
+        <Route path="details/:id" element={<LibraryDetailsPage />} />
         <Route path="learn" element={<LearnMainPage />} />
         <Route path="tests" element={<TestPage/>} />
         <Route path="jobs" element={<JobsPanel />} />
@@ -152,9 +154,6 @@ const PublicRoutes = () => {
       </Route>
       
       {/* Details pages with adaptive layout - Works for both guest and authenticated users */}
-      <Route path="/jobs/:id" element={<AdaptiveLayout />}>
-        <Route index element={<JobDetailsPage />} />
-      </Route>
       <Route path="learn-details" element={<AdaptiveLayout />}>
         <Route path=":id" element={<LearnDetails />} />
       </Route>
@@ -162,8 +161,8 @@ const PublicRoutes = () => {
         <Route index element={<CourseDetails />} />
       </Route>
       
-      <Route path="job-details" element={<AdaptiveLayout />}>
-        {/* <Route index element={<JobDetails />} /> */}
+      <Route path="jobDetails" element={<AdaptiveLayout />}>
+        <Route index element={<JobDetailsPage />} />
       </Route>
       
       <Route path="test-details" element={<AdaptiveLayout />}>
