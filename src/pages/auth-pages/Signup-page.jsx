@@ -1,18 +1,21 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { API_BASE_URL } from '../../constants/ApiConstants';
 import axios from 'axios';
+import { auth, signInWithPopup, provider } from '../../config/firebase';
+import { mainContext } from '../../context/MainContext';
 
 const SignupPage = () => {
   const [searchParams] = useSearchParams();
   const role = searchParams.get("role");
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false); // Added state for Google loading
   const [step, setStep] = useState(1);
   const [otp, setOtp] = useState('');
   const [otpVerified, setOtpVerified] = useState(false);
   const [error, setError] = useState('');
- 
+  const { setUser, setToken } = useContext(mainContext);
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -64,6 +67,44 @@ const SignupPage = () => {
     }
 };
 
+const handleGoogleSignup = async () => {
+  setGoogleLoading(true);
+  try {
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+    const { displayName, email, uid } = user;
+
+    const res = await axios.post(`${API_BASE_URL}/auth/google`, {
+      name: displayName,
+      email,
+      firebaseUid: uid,
+      // role: formData.role // Pass the role from signup form
+    });
+
+    const { token, user: backendUser } = res.data;
+
+    localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(backendUser));
+        // ✅ Update context state
+    setUser(backendUser);
+    setToken(token);
+
+    toast.success('Google signup successful!');
+    navigate("/");
+  } catch (err) {
+    console.error("Google signup error:", err);
+
+    if (err.response?.data?.message) {
+      toast.error(err.response.data.message);
+    } else if (err.code === 'auth/popup-closed-by-user') {
+      toast.error('Signup cancelled by user');
+    } else {
+      toast.error('Google signup failed. Please try again.');
+    }
+  } finally {
+    setGoogleLoading(false);
+  }
+};
 
 
 const verifyOtp = async (e) => {
@@ -182,7 +223,9 @@ const verifyOtp = async (e) => {
             <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
-                className="px-3 py-2 border border-gray-300 rounded-lg flex items-center justify-center space-x-2 hover:bg-gray-50 transition text-sm">
+                className="px-3 py-2 border border-gray-300 rounded-lg flex items-center justify-center space-x-2 hover:bg-gray-50 transition text-sm"
+                onClick={handleGoogleSignup} >
+                {googleLoading && <svg className="animate-spin h-5 w-5 mr-3 border-t-2 border-gray-500 rounded-full" viewBox="0 0 24 24"></svg>}
                 <img src="/icons/gmail.png" alt="Google" className="w-4 h-4" />
                 <span>Google</span>
               </button>
