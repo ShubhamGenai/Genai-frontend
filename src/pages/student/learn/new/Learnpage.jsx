@@ -245,6 +245,21 @@ const LearningPlatform = () => {
           bestseller: false,
           enrolled: true,
           category: "class-12"
+        },
+        {
+          id: 13,
+          title: "Introduction to Programming (Free)",
+          instructor: "Code Academy",
+          image: "https://images.unsplash.com/photo-1542831371-d2432a7e7d58?w=400&h=300&fit=crop",
+          rating: 4.5,
+          students: 25000,
+          duration: 10,
+          price: 0,
+          originalPrice: 1999,
+          level: "Beginner",
+          bestseller: false,
+          enrolled: false,
+          category: "web-development" // Assign to an existing category or create a new one
         }
       ];
 

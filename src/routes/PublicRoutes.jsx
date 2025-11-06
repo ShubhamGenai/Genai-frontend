@@ -31,6 +31,7 @@ import LearningPlatform from "../pages/student/learn/new/Learnpage";
 import JobsPanel from "../pages/student/jobs/new/JobsPanel";
 import JobDetailsPage from "../pages/student/jobs/new/JobDetailsPage"; // Import the new JobDetailsPage
 import LibraryDetailsPage from "../pages/student/library/new/LibraryDetailsPage";
+import CourseTakingPage from "../pages/student/learn/CourseTakingPage";
 
 
 // Authentication route components
@@ -83,6 +84,7 @@ const PublicRoutes = () => {
         {/* <Route path="jobs" element={<JobsPage />} /> */}
         {/* Learn Details (nested under /learn) */}
         <Route path="details/:id" element={<LearnDetails />} />
+        <Route path="course-taking/:id" element={<CourseTakingPage />} />
         <Route path="library" element={<LibraryPage />} />
         <Route path="community" element={<CommunityPage />} />
         <Route path="community/all" element={<CommunityPage />} />

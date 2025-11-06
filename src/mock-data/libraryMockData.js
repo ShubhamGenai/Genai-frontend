@@ -233,52 +233,420 @@ export const resources = {
   ]
 };
 
+
 export const mockResourceDetails = [
+  // NCERT Class 8 Resources
   {
     id: 1,
     category: "Mathematics",
     title: "Mathematics Textbook",
-    description: "NCERT Mathematics textbook for Class 8",
+    description: "NCERT Mathematics textbook for Class 8 covering all fundamental concepts",
     whatsIncluded: [
       "Official NCERT content",
-      "High-quality PDF",
-      "Free updates",
-      "All chapters included",
+      "High-quality PDF format",
+      "All 16 chapters included",
+      "Exercise solutions",
       "Printable format"
     ],
     additionalInfo: {
-      bestFor: "Students preparing for board exams, competitive exams, and concept clarity",
-      prerequisites: "Basic understanding of previous class concepts",
-      support: "24/7 customer support for any queries or issues"
+      bestFor: "Class 8 students, board exam preparation, concept building",
+      prerequisites: "Class 7 Mathematics knowledge",
+      support: "24/7 customer support for technical issues"
     },
     fileSize: "12.5 MB",
     format: "PDF",
     downloads: "89,234",
     isFree: true,
-    icon: 'FileText' // Store icon name as string
+    icon: 'Calculator'
   },
   {
-      id: 2,
-      category: "Science",
-      title: "Science Explorer Guide",
-      description: "Comprehensive guide for high school science, covering Physics, Chemistry, and Biology.",
-      whatsIncluded: [
-          "Interactive experiments",
-          "Detailed diagrams",
-          "Practice questions",
-          "Online simulations",
-          "Chapter summaries"
-      ],
-      additionalInfo: {
-          bestFor: "High school students, competitive exam aspirants",
-          prerequisites: "Basic scientific literacy",
-          support: "Email support for queries"
-      },
-      fileSize: "30 MB",
-      format: "eBook",
-      downloads: "120,500",
-      isFree: false,
-      price: "₹299",
-      icon: 'BookOpen' // Store icon name as string
+    id: 2,
+    category: "Science",
+    title: "Science Textbook",
+    description: "Complete NCERT Science textbook for Class 8 with Physics, Chemistry, and Biology",
+    whatsIncluded: [
+      "18 comprehensive chapters",
+      "Colorful diagrams and illustrations",
+      "Activity-based learning",
+      "Chapter-wise questions",
+      "Glossary and index"
+    ],
+    additionalInfo: {
+      bestFor: "Science foundation building, competitive exam base",
+      prerequisites: "Basic scientific concepts from Class 7",
+      support: "Online doubt clearing sessions"
+    },
+    fileSize: "18.3 MB",
+    format: "PDF",
+    downloads: "76,543",
+    isFree: true,
+    icon: 'Microscope'
+  },
+  {
+    id: 3,
+    category: "English",
+    title: "English Textbook",
+    description: "NCERT English Honeydew textbook for Class 8 with prose and poetry",
+    whatsIncluded: [
+      "8 prose lessons",
+      "8 poetry selections",
+      "Grammar exercises",
+      "Writing skills development",
+      "Audio narrations"
+    ],
+    additionalInfo: {
+      bestFor: "English language proficiency, literature appreciation",
+      prerequisites: "Basic English reading skills",
+      support: "Language learning assistance"
+    },
+    fileSize: "8.7 MB",
+    format: "PDF + Audio",
+    downloads: "65,789",
+    isFree: true,
+    icon: 'BookOpen'
+  },
+
+  // JEE Preparation Resources
+  {
+    id: 49,
+    category: "Physics",
+    title: "Physics JEE Main",
+    description: "Comprehensive Physics guide for JEE Main covering all topics with problem-solving techniques",
+    whatsIncluded: [
+      "30 chapters with theory",
+      "500+ solved examples",
+      "1000+ practice problems",
+      "Previous year questions",
+      "Mock test series"
+    ],
+    additionalInfo: {
+      bestFor: "JEE Main aspirants, engineering entrance preparation",
+      prerequisites: "Class 11-12 Physics completion",
+      support: "Expert faculty doubt resolution"
+    },
+    fileSize: "15.2 MB",
+    format: "Interactive PDF",
+    downloads: "45,678",
+    isFree: true,
+    icon: 'Atom'
+  },
+  {
+    id: 52,
+    category: "Practice",
+    title: "JEE Advanced Papers",
+    description: "Collection of JEE Advanced papers from last 10 years with detailed solutions",
+    whatsIncluded: [
+      "10 years question papers",
+      "Detailed step-by-step solutions",
+      "Topic-wise analysis",
+      "Difficulty level marking",
+      "Performance tracking"
+    ],
+    additionalInfo: {
+      bestFor: "JEE Advanced preparation, pattern understanding",
+      prerequisites: "JEE Main level preparation",
+      support: "Solution explanation videos"
+    },
+    fileSize: "12.3 MB",
+    format: "PDF + Videos",
+    downloads: "32,456",
+    isFree: false,
+    price: "₹199",
+    icon: 'Trophy'
+  },
+
+  // NEET Preparation Resources
+  {
+    id: 64,
+    category: "Physics",
+    title: "Physics NEET",
+    description: "Complete Physics preparation guide for NEET with medical entrance focus",
+    whatsIncluded: [
+      "NEET syllabus coverage",
+      "Medical physics applications",
+      "Numerical problem solving",
+      "Conceptual clarity focus",
+      "Quick revision notes"
+    ],
+    additionalInfo: {
+      bestFor: "Medical entrance preparation, NEET aspirants",
+      prerequisites: "Class 11-12 Physics background",
+      support: "Medical physics expert guidance"
+    },
+    fileSize: "16.2 MB",
+    format: "PDF",
+    downloads: "38,912",
+    isFree: true,
+    icon: 'Heart'
+  },
+  {
+    id: 68,
+    category: "Tests",
+    title: "NEET Mock Tests",
+    description: "Comprehensive NEET mock test series with real exam simulation",
+    whatsIncluded: [
+      "20 full-length mock tests",
+      "Subject-wise tests",
+      "Performance analytics",
+      "All India ranking",
+      "Detailed score analysis"
+    ],
+    additionalInfo: {
+      bestFor: "NEET exam practice, time management, performance assessment",
+      prerequisites: "NEET syllabus completion",
+      support: "Performance counseling sessions"
+    },
+    fileSize: "9.3 MB",
+    format: "Online Platform",
+    downloads: "28,345",
+    isFree: false,
+    price: "₹299",
+    icon: 'Timer'
+  },
+
+  // Web Development Resources
+  {
+    id: 84,
+    category: "HTML",
+    title: "HTML Basics",
+    description: "Complete beginner's guide to HTML with hands-on examples and projects",
+    whatsIncluded: [
+      "HTML5 fundamentals",
+      "Semantic markup",
+      "Forms and validation",
+      "Accessibility features",
+      "5 practical projects"
+    ],
+    additionalInfo: {
+      bestFor: "Web development beginners, career changers",
+      prerequisites: "Basic computer literacy",
+      support: "Developer community access"
+    },
+    fileSize: "8.5 MB",
+    format: "Interactive Tutorial",
+    downloads: "156,789",
+    isFree: true,
+    icon: 'Code'
+  },
+  {
+    id: 87,
+    category: "React",
+    title: "React Complete Guide",
+    description: "Comprehensive React.js guide from basics to advanced concepts with real-world projects",
+    whatsIncluded: [
+      "React fundamentals to advanced",
+      "Hooks and state management",
+      "Redux integration",
+      "Testing strategies",
+      "3 full-stack projects"
+    ],
+    additionalInfo: {
+      bestFor: "Frontend developers, JavaScript programmers looking to master React",
+      prerequisites: "JavaScript ES6+ knowledge",
+      support: "Code review sessions with experts"
+    },
+    fileSize: "15.3 MB",
+    format: "Video + Code",
+    downloads: "89,456",
+    isFree: false,
+    price: "₹299",
+    icon: 'Layers'
+  },
+
+  // Data Science Resources
+  {
+    id: 104,
+    category: "Python",
+    title: "Python Basics",
+    description: "Foundation course in Python programming for data science and general programming",
+    whatsIncluded: [
+      "Python syntax and basics",
+      "Data structures",
+      "Object-oriented programming",
+      "File handling",
+      "10 coding projects"
+    ],
+    additionalInfo: {
+      bestFor: "Programming beginners, data science aspirants",
+      prerequisites: "Basic computer skills",
+      support: "Live coding sessions"
+    },
+    fileSize: "11.2 MB",
+    format: "Interactive Course",
+    downloads: "234,567",
+    isFree: true,
+    icon: 'Code2'
+  },
+  {
+    id: 108,
+    category: "ML",
+    title: "Machine Learning Basics",
+    description: "Introduction to machine learning concepts with practical implementation",
+    whatsIncluded: [
+      "ML algorithms explanation",
+      "Scikit-learn tutorials",
+      "Data preprocessing",
+      "Model evaluation",
+      "5 ML projects"
+    ],
+    additionalInfo: {
+      bestFor: "Data science beginners, Python programmers",
+      prerequisites: "Python programming, basic statistics",
+      support: "ML expert mentorship"
+    },
+    fileSize: "14.8 MB",
+    format: "Jupyter Notebooks",
+    downloads: "67,890",
+    isFree: false,
+    price: "₹299",
+    icon: 'Brain'
+  },
+
+  // AI & ML Resources
+  {
+    id: 122,
+    category: "AI Basics",
+    title: "AI Fundamentals",
+    description: "Comprehensive introduction to Artificial Intelligence concepts and applications",
+    whatsIncluded: [
+      "AI history and evolution",
+      "Machine learning basics",
+      "Neural network introduction",
+      "AI ethics and philosophy",
+      "Practical AI applications"
+    ],
+    additionalInfo: {
+      bestFor: "AI beginners, technology enthusiasts, students",
+      prerequisites: "Basic programming knowledge helpful",
+      support: "AI research community access"
+    },
+    fileSize: "12.5 MB",
+    format: "Multimedia Course",
+    downloads: "145,678",
+    isFree: true,
+    icon: 'Bot'
+  },
+  {
+    id: 126,
+    category: "Deep Learning",
+    title: "Deep Learning Guide",
+    description: "Advanced deep learning techniques with TensorFlow and PyTorch implementations",
+    whatsIncluded: [
+      "Neural network architectures",
+      "CNN and RNN implementations",
+      "Transfer learning",
+      "Advanced optimization",
+      "Industry case studies"
+    ],
+    additionalInfo: {
+      bestFor: "ML engineers, AI researchers, advanced practitioners",
+      prerequisites: "Machine learning fundamentals, Python proficiency",
+      support: "Research paper discussions"
+    },
+    fileSize: "18.3 MB",
+    format: "Advanced Course",
+    downloads: "34,567",
+    isFree: false,
+    price: "₹399",
+    icon: 'Network'
+  },
+
+  // Study Notes Resources
+  {
+    id: 137,
+    category: "Physics",
+    title: "Physics Notes Class 12",
+    description: "Comprehensive physics notes for Class 12 covering all NCERT chapters",
+    whatsIncluded: [
+      "15 chapter summaries",
+      "Important formulas",
+      "Concept maps",
+      "Previous year questions",
+      "Quick revision points"
+    ],
+    additionalInfo: {
+      bestFor: "Class 12 students, board exam preparation, JEE/NEET base",
+      prerequisites: "Class 11 Physics completion",
+      support: "Subject expert consultations"
+    },
+    fileSize: "14.5 MB",
+    format: "PDF Notes",
+    downloads: "123,456",
+    isFree: true,
+    icon: 'FileText'
+  },
+  {
+    id: 158,
+    category: "Bundle",
+    title: "Revision Notes Bundle",
+    description: "Complete revision notes bundle for all subjects and competitive exams",
+    whatsIncluded: [
+      "All subject notes",
+      "Formula sheets",
+      "Quick revision guides",
+      "Mind maps",
+      "Last-minute preparation"
+    ],
+    additionalInfo: {
+      bestFor: "Comprehensive exam preparation, time-efficient revision",
+      prerequisites: "Subject completion",
+      support: "Revision strategy guidance"
+    },
+    fileSize: "18.2 MB",
+    format: "Multi-format Bundle",
+    downloads: "78,901",
+    isFree: false,
+    price: "₹199",
+    icon: 'Package'
+  },
+
+  // Exam Guide Resources
+  {
+    id: 162,
+    category: "JEE Guide",
+    title: "JEE Preparation Guide",
+    description: "Strategic guide for JEE preparation with study plans and expert advice",
+    whatsIncluded: [
+      "12-month study plan",
+      "Subject-wise strategies",
+      "Time management tips",
+      "Stress management",
+      "Success stories"
+    ],
+    additionalInfo: {
+      bestFor: "JEE aspirants, strategic preparation planning",
+      prerequisites: "Class 11-12 enrollment",
+      support: "Mentorship program access"
+    },
+    fileSize: "12.5 MB",
+    format: "Strategy Guide",
+    downloads: "56,789",
+    isFree: false,
+    price: "₹299",
+    icon: 'Target'
+  },
+  {
+    id: 174,
+    category: "Strategy",
+    title: "Study Strategy Guide",
+    description: "Universal study strategies and techniques for effective learning",
+    whatsIncluded: [
+      "Learning methodologies",
+      "Memory techniques",
+      "Note-taking strategies",
+      "Exam preparation tips",
+      "Productivity hacks"
+    ],
+    additionalInfo: {
+      bestFor: "All students, learning optimization, academic improvement",
+      prerequisites: "None",
+      support: "Study coach consultations"
+    },
+    fileSize: "8.9 MB",
+    format: "Interactive Guide",
+    downloads: "198,765",
+    isFree: true,
+    icon: 'Lightbulb'
   }
 ];
+

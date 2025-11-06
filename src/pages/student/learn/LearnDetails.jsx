@@ -220,10 +220,10 @@ const LearnDetails = () => {
                 <div className="p-4">
                   <div className="flex items-center justify-between mb-1">
                     <div className="text-lg font-light text-gray-900">
-                    {priceDiscounted != null ? `₹${priceDiscounted}` : (courseDetails?.priceText || '—')}{' '}
-                    {priceActual && priceDiscounted != null && priceDiscounted < priceActual && (
-                      <span className="text-xs text-gray-500 line-through ml-2">₹{priceActual}</span>
-                    )}
+                      {isFreeCourse ? 'Free' : `₹${priceActual}`}
+                      {priceActual && priceDiscounted != null && priceDiscounted < priceActual && (
+                        <span className="text-xs text-gray-500 line-through ml-2">₹{priceDiscounted}</span>
+                      )}
                     </div>
                     {!isFreeCourse && discountPercent != null && (
                       <span className="text-[10px] px-2.5 py-0.5 bg-blue-600 text-white rounded-full">
@@ -235,29 +235,41 @@ const LearnDetails = () => {
                     <div className="flex flex-col gap-2.5">
                       <button
                         className="w-full bg-blue-600 text-white py-2 rounded-lg font-light text-sm hover:bg-blue-700 transition-colors"
-                        onClick={() => navigate(`/learn/course/${effectiveId || ''}`)}
+                        onClick={() => navigate(`/learn/course-taking/${effectiveId || ''}`)}
                       >
                         Go To Course
                       </button>
                     </div>
                   ) : (
                     <div className="flex flex-col gap-2.5">
-                      <button
-                        className="w-full bg-white text-gray-900 py-2 rounded-lg font-light text-sm hover:bg-gray-50 transition-colors border border-gray-200 flex items-center justify-center gap-2"
-                        onClick={() => {
-                          // Placeholder add-to-cart handler
-                          console.log('Added to cart', courseDetails?.id);
-                        }}
-                      >
-                        <ShoppingCart className="w-4 h-4" />
-                        Add To Cart
-                      </button>
-                      <button
-                        className="w-full bg-blue-600 text-white py-2 rounded-lg font-light text-sm hover:bg-blue-700 transition-colors"
-                        onClick={() => setShowPurchaseModal(true)}
-                      >
-                        Buy Now
-                      </button>
+                      {(isFreeCourse || courseDetails?.enrolled) ? (
+                        <button
+                          onClick={() => navigate(`/learn/course-taking/${courseDetails.id}`)}
+                          className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-3 rounded-lg text-base font-semibold hover:bg-blue-700 transition-colors"
+                        >
+                          <PlayCircle className="w-5 h-5" />
+                          Go to Course
+                        </button>
+                      ) : (
+                        <>
+                          <button
+                            className="w-full bg-white text-gray-900 py-2 rounded-lg font-light text-sm hover:bg-gray-50 transition-colors border border-gray-200 flex items-center justify-center gap-2"
+                            onClick={() => {
+                              // Placeholder add-to-cart handler
+                              console.log('Added to cart', courseDetails?.id);
+                            }}
+                          >
+                            <ShoppingCart className="w-4 h-4" />
+                            Add To Cart
+                          </button>
+                          <button
+                            className="w-full bg-blue-600 text-white py-2 rounded-lg font-light text-sm hover:bg-blue-700 transition-colors"
+                            onClick={() => setShowPurchaseModal(true)}
+                          >
+                            Buy Now
+                          </button>
+                        </>
+                      )}
                     </div>
                   )}
                 </div>

@@ -17,6 +17,7 @@ import TestTakingPage from "../pages/student/test/TestTakingPage";
 import JobDetails from "../pages/student/jobs/JobDetails";
 import CoursePlayer from "../pages/student/learn/course-player/Course-Player";
 import LearnDetails from "../pages/student/learn/LearnDetails";
+import CourseTakingPage from "../pages/student/learn/CourseTakingPage";
 
 const StudentRoutes = () => {
   return (
@@ -50,6 +51,7 @@ const StudentRoutes = () => {
         <Route path="learn/details/:id" element={<LearnDetails />} />
         <Route path="course-details" element={<CourseDetails />} />
         <Route path="course-player" element={<CoursePlayer />} />
+        <Route path="course-taking/:id" element={<CourseTakingPage />} />
         <Route path="tests" element={<TestPage />} />
         <Route path="test-details" element={<TestDetailsPage />} />
         <Route path="test-player" element={<TestPlayer />} />
