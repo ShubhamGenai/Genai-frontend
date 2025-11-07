@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { API_BASE_URL } from '../../constants/ApiConstants';
@@ -15,6 +15,7 @@ const SignupPage = () => {
   const [otp, setOtp] = useState('');
   const [otpVerified, setOtpVerified] = useState(false);
   const [error, setError] = useState('');
+  const [resendTimer, setResendTimer] = useState(60);
   const { setUser, setToken } = useContext(mainContext);
   const navigate = useNavigate();
 
@@ -136,7 +137,33 @@ const verifyOtp = async (e) => {
   }
 };
 
+const resendOtp = async () => {
+  setLoading(true);
+  try {
+    const response = await axios.post(`${API_BASE_URL}/auth/resend-otp`, { email: formData.email });
+    if (response.data.success) {
+      toast.success('New OTP sent successfully!');
+      setResendTimer(60); // Reset timer
+    } else {
+      toast.error(response.data.message || 'Failed to resend OTP.');
+    }
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || 'Failed to resend OTP.';
+    toast.error(errorMessage);
+  } finally {
+    setLoading(false);
+  }
+};
 
+useEffect(() => {
+  let timerInterval;
+  if (step === 2 && resendTimer > 0) {
+    timerInterval = setInterval(() => {
+      setResendTimer(prev => prev - 1);
+    }, 1000);
+  }
+  return () => clearInterval(timerInterval);
+}, [step, resendTimer]);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-[#F5F8FA]">
@@ -266,9 +293,17 @@ const verifyOtp = async (e) => {
 
             <p className="text-center text-sm mt-3">
               Didn't receive the OTP?{" "}
-              <button type="button" className="text-blue-600 hover:underline">
-              {loading && <svg className="animate-spin h-5 w-5 mr-3 border-t-2 border-white rounded-full" viewBox="0 0 24 24"></svg>}
-                Resend OTP
+              <button 
+                type="button" 
+                onClick={resendOtp}
+                disabled={loading || resendTimer > 0} // Disable during loading or timer countdown
+                className={`text-blue-600 hover:underline ${loading || resendTimer > 0 ? 'cursor-not-allowed opacity-50' : ''}`}
+              >
+                {loading ? (
+                  <svg className="animate-spin h-4 w-4 mr-2 border-t-2 border-blue-600 rounded-full inline-block" viewBox="0 0 24 24"></svg>
+                ) : (
+                  resendTimer > 0 ? `Resend OTP in ${resendTimer}s` : 'Resend OTP'
+                )}
               </button>
             </p>
           </form>
