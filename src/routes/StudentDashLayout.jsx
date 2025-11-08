@@ -12,13 +12,17 @@ const StudentDashboardLayout = () => {
     const path = location.pathname;
     
     // Check for specific submenu routes first
-    if (path.includes("/community/forum")) setActiveItem("community-forum");
-    else if (path.includes("/community/groups")) setActiveItem("community-groups");
-    else if (path.includes("/community/events")) setActiveItem("community-events");
-    else if (path.includes("/progress/courses")) setActiveItem("progress-courses");
-    else if (path.includes("/progress/skills")) setActiveItem("progress-skills");
-    else if (path.includes("/progress/certificates")) setActiveItem("progress-certificates");
-    else if (path.includes("/leaderboard")) setActiveItem("progress-leaderboard");
+    if (path.includes("/community/all")) setActiveItem("community-all");
+    else if (path.includes("/community/college")) setActiveItem("community-college");
+    else if (path.includes("/community/company")) setActiveItem("community-company");
+    else if (path.includes("/community/examprep")) setActiveItem("community-examprep");
+    else if (path.includes("/community/skills")) setActiveItem("community-skills");
+    else if (path.includes("/progress/mycourses")) setActiveItem("progress-mycourses");
+    else if (path.includes("/progress/mytests")) setActiveItem("progress-mytests");
+    else if (path.includes("/progress/myjobapplications")) setActiveItem("progress-myjobapplications");
+    else if (path.includes("/progress/mydocuments")) setActiveItem("progress-mydocuments");
+    else if (path.includes("/progress/mynotes")) setActiveItem("progress-mynotes");
+    else if (path.includes("/profile")) setActiveItem("progress-profile");
     
     // Check for main menu routes
     else if (path.includes("/learn") || path.includes("/course-details") || path.includes("/course-player")) setActiveItem("learn");
@@ -26,6 +30,8 @@ const StudentDashboardLayout = () => {
     else if (path.includes("/jobs") || path.includes("/job-details")) setActiveItem("jobs");
     else if (path.includes("/community")) setActiveItem("community");
     else if (path.includes("/progress")) setActiveItem("progress");
+    else if (path.includes("/library")) setActiveItem("library");
+    else if (path.includes("/ai-chat")) setActiveItem("ai-chat");
     else if (path.includes("/settings")) setActiveItem("settings");
     else if (path.includes("/cart")) setActiveItem("cart");
     else if (path.includes("/list")) setActiveItem("list");
@@ -46,7 +52,7 @@ const StudentDashboardLayout = () => {
         <Header/>
 
         {/* Outlet renders the child routes */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-6">
+        <main className="flex-1 overflow-y-auto ">
           <Outlet />
         </main>
       </div>

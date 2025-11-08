@@ -40,7 +40,7 @@ export const Header = () => {
     setIsDropdownOpen(false);
   };
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200 px-4 md:px-6 py-3 md:py-4">
+    <header className="bg-white shadow-sm border-b border-gray-200 px-4 md:px-6 py-2 md:py-2">
       <div className="flex items-center justify-between">
         {/* Left Section - Welcome Message */}
         <div className="flex items-center space-x-2 md:space-x-4 min-w-0 flex-1">

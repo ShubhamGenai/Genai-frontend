@@ -25,6 +25,7 @@ import CompanyCommunityPage from "../pages/student/community/CompanyCommunityPag
 import ExamPrepCommunityPage from "../pages/student/community/ExamPrepCommunityPage";
 import SkillsCommunityPage from "../pages/student/community/SkillsCommunityPage";
 import LearnDetails from "../pages/student/learn/LearnDetails";
+import AllCommunitiesPage from "../pages/student/community/AllCommunitiesPage";
 
 import TestPlatform from "../pages/student/test/new/TestPage-new";
 import LearningPlatform from "../pages/student/learn/new/Learnpage";
@@ -32,6 +33,13 @@ import JobsPanel from "../pages/student/jobs/new/JobsPanel";
 import JobDetailsPage from "../pages/student/jobs/new/JobDetailsPage"; // Import the new JobDetailsPage
 import LibraryDetailsPage from "../pages/student/library/new/LibraryDetailsPage";
 import CourseTakingPage from "../pages/student/learn/CourseTakingPage";
+import MyCourses from "../pages/student/progress/MyCourses";
+import MyTests from "../pages/student/progress/MyTests";
+import MyJobApplications from "../pages/student/progress/MyJobApplications";
+import MyDocuments from "../pages/student/progress/MyDocuments";
+import MyNotes from "../pages/student/progress/MyNotes";
+import Profile from "../pages/student/progress/Profile";
+import AIChatPage from "../pages/student/ai-chat/AIChatPage";
 
 
 // Authentication route components
@@ -86,8 +94,8 @@ const PublicRoutes = () => {
         <Route path="details/:id" element={<LearnDetails />} />
         <Route path="course-taking/:id" element={<CourseTakingPage />} />
         <Route path="library" element={<LibraryPage />} />
-        <Route path="community" element={<CommunityPage />} />
-        <Route path="community/all" element={<CommunityPage />} />
+        <Route path="community" element={<AllCommunitiesPage />} />
+        <Route path="community/all" element={<AllCommunitiesPage />} />
         <Route path="community/college" element={<CollegeCommunityPage />} />
         <Route path="community/company" element={<CompanyCommunityPage />} />
         <Route path="community/exam-prep" element={<ExamPrepCommunityPage />} />
@@ -100,8 +108,8 @@ const PublicRoutes = () => {
         <Route path="learn" element={<LearningPlatform />} />
         <Route path="tests" element={<TestPlatform/>} />
         <Route path="library" element={<LibraryPage />} />
-        <Route path="community" element={<CommunityPage />} />
-        <Route path="community/all" element={<CommunityPage />} />
+        <Route path="community" element={<AllCommunitiesPage />} />
+        <Route path="community/all" element={<AllCommunitiesPage />} />
         <Route path="community/college" element={<CollegeCommunityPage />} />
         <Route path="community/company" element={<CompanyCommunityPage />} />
         <Route path="community/exam-prep" element={<ExamPrepCommunityPage />} />
@@ -113,8 +121,8 @@ const PublicRoutes = () => {
         <Route path="learn" element={<LearningPlatform />} />
         <Route path="jobs" element={<JobsPanel />} />
         <Route path="library" element={<LibraryPage />} />
-        <Route path="community" element={<CommunityPage />} />
-        <Route path="community/all" element={<CommunityPage />} />
+        <Route path="community" element={<AllCommunitiesPage />} />
+        <Route path="community/all" element={<AllCommunitiesPage />} />
         <Route path="community/college" element={<CollegeCommunityPage />} />
         <Route path="community/company" element={<CompanyCommunityPage />} />
         <Route path="community/exam-prep" element={<ExamPrepCommunityPage />} />
@@ -133,8 +141,8 @@ const PublicRoutes = () => {
         <Route path="learn" element={<LearnMainPage />} />
         <Route path="tests" element={<TestPage/>} />
         <Route path="jobs" element={<JobsPanel />} />
-        <Route path="community" element={<CommunityPage />} />
-        <Route path="community/all" element={<CommunityPage />} />
+        <Route path="community" element={<AllCommunitiesPage />} />
+        <Route path="community/all" element={<AllCommunitiesPage />} />
         <Route path="community/college" element={<CollegeCommunityPage />} />
         <Route path="community/company" element={<CompanyCommunityPage />} />
         <Route path="community/exam-prep" element={<ExamPrepCommunityPage />} />
@@ -144,7 +152,7 @@ const PublicRoutes = () => {
       {/* Community routes */}
       <Route path="community" element={<AdaptiveLayout />}>
         <Route index element={<CommunityPage />} />
-        <Route path="all" element={<CommunityPage />} />
+        <Route path="all" element={<AllCommunitiesPage />} />
         <Route path="college" element={<CollegeCommunityPage />} />
         <Route path="company" element={<CompanyCommunityPage />} />
         <Route path="exam-prep" element={<ExamPrepCommunityPage />} />
@@ -155,6 +163,41 @@ const PublicRoutes = () => {
         <Route path="library" element={<LibraryPage />} />
       </Route>
       
+      {/* Progress routes */}
+      <Route path="progress" element={<AdaptiveLayout />}>
+        <Route path="mycourses" element={<MyCourses />} />
+        <Route path="mytests" element={<MyTests />} />
+        <Route path="myjobapplications" element={<MyJobApplications />} />
+        <Route path="mydocuments" element={<MyDocuments />} />
+        <Route path="mynotes" element={<MyNotes />} />
+        <Route path="profile" element={<Profile />} />
+        <Route path="learn" element={<LearningPlatform />} />
+        <Route path="tests" element={<TestPlatform/>} />
+        <Route path="jobs" element={<JobsPanel />} />
+        <Route path="library" element={<LibraryPage />} />
+        <Route path="community" element={<AllCommunitiesPage />} />
+      </Route>
+      
+      {/* Library main route, also acts as a top-level route */}
+      <Route path="library" element={<AdaptiveLayout />}>
+        <Route index element={<LibraryPage />} />
+        <Route path="details/:id" element={<LibraryDetailsPage />} />
+        <Route path="learn" element={<LearningPlatform />} />
+        <Route path="tests" element={<TestPlatform />} />
+        <Route path="jobs" element={<JobsPanel />} />
+        <Route path="community" element={<AllCommunitiesPage />} />
+      </Route>
+
+      {/* AI Chat Route */}
+      <Route path="ai-chat" element={<AdaptiveLayout />}>
+        <Route index element={<AIChatPage />} />
+        <Route path="learn" element={<LearningPlatform />} />
+        <Route path="tests" element={<TestPlatform />} />
+        <Route path="jobs" element={<JobsPanel />} />
+        <Route path="community" element={<AllCommunitiesPage />} />
+        <Route path="library" element={<LibraryPage />} />
+      </Route>
+
       {/* Details pages with adaptive layout - Works for both guest and authenticated users */}
       <Route path="learn-details" element={<AdaptiveLayout />}>
         <Route path=":id" element={<LearnDetails />} />

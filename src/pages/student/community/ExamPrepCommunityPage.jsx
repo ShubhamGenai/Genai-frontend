@@ -49,7 +49,7 @@ const ExamPrepCommunityPage = () => {
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
-            <div>
+    <div>
               <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-3">
                 <FileTextIcon className="w-8 h-8 text-blue-600" />
                 Exam Prep Community

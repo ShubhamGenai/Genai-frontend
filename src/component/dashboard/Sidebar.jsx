@@ -19,7 +19,19 @@ import {
   GraduationCapIcon,
   TrendingUpIcon,
   TrophyIcon,
-  Icon
+  BookIcon, // Added for My Courses
+  ClipboardCheckIcon, // Added for My Tests
+  BriefcaseIcon, // Added for My Job Applications
+  FolderIcon, // Added for My Documents
+  ClipboardIcon, // Added for My Notes
+  UserIcon, // Added for Profile
+  UsersRoundIcon, // Added for All Communities
+  GraduationCap, // Added for College
+  Building, // Added for Company
+  ClipboardList, // Added for Exam Prep
+  Sparkles, // Added for Skills
+  LibrarySquareIcon, // Added for Library
+  MessageSquareTextIcon // Added for AI Chat
 } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -64,6 +76,21 @@ const Sidebar = ({ activeItem, setActiveItem }) => {
       path: '/student/jobs',
       hasSubmenu: false 
     },
+    
+    { 
+      id: 'library', 
+      name: 'Library', 
+      icon: LibrarySquareIcon, 
+      path: '/student/library',
+      hasSubmenu: false 
+    },
+    { 
+      id: 'ai-chat', 
+      name: 'AI Chat', 
+      icon: MessageSquareTextIcon, 
+      path: '/student/ai-chat',
+      hasSubmenu: false 
+    },
     { 
       id: 'community', 
       name: 'Community', 
@@ -71,9 +98,11 @@ const Sidebar = ({ activeItem, setActiveItem }) => {
       path: null,
       hasSubmenu: true,
       submenu: [
-        { id: 'community-forum', name: 'Forum', path: '/student/community/forum', icon: MessageSquareIcon },
-        { id: 'community-groups', name: 'Groups', path: '/student/community/groups', icon: UserPlusIcon },
-        { id: 'community-events', name: 'Events', path: '/student/community/events', icon: CalendarIcon }
+        { id: 'community-all', name: 'All Communities', path: '/student/community/all', icon: UsersRoundIcon },
+        { id: 'community-college', name: 'College', path: '/student/community/college', icon: GraduationCap },
+        { id: 'community-company', name: 'Company', path: '/student/community/company', icon: Building },
+        { id: 'community-examprep', name: 'Exam Prep', path: '/student/community/examprep', icon: ClipboardList },
+        { id: 'community-skills', name: 'Skills', path: '/student/community/skills', icon: Sparkles }
       ]
     },
     { 
@@ -83,12 +112,14 @@ const Sidebar = ({ activeItem, setActiveItem }) => {
       path: null,
       hasSubmenu: true,
       submenu: [
-        { id: 'progress-courses', name: 'Course Progress', path: '/student/progress/courses', icon: GraduationCapIcon },
-        { id: 'progress-skills', name: 'Skills Track', path: '/student/progress/skills', icon: TrendingUpIcon },
-        { id: 'progress-certificates', name: 'Certificates', path: '/student/progress/certificates', icon: Icon },
-        { id: 'progress-leaderboard', name: 'Leaderboard', path: '/student/leaderboard', icon: TrophyIcon }
+        { id: 'progress-mycourses', name: 'My Courses', path: '/student/progress/mycourses', icon: BookIcon },
+        { id: 'progress-mytests', name: 'My Tests', path: '/student/progress/mytests', icon: ClipboardCheckIcon },
+        { id: 'progress-myjobapplications', name: 'My Job Applications', path: '/student/progress/myjobapplications', icon: BriefcaseIcon },
+        { id: 'progress-mydocuments', name: 'My Documents', path: '/student/progress/mydocuments', icon: FolderIcon },
+        { id: 'progress-mynotes', name: 'My Notes', path: '/student/progress/mynotes', icon: ClipboardIcon },
+        { id: 'progress-profile', name: 'Profile', path: '/student/profile', icon: UserIcon }
       ]
-    }
+    },
   ];
 
   const bottomMenuItems = [
@@ -223,17 +254,23 @@ const Sidebar = ({ activeItem, setActiveItem }) => {
       `}>
         {/* Logo Section */}
         <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-          {!isCollapsed && (
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
-                <Rocket className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h1 className="text-lg font-bold text-gray-900">GenAI</h1>
-                <p className="text-xs text-gray-500">Learning</p>
-              </div>
-            </div>
-          )}
+        {isCollapsed ? (
+          <div className="flex items-center justify-center w-full">
+            <h1 className="text-xs font-bold tracking-tight">
+              Gen{' '}
+              <span className="bg-gradient-to-r from-blue-600 to-emerald-600 bg-clip-text text-transparent">AI</span>
+            </h1>
+          </div>
+        ) : (
+          <div className="flex items-center space-x-3">
+            <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold leading-tight tracking-tight">
+              Gen{' '}
+              <span className="bg-gradient-to-r from-blue-600 to-emerald-600 bg-clip-text text-transparent hover:from-blue-700 hover:to-emerald-700 transition-all duration-500">
+                AI
+              </span>
+            </h1>
+          </div>
+        )}
           
           {/* Collapse Toggle Button - Hidden on Mobile */}
           {!isMobile && (
@@ -265,29 +302,28 @@ const Sidebar = ({ activeItem, setActiveItem }) => {
                   {/* Main Menu Item */}
                   <button
                     onClick={() => handleMenuClick(item)}
-                    className={`w-full flex items-center ${isCollapsed ? 'justify-center px-2' : 'justify-between px-3'} py-3 rounded-lg text-left transition-colors duration-200 ${
-                      isMainActive || isSubmenuActive
-                        ? 'bg-gray-900 text-white'
-                        : 'text-gray-700 hover:bg-gray-100'
-                    }`}
+                    className={`w-full flex items-center ${isCollapsed ? 'justify-center px-2' : 'justify-between px-3'} py-3 rounded-lg text-left transition-colors duration-200 ${isCollapsed ? '' : 'transform transition-transform'} ${isMainActive || isSubmenuActive ? 'bg-gray-100 text-gray-900 shadow-sm -translate-y-0.5' : 'text-gray-700 hover:bg-gray-100'}`}
                     title={isCollapsed ? item.name : ''}
                   >
                     <div className={`flex items-center ${isCollapsed ? '' : 'space-x-3'}`}>
-                      <Icon className={`w-5 h-5 ${isMainActive || isSubmenuActive ? 'text-white' : 'text-gray-600'}`} />
+                      <Icon className={`w-5 h-5 ${isMainActive || isSubmenuActive ? 'text-black' : 'text-gray-600'}`} />
                       {!isCollapsed && <span className="font-medium">{item.name}</span>}
                     </div>
                     {item.hasSubmenu && !isCollapsed && (
                       <ChevronRightIcon 
                         className={`w-4 h-4 transition-transform ${
                           isExpanded ? 'rotate-90' : ''
-                        } ${isMainActive || isSubmenuActive ? 'text-white' : 'text-gray-400'}`} 
+                        } ${isMainActive || isSubmenuActive ? 'text-black' : 'text-gray-400'}`} 
                       />
                     )}
                   </button>
 
                   {/* Submenu - Show when expanded and not collapsed */}
-                  {item.hasSubmenu && isExpanded && !isCollapsed && (
-                    <div className="ml-8 mt-1 space-y-1">
+                  {item.hasSubmenu && !isCollapsed && (
+                    <div
+                      className={`ml-8 mt-1 overflow-hidden transition-[max-height] duration-300 ease-in-out ${isExpanded ? 'space-y-1 rounded-md bg-gray-50' : ''}`}
+                      style={{ maxHeight: isExpanded ? `${(item.submenu?.length || 0) * 44}px` : '0px' }}
+                    >
                       {item.submenu.map((subItem) => {
                         const SubIcon = subItem.icon;
                         const isSubActive = activeItem === subItem.id;

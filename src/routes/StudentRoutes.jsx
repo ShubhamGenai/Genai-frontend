@@ -18,6 +18,23 @@ import JobDetails from "../pages/student/jobs/JobDetails";
 import CoursePlayer from "../pages/student/learn/course-player/Course-Player";
 import LearnDetails from "../pages/student/learn/LearnDetails";
 import CourseTakingPage from "../pages/student/learn/CourseTakingPage";
+import LearningPlatform from "../pages/student/learn/new/Learnpage";
+import TestPlatform from "../pages/student/test/new/TestPage-new";
+import JobsPlatform from "../pages/student/jobs/new/JobsPanel";
+import MyCourses from "../pages/student/progress/MyCourses";
+import MyTests from "../pages/student/progress/MyTests";
+import MyJobApplications from "../pages/student/progress/MyJobApplications";
+import MyDocuments from "../pages/student/progress/MyDocuments";
+import MyNotes from "../pages/student/progress/MyNotes";
+import Profile from "../pages/student/progress/Profile";
+import AllCommunitiesPage from "../pages/student/community/AllCommunitiesPage";
+import CollegeCommunityPage from "../pages/student/community/CollegeCommunityPage";
+import CompanyCommunityPage from "../pages/student/community/CompanyCommunityPage";
+import ExamPrepCommunityPage from "../pages/student/community/ExamPrepCommunityPage";
+import SkillsCommunityPage from "../pages/student/community/SkillsCommunityPage";
+import LibraryPage from "../pages/student/library/LibraryPage";
+import AIChatPage from "../pages/student/ai-chat/AIChatPage";
+import CommunityPage from "../pages/student/community/CommunityPage";
 
 const StudentRoutes = () => {
   return (
@@ -47,31 +64,37 @@ const StudentRoutes = () => {
         <Route path="profile" element={<ProfileMain />} />
         
         {/* Main Navigation Routes */}
-        <Route path="learn" element={<LearnMainPage />} />
+        <Route path="learn" element={<LearningPlatform />} />
         <Route path="learn/details/:id" element={<LearnDetails />} />
         <Route path="course-details" element={<CourseDetails />} />
         <Route path="course-player" element={<CoursePlayer />} />
         <Route path="course-taking/:id" element={<CourseTakingPage />} />
-        <Route path="tests" element={<TestPage />} />
+        <Route path="tests" element={<TestPlatform />} />
         <Route path="test-details" element={<TestDetailsPage />} />
         <Route path="test-player" element={<TestPlayer />} />
-        <Route path="jobs" element={<JobsPage />} />
+        <Route path="jobs" element={<JobsPlatform />} />
         <Route path="job-details" element={<JobDetails />} />
         
         {/* Community Submenu Routes */}
-        <Route path="community/forum" element={<div className="p-6"><h1 className="text-2xl font-bold">Community Forum</h1><p>Forum functionality coming soon...</p></div>} />
-        <Route path="community/groups" element={<div className="p-6"><h1 className="text-2xl font-bold">Community Groups</h1><p>Groups functionality coming soon...</p></div>} />
-        <Route path="community/events" element={<div className="p-6"><h1 className="text-2xl font-bold">Community Events</h1><p>Events functionality coming soon...</p></div>} />
+        <Route path="community/all" element={<CommunityPage />} />
+        <Route path="community/college" element={<CollegeCommunityPage />} />
+        <Route path="community/company" element={<CompanyCommunityPage />} />
+        <Route path="community/examprep" element={<ExamPrepCommunityPage />} />
+        <Route path="community/skills" element={<SkillsCommunityPage />} />
         
         {/* Progress Submenu Routes */}
-        <Route path="progress/courses" element={<div className="p-6"><h1 className="text-2xl font-bold">Course Progress</h1><p>Course progress tracking coming soon...</p></div>} />
-        <Route path="progress/skills" element={<div className="p-6"><h1 className="text-2xl font-bold">Skills Track</h1><p>Skills tracking coming soon...</p></div>} />
-        <Route path="progress/certificates" element={<div className="p-6"><h1 className="text-2xl font-bold">Certificates</h1><p>Certificates functionality coming soon...</p></div>} />
-        <Route path="leaderboard" element={<LeaderBoardPage />} />
+        <Route path="progress/mycourses" element={<MyCourses />} />
+        <Route path="progress/mytests" element={<MyTests />} />
+        <Route path="progress/myjobapplications" element={<MyJobApplications />} />
+        <Route path="progress/mydocuments" element={<MyDocuments />} />
+        <Route path="progress/mynotes" element={<MyNotes />} />
+        <Route path="profile" element={<Profile />} />
         
         {/* Settings Route */}
         <Route path="settings" element={<div className="p-6"><h1 className="text-2xl font-bold">Settings</h1><p>Settings functionality coming soon...</p></div>} />
         
+        <Route path="library" element={<LibraryPage />} />
+        <Route path="ai-chat" element={<AIChatPage />} />
         <Route path="*" element={<Navigate to="/student" replace />} />
       </Route>
     </Routes>
