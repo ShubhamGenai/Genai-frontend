@@ -74,8 +74,8 @@ const LearningPlatform = () => {
           rating: 4.8,
           students: 15400,
           duration: 120,
-          price: 4999,
-          originalPrice: 9999,
+          price: 2999, // Reduced price
+          originalPrice: 4999, // Reduced original price
           level: "Intermediate",
           bestseller: true,
           enrolled: true,
@@ -89,8 +89,8 @@ const LearningPlatform = () => {
           rating: 4.9,
           students: 12300,
           duration: 100,
-          price: 4499,
-          originalPrice: 8999,
+          price: 2699, // Reduced price
+          originalPrice: 4499, // Reduced original price
           level: "Advanced",
           bestseller: false,
           enrolled: false,
@@ -104,8 +104,8 @@ const LearningPlatform = () => {
           rating: 4.7,
           students: 8900,
           duration: 60,
-          price: 3999,
-          originalPrice: 7999,
+          price: 1999, // Reduced price
+          originalPrice: 3999, // Reduced original price
           level: "Beginner",
           bestseller: true,
           enrolled: true,
@@ -119,8 +119,8 @@ const LearningPlatform = () => {
           rating: 4.9,
           students: 18200,
           duration: 150,
-          price: 5999,
-          originalPrice: 12999,
+          price: 3499, // Reduced price
+          originalPrice: 6499, // Reduced original price
           level: "Intermediate",
           bestseller: true,
           enrolled: false,
@@ -134,8 +134,8 @@ const LearningPlatform = () => {
           rating: 4.8,
           students: 14500,
           duration: 130,
-          price: 5499,
-          originalPrice: 10999,
+          price: 3299, // Reduced price
+          originalPrice: 5999, // Reduced original price
           level: "Advanced",
           bestseller: false,
           enrolled: true,
@@ -149,8 +149,8 @@ const LearningPlatform = () => {
           rating: 4.7,
           students: 9800,
           duration: 200,
-          price: 6999,
-          originalPrice: 14999,
+          price: 4999, // Reduced price
+          originalPrice: 8999, // Reduced original price
           level: "Advanced",
           bestseller: true,
           enrolled: false,
@@ -164,8 +164,8 @@ const LearningPlatform = () => {
           rating: 4.8,
           students: 16500,
           duration: 90,
-          price: 2999,
-          originalPrice: 5999,
+          price: 1499, // Reduced price
+          originalPrice: 2999, // Reduced original price
           level: "Beginner",
           bestseller: true,
           enrolled: false,
@@ -179,8 +179,8 @@ const LearningPlatform = () => {
           rating: 4.6,
           students: 11200,
           duration: 80,
-          price: 3499,
-          originalPrice: 6999,
+          price: 1799, // Reduced price
+          originalPrice: 3499, // Reduced original price
           level: "Beginner",
           bestseller: false,
           enrolled: false,
@@ -194,8 +194,8 @@ const LearningPlatform = () => {
           rating: 4.8,
           students: 13700,
           duration: 110,
-          price: 4999,
-          originalPrice: 9999,
+          price: 2499, // Reduced price
+          originalPrice: 4999, // Reduced original price
           level: "Beginner",
           bestseller: true,
           enrolled: true,
@@ -209,8 +209,8 @@ const LearningPlatform = () => {
           rating: 4.9,
           students: 10500,
           duration: 95,
-          price: 4499,
-          originalPrice: 8999,
+          price: 2249, // Reduced price
+          originalPrice: 4499, // Reduced original price
           level: "Intermediate",
           bestseller: false,
           enrolled: false,
@@ -224,8 +224,8 @@ const LearningPlatform = () => {
           rating: 4.7,
           students: 11800,
           duration: 85,
-          price: 3999,
-          originalPrice: 7999,
+          price: 1999, // Reduced price
+          originalPrice: 3999, // Reduced original price
           level: "Intermediate",
           bestseller: true,
           enrolled: false,
@@ -239,8 +239,8 @@ const LearningPlatform = () => {
           rating: 4.8,
           students: 9200,
           duration: 100,
-          price: 3499,
-          originalPrice: 6999,
+          price: 1749, // Reduced price
+          originalPrice: 3499, // Reduced original price
           level: "Intermediate",
           bestseller: false,
           enrolled: true,
@@ -255,7 +255,7 @@ const LearningPlatform = () => {
           students: 25000,
           duration: 10,
           price: 0,
-          originalPrice: 1999,
+          originalPrice: 999, // Reduced original price
           level: "Beginner",
           bestseller: false,
           enrolled: false,
@@ -378,8 +378,8 @@ const LearningPlatform = () => {
   return (
     <div className="min-h-screen ">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white py-2 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
+      <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white py-8 px-4">
+        <div className="w-full">
           <h1 className="text-xl sm:text-xl lg:text-md font-medium mb-1">Learn From The Best</h1>
           <p className="text-xs sm:text-md text-blue-100 font-light max-w-3xl">
             Access world-class courses taught by industry experts. Start learning today and achieve your goals.
@@ -388,7 +388,7 @@ const LearningPlatform = () => {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+      <div className="w-full px-4 py-8 lg:py-12">
         <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
           {/* Sidebar */}
           <div className="w-full lg:w-56 flex-shrink-0">
@@ -514,7 +514,7 @@ const LearningPlatform = () => {
 
                       {/* Price & Level */}
                       <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-                        <div className="flex items-baseline gap-2">
+                        <div className="flex items-baseline">
                           <span className="text-sm font-light text-black">₹{course.price}</span>
                           <span className="text-[0.65rem] text-gray-500 line-through">₹{course.originalPrice}</span>
                         </div>

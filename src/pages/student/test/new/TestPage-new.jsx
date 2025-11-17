@@ -445,17 +445,18 @@ const TestPlatform = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white py-10 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <h1 className="text-2xl sm:text-2xl lg:text-3xl font-light mb-4">Test Your Skills</h1>
-          <p className="text-xs sm:text-xl text-blue-100 font-light max-w-3xl">
-            Take practice tests and mock exams to evaluate your knowledge and track your progress.
+      
+        <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white py-8 px-4">
+        <div className="w-full">
+          <h1 className="text-xl sm:text-xl lg:text-md font-medium mb-1">Test Your Skills</h1>
+          <p className="text-xs sm:text-md text-blue-100 font-light max-w-3xl">
+          Take practice tests and mock exams to evaluate your knowledge and track your progress..
           </p>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+      <div className="w-full px-4 py-8 lg:py-12">
         <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
           {/* Sidebar */}
           <div className="w-full lg:w-56 flex-shrink-0">

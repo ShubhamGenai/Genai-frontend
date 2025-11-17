@@ -98,58 +98,58 @@ const GuestLearnLayout = () => {
       icon: FileTextIcon,
       path: "/tests"
     },
-    {
-      id: "jobs",
-      name: "Jobs",
-      icon: BriefcaseIcon,
-      path: "/jobs"
-    },
+    // {
+    //   id: "jobs",
+    //   name: "Jobs",
+    //   icon: BriefcaseIcon,
+    //   path: "/jobs"
+    // },
     {
       id: "library",
       name: "Library",
       icon: LibraryIcon,
       path: "/library"
     },
-    {
-      id: "community",
-      name: "Community",
-      icon: UsersIcon,
-      path: "/community",
-      hasSubmenu: true,
-      submenu: [
-        {
-          id: "all-communities",
-          name: "All Communities",
-          icon: UsersIcon,
-          path: "/community/all"
-        },
-        {
-          id: "college",
-          name: "College",
-          icon: GraduationCapIcon,
-          path: "/community/college",
-          hasNotification: true
-        },
-        {
-          id: "company",
-          name: "Company",
-          icon: BuildingIcon,
-          path: "/community/company"
-        },
-        {
-          id: "exam-prep",
-          name: "Exam Prep",
-          icon: FileTextIcon,
-          path: "/community/exam-prep"
-        },
-        {
-          id: "skills",
-          name: "Skills",
-          icon: AwardIcon,
-          path: "/community/skills"
-        }
-      ]
-    }
+    // {
+    //   id: "community",
+    //   name: "Community",
+    //   icon: UsersIcon,
+    //   path: "/community",
+    //   hasSubmenu: true,
+    //   submenu: [
+    //     {
+    //       id: "all-communities",
+    //       name: "All Communities",
+    //       icon: UsersIcon,
+    //       path: "/community/all"
+    //     },
+    //     {
+    //       id: "college",
+    //       name: "College",
+    //       icon: GraduationCapIcon,
+    //       path: "/community/college",
+    //       hasNotification: true
+    //     },
+    //     {
+    //       id: "company",
+    //       name: "Company",
+    //       icon: BuildingIcon,
+    //       path: "/community/company"
+    //     },
+    //     {
+    //       id: "exam-prep",
+    //       name: "Exam Prep",
+    //       icon: FileTextIcon,
+    //       path: "/community/exam-prep"
+    //     },
+    //     {
+    //       id: "skills",
+    //       name: "Skills",
+    //       icon: AwardIcon,
+    //       path: "/community/skills"
+    //     }
+    //   ]
+    // }
   ];
 
   return (

@@ -121,12 +121,12 @@ const AdaptiveLayout = () => {
       icon: FileTextIcon,
       path: "/tests"
     },
-    {
-      id: "jobs",
-      name: "Jobs",
-      icon: BriefcaseIcon,
-      path: "/jobs"
-    },
+    // {
+    //   id: "jobs",
+    //   name: "Jobs",
+    //   icon: BriefcaseIcon,
+    //   path: "/jobs"
+    // },
     {
       id: "library",
       name: "Library",
@@ -166,46 +166,46 @@ const AdaptiveLayout = () => {
         }
       ]
     },
-    {
-      id: "community",
-      name: "Community",
-      icon: UsersIcon,
-      path: "/community",
-      hasSubmenu: true,
-      submenu: [
-        {
-          id: "all-communities",
-          name: "All Communities",
-          icon: UsersIcon,
-          path: "/community/all"
-        },
-        {
-          id: "college",
-          name: "College",
-          icon: GraduationCapIcon,
-          path: "/community/college",
-          hasNotification: true
-        },
-        {
-          id: "company",
-          name: "Company",
-          icon: BuildingIcon,
-          path: "/community/company"
-        },
-        {
-          id: "exam-prep",
-          name: "Exam Prep",
-          icon: FileTextIcon,
-          path: "/community/exam-prep"
-        },
-        {
-          id: "skills",
-          name: "Skills",
-          icon: AwardIcon,
-          path: "/community/skills"
-        }
-      ]
-    }
+    // {
+    //   id: "community",
+    //   name: "Community",
+    //   icon: UsersIcon,
+    //   path: "/community",
+    //   hasSubmenu: true,
+    //   submenu: [
+    //     {
+    //       id: "all-communities",
+    //       name: "All Communities",
+    //       icon: UsersIcon,
+    //       path: "/community/all"
+    //     },
+    //     {
+    //       id: "college",
+    //       name: "College",
+    //       icon: GraduationCapIcon,
+    //       path: "/community/college",
+    //       hasNotification: true
+    //     },
+    //     {
+    //       id: "company",
+    //       name: "Company",
+    //       icon: BuildingIcon,
+    //       path: "/community/company"
+    //     },
+    //     {
+    //       id: "exam-prep",
+    //       name: "Exam Prep",
+    //       icon: FileTextIcon,
+    //       path: "/community/exam-prep"
+    //     },
+    //     {
+    //       id: "skills",
+    //       name: "Skills",
+    //       icon: AwardIcon,
+    //       path: "/community/skills"
+    //     }
+    //   ]
+    // }
   ];
 
   // Guest Header Component
@@ -216,32 +216,32 @@ const AdaptiveLayout = () => {
         <div className="flex items-center gap-4 flex-1">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-              <Home className="text-white w-5 h-5" />
+            <div className="w-7 h-7 bg-blue-600 rounded-full flex items-center justify-center">
+              <Home className="text-white w-4 h-4" />
             </div>
           </Link>
           
           {/* Search Bar */}
-          <div className="flex-1 max-w-md">
+          <div className="flex-1 max-w-sm">
             <div className="relative">
               <input
                 type="text"
                 placeholder="Search courses, jobs..."
-                className="w-full px-4 py-2 pl-10 pr-4 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-1.5 pl-9 pr-3 bg-gray-50 border border-gray-200 rounded-md text-xs font-normal focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent text-gray-800"
               />
-              <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                <MdSavedSearch className="w-4 h-4 text-gray-400" />
+              <div className="absolute left-2.5 top-1/2 transform -translate-y-1/2">
+                <MdSavedSearch className="w-3.5 h-3.5 text-gray-500" />
               </div>
             </div>
           </div>
         </div>
 
         {/* Right Section - Cart and Auth Buttons */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           {/* Cart Icon */}
-          <Link to="/cart" className="relative p-2 text-gray-500 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors">
-            <MdOutlineShoppingCartCheckout className="w-5 h-5" />
-            <span className="absolute -top-1 -right-1 w-4 h-4 bg-blue-600 text-white text-xs rounded-full flex items-center justify-center">
+          <Link to="/cart" className="relative p-1.5 text-black hover:text-black rounded-md hover:bg-gray-100 transition-colors">
+            <MdOutlineShoppingCartCheckout className="w-4 h-4 text-black" />
+            <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-blue-600 text-white text-xxs rounded-full flex items-center justify-center font-medium">
               0
             </span>
           </Link>
@@ -249,13 +249,13 @@ const AdaptiveLayout = () => {
           {/* Auth Buttons */}
           {/* <Link 
             to="/login" 
-            className="px-3 py-1.5 text-gray-500 rounded-lg font-medium hover:bg-blue-50 hover:text-gray-800 text-md transition-colors"
+            className="px-2.5 py-1 text-black rounded-md font-normal hover:bg-blue-50 hover:text-black text-xs transition-colors"
           >
             Sign In
           </Link>
           <Link 
             to="/login-landing" 
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 text-md transition-colors"
+            className="px-3 py-1.5 bg-blue-600 text-white rounded-md font-medium hover:bg-blue-700 text-xs transition-colors"
           >
             Sign Up
           </Link> */}
@@ -268,15 +268,15 @@ const AdaptiveLayout = () => {
   const GuestSidebar = () => (
     <div className={`
       ${isMobile ? 'fixed inset-y-0 left-0 z-50' : 'relative'}
-      ${isCollapsed ? 'w-16' : 'w-64'}
-      bg-white shadow-lg h-full border-r border-gray-200 flex flex-col transition-all duration-300
+      ${isCollapsed ? 'w-14' : 'w-56'}
+      bg-white shadow-lg h-full border-r border-gray-200 flex flex-col transition-all duration-300 ease-in-out
       ${isMobile && !isMobileOpen ? '-translate-x-full' : 'translate-x-0'}
     `}>
       {/* Logo Section */}
-      <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+      <div className="p-4  border-gray-200 flex items-center justify-between">
         {isCollapsed ? (
           <div className="flex items-center justify-center w-full">
-            <h1 className="text-xs font-bold tracking-tight">
+            <h1 className="text-xs font-normal tracking-tight text-black">
               Gen{' '}
               <span className="bg-gradient-to-r from-blue-600 to-emerald-600 bg-clip-text text-transparent">AI</span>
             </h1>
@@ -295,19 +295,19 @@ const AdaptiveLayout = () => {
         {/* Collapse Toggle Button */}
         <button
           onClick={toggleCollapse}
-          className={`p-1 rounded-lg hover:bg-gray-100 transition-colors ${isCollapsed ? '' : 'transform transition-transform'} ${isCollapsed ? '' : ''}`}
+          className={`p-1 rounded-sm hover:bg-gray-100 transition-colors ${isCollapsed ? '' : 'transform transition-transform'} ${isCollapsed ? '' : ''}`}
           title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
           {isCollapsed ? (
-            <ChevronRightIcon className="w-4 h-4 text-gray-600" />
+            <ChevronRightIcon className="w-3.5 h-3.5 text-black" />
           ) : (
-            <ChevronLeftIcon className="w-4 h-4 text-gray-600" />
+            <ChevronLeftIcon className="w-3.5 h-3.5 text-black" />
           )}
         </button>
       </div>
 
       {/* Main Navigation */}
-      <nav className="flex-1 px-2 py-4 overflow-y-auto">
+      <nav className="flex-1 px-1.5 py-3 overflow-y-auto">
         <div className="space-y-1">
           {guestMenuItems.map((item) => {
             const Icon = item.icon;
@@ -320,21 +320,21 @@ const AdaptiveLayout = () => {
                   {/* Main menu item with expand/collapse */}
                   <button
                     onClick={() => toggleExpanded(item.id)}
-                    className={`w-full flex items-center ${(isCollapsed && !isMobile) ? 'justify-center px-2' : 'space-x-3 px-3'} py-3 rounded-lg text-left transition-colors duration-200 transform transition-transform ${
+                    className={`w-full flex items-center ${(isCollapsed && !isMobile) ? 'justify-center px-1.5' : 'space-x-2 px-2.5'} py-2.5 rounded-md text-left transition-colors duration-200 transform transition-transform ${isCollapsed ? '' : ''} ${
                       isActive || isExpanded
-                        ? 'bg-gray-100 text-gray-900 shadow-sm -translate-y-0.5'
-                        : 'text-gray-700 hover:bg-gray-100'
+                        ? 'bg-gray-100 text-black shadow-sm -translate-y-0.5'
+                        : 'text-black hover:bg-gray-100 hover:text-black'
                     }`}
                     title={isCollapsed ? item.name : ''}
                   >
-                    <Icon className={`w-5 h-5 ${isActive ? 'text-gray-900' : 'text-gray-600'}`} />
+                    <Icon className={`w-4 h-4 ${isActive ? 'text-black' : 'text-black'}`} />
                     {!isCollapsed && (
                       <>
-                        <span className="font-medium flex-1">{item.name}</span>
+                        <span className="font-normal flex-1 text-sm text-black">{item.name}</span>
                         {isExpanded ? (
-                          <ChevronUpIcon className="w-4 h-4 text-gray-500" />
+                          <ChevronUpIcon className="w-3.5 h-3.5 text-black" />
                         ) : (
-                          <ChevronDownIcon className="w-4 h-4 text-gray-500" />
+                          <ChevronDownIcon className="w-3.5 h-3.5 text-black" />
                         )}
                       </>
                     )}
@@ -343,7 +343,7 @@ const AdaptiveLayout = () => {
                   {/* Submenu items: icon-only when collapsed on desktop, full on mobile/expanded */}
                   {isCollapsed && !isMobile ? (
                     isExpanded && (
-                      <div className="mt-1 space-y-2">
+                      <div className="mt-0.5 space-y-1.5">
                         {item.submenu.map((subItem) => {
                           const SubIcon = subItem.icon;
                           const isSubActive = activeItem === subItem.id;
@@ -351,12 +351,10 @@ const AdaptiveLayout = () => {
                             <Link
                               key={subItem.id}
                               to={subItem.path}
-                              className={`flex justify-center items-center py-2 rounded-lg transition-colors duration-200 ${
-                                isSubActive ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50'
-                              }`}
+                              className={`flex justify-center items-center py-1.5 rounded-md transition-colors duration-200 ${isSubActive ? 'bg-gray-100 text-black' : 'text-black hover:bg-gray-50 hover:text-black'}`}
                               title={subItem.name}
                             >
-                              <SubIcon className="w-4 h-4" />
+                              <SubIcon className="w-3.5 h-3.5 text-black" />
                             </Link>
                           );
                         })}
@@ -365,8 +363,8 @@ const AdaptiveLayout = () => {
                   ) : (
                     // Not collapsed (or on mobile): show full submenu with labels and animation
                     <div
-                      className={`ml-4 mt-1 overflow-hidden transition-[max-height] duration-300 ease-in-out ${isExpanded ? 'space-y-1 rounded-md bg-gray-50' : ''}`}
-                      style={{ maxHeight: isExpanded && item.submenu ? `${(item.submenu.length || 0) * 44}px` : '0px' }}
+                      className={`ml-3 mt-0.5 overflow-hidden transition-[max-height] duration-300 ease-in-out ${isExpanded ? 'space-y-1 rounded-md bg-gray-50' : ''}`}
+                      style={{ maxHeight: isExpanded && item.submenu ? `${(item.submenu.length || 0) * 36}px` : '0px' }}
                     >
                       {item.submenu.map((subItem) => {
                         const SubIcon = subItem.icon;
@@ -375,19 +373,15 @@ const AdaptiveLayout = () => {
                           <Link
                             key={subItem.id}
                             to={subItem.path}
-                            className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-colors duration-200 ${
-                              isSubActive
-                                ? 'bg-gray-100 text-gray-900'
-                                : 'text-gray-600 hover:bg-gray-50'
-                            }`}
+                            className={`w-full flex items-center space-x-2.5 px-2.5 py-1.5 rounded-md text-left transition-colors duration-200 ${isSubActive ? 'bg-gray-100 text-black' : 'text-black hover:bg-gray-50 hover:text-black'}`}
                             onClick={() => {
                               if (isMobile) setIsMobileOpen(false);
                             }}
                           >
-                            <SubIcon className="w-4 h-4" />
-                            <span className="text-sm font-medium">{subItem.name}</span>
+                            <SubIcon className="w-3.5 h-3.5 text-black" />
+                            <span className="text-xs font-normal text-black">{subItem.name}</span>
                             {subItem.hasNotification && (
-                              <div className="w-2 h-2 bg-red-500 rounded-full ml-auto"></div>
+                              <div className="w-1.5 h-1.5 bg-red-500 rounded-full ml-auto"></div>
                             )}
                           </Link>
                         );
@@ -401,18 +395,14 @@ const AdaptiveLayout = () => {
                 <Link
                   key={item.id}
                   to={item.path}
-                  className={`w-full flex items-center ${isCollapsed ? 'justify-center px-2' : 'space-x-3 px-3'} py-3 rounded-lg text-left transition-colors duration-200 ${
-                    isActive
-                      ? 'bg-gray-100 text-gray-900'
-                      : 'text-gray-700 hover:bg-gray-100'
-                  }`}
+                  className={`w-full flex items-center ${isCollapsed ? 'justify-center px-1.5' : 'space-x-2.5 px-2.5'} py-2.5 rounded-md text-left transition-colors duration-200 ${isActive ? 'bg-gray-100 text-black' : 'text-black hover:bg-gray-100 hover:text-black'}`}
                   title={isCollapsed ? item.name : ''}
                   onClick={() => {
                     if (isMobile) setIsMobileOpen(false);
                   }}
                 >
-                  <Icon className={`w-5 h-5 ${isActive ? 'text-gray-900' : 'text-gray-600'}`} />
-                  {!isCollapsed && <span className="font-medium">{item.name}</span>}
+                  <Icon className={`w-4 h-4 ${isActive ? 'text-black' : 'text-black'}`} />
+                  {!isCollapsed && <span className="font-normal text-sm text-black">{item.name}</span>}
                 </Link>
               );
             }
@@ -422,26 +412,26 @@ const AdaptiveLayout = () => {
 
       {/* Bottom Section - Auth Buttons (hidden when collapsed) */}
       {!isCollapsed && (
-        <div className="px-2 py-4 border-t border-gray-200 flex-shrink-0">
-          <div className="space-y-2">
+        <div className="px-1.5 py-3 border-t border-gray-200 flex-shrink-0">
+          <div className="space-y-1.5">
             <Link
               to="/login"
-              className={`w-full flex items-center space-x-3 px-3 py-3 rounded-lg text-left transition-colors duration-200 text-gray-700 hover:bg-gray-100`}
+              className={`w-full flex items-center space-x-2.5 px-2.5 py-2.5 rounded-md text-left transition-colors duration-200 text-black hover:bg-gray-100`}
               onClick={() => {
                 if (isMobile) setIsMobileOpen(false);
               }}
             >
-              <span className="text-sm font-medium">Sign In</span>
+              <span className="text-xs font-normal text-black">Sign In</span>
             </Link>
             
             <Link
               to="/login-landing"
-              className={`w-full flex items-center space-x-3 px-3 py-3 rounded-lg text-left transition-colors duration-200 bg-blue-600 text-white hover:bg-blue-700`}
+              className={`w-full flex items-center space-x-2.5 px-2.5 py-2.5 rounded-md text-left transition-colors duration-200 bg-blue-600 text-white hover:bg-blue-700`}
               onClick={() => {
                 if (isMobile) setIsMobileOpen(false);
               }}
             >
-              <span className="text-sm font-medium">Sign Up</span>
+              <span className="text-xs font-normal">Sign Up</span>
             </Link>
           </div>
         </div>
@@ -454,7 +444,7 @@ const AdaptiveLayout = () => {
       {/* Mobile Overlay with Blur */}
       {isMobile && isMobileOpen && (
         <div 
-          className="fixed inset-0 bg-transparent backdrop-blur-md z-40 md:hidden"
+          className="fixed inset-0 bg-transparent backdrop-blur-sm z-40 md:hidden"
           onClick={() => setIsMobileOpen(false)}
         />
       )}
@@ -463,17 +453,17 @@ const AdaptiveLayout = () => {
       {isMobile && (
         <button
           onClick={toggleMobile}
-          className="fixed top-1/2 left-4 transform -translate-y-1/2 z-50 p-3 bg-white rounded-full shadow-lg border border-gray-200 md:hidden hover:bg-gray-50 transition-colors"
+          className="fixed top-1/2 left-3 transform -translate-y-1/2 z-50 p-2 bg-white rounded-full shadow-md border border-gray-200 md:hidden hover:bg-gray-50 transition-colors"
         >
           {isMobileOpen ? (
-            <XIcon className="w-5 h-5 text-gray-600" />
+            <XIcon className="w-4 h-4 text-gray-700" />
           ) : (
-            <ChevronRightIcon className="w-5 h-5 text-gray-600" />
+            <ChevronRightIcon className="w-4 h-4 text-gray-700" />
           )}
         </button>
       )}
 
-      <div className="flex h-screen bg-gray-50">
+      <div className="flex h-screen bg-background text-foreground">
         {/* Sidebar - Different for authenticated vs guest users */}
         {isAuthenticated ? (
           <Sidebar activeItem={activeItem} setActiveItem={setActiveItem} />

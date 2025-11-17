@@ -1,12 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ChevronLeft, FileText, Check, Download, Info, BookOpen, Users, Star, Loader } from 'lucide-react';
+import { ChevronLeft, FileText, Check, Download, Info, BookOpen, Users, Star, Loader, Calculator, Microscope, Atom, Trophy, Code, Layers, Code2, Brain, Bot, Network, Package, Target, Lightbulb } from 'lucide-react';
 import { mockResourceDetails } from '../../../../mock-data/libraryMockData';
 
 
 const IconComponents = {
   FileText: FileText,
   BookOpen: BookOpen,
+  Calculator: Calculator,
+  Microscope: Microscope,
+  Atom: Atom,
+  Trophy: Trophy,
+  Code: Code,
+  Layers: Layers,
+  Code2: Code2,
+  Brain: Brain,
+  Bot: Bot,
+  Network: Network,
+  Package: Package,
+  Target: Target,
+  Lightbulb: Lightbulb,
   // Add other icons here if needed
 };
 
@@ -85,90 +98,96 @@ const LibraryDetailsPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="bg-white shadow-sm py-4 px-4 sm:px-6 lg:px-8 border-b">
+      <div className="bg-white py-3 px-4 sm:px-6 lg:px-8 border-b border-gray-100">
         <div className="max-w-7xl mx-auto flex items-center">
-          <button onClick={() => navigate('/library')} className="flex items-center text-gray-600 hover:text-gray-900 transition-colors">
-            <ChevronLeft className="w-5 h-5 mr-1" />
-            <span className="text-sm font-medium">Back to Folder</span>
+          <button onClick={() => navigate('/library')} className="flex items-center text-gray-700 hover:text-gray-900 transition-colors text-xs">
+            <ChevronLeft className="w-4 h-4 mr-1" />
+            <span className="font-normal">Back to Folder</span>
           </button>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+      <div className="w-full px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Left Column - Details */}
           <div className="flex-1">
-            <span className="inline-flex items-center px-3 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 mb-2">
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-normal bg-gray-100 text-gray-800 mb-2">
               {resource.category}
             </span>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">{resource.title}</h1>
-            <p className="text-gray-600 text-lg mb-6">{resource.description}</p>
+            <h1 className="text-xl font-medium text-gray-900 mb-1">{resource.title}</h1>
+            <p className="text-gray-600 text-sm mb-6">{resource.description}</p>
 
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">What's Included</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-6">
+              <h2 className="text-base font-medium text-gray-900 mb-4">What's Included</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-y-2 gap-x-6">
                 {resource.whatsIncluded.map((item, index) => (
                   <div key={index} className="flex items-center text-sm text-gray-700">
-                    <Check className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" />
-                    <span>{item}</span>
+                    <Check className="w-3.5 h-3.5 text-green-500 mr-2 flex-shrink-0" />
+                    <span className="text-xs">{item}</span>
                   </div>
                 ))}
               </div>
             </div>
 
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Additional Information</h2>
-              <div className="space-y-4">
+              <h2 className="text-base font-medium text-gray-900 mb-4">Additional Information</h2>
+              <div className="space-y-3">
                 <div>
-                  <h3 className="text-base font-medium text-gray-800 mb-1">Best For</h3>
-                  <p className="text-sm text-gray-700">{resource.additionalInfo.bestFor}</p>
+                  <h3 className="text-sm font-medium text-gray-800 mb-0.5">Best For</h3>
+                  <p className="text-xs text-gray-700">{resource.additionalInfo.bestFor}</p>
                 </div>
                 <div>
-                  <h3 className="text-base font-medium text-gray-800 mb-1">Prerequisites</h3>
-                  <p className="text-sm text-gray-700">{resource.additionalInfo.prerequisites}</p>
+                  <h3 className="text-sm font-medium text-gray-800 mb-0.5">Prerequisites</h3>
+                  <p className="text-xs text-gray-700">{resource.additionalInfo.prerequisites}</p>
                 </div>
                 <div>
-                  <h3 className="text-base font-medium text-gray-800 mb-1">Support</h3>
-                  <p className="text-sm text-gray-700">{resource.additionalInfo.support}</p>
+                  <h3 className="text-sm font-medium text-gray-800 mb-0.5">Support</h3>
+                  <p className="text-xs text-gray-700">{resource.additionalInfo.support}</p>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Right Column - Purchase/Download */}
-          <div className="w-full lg:w-80 flex-shrink-0">
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sticky top-6 text-center">
-              <div className="mb-6 flex justify-center">
-                {IconComponents[resource.icon] && React.createElement(IconComponents[resource.icon], { className: "w-24 h-24 text-blue-600" })}
+          <div className="w-full lg:w-72 flex-shrink-0">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-5 sticky top-6 text-center">
+              <div className="mb-5 flex justify-center">
+                {IconComponents[resource.icon] && React.createElement(IconComponents[resource.icon], { className: "w-20 h-20 text-blue-600" })}
               </div>
               
+              {resource.isFree && (
+                <span className="inline-flex items-center justify-center w-full px-3 py-2 rounded-lg text-sm font-medium bg-green-100 text-green-800 mb-3">
+                  Free Resource
+                </span>
+              )}
+
               {resource.isFree ? (
-                <button className="w-full bg-green-500 text-white py-3 rounded-lg text-lg font-semibold hover:bg-green-600 transition-colors flex items-center justify-center gap-2">
-                  <Download className="w-5 h-5" />
+                <button className="w-full bg-blue-600 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
+                  <Download className="w-4 h-4" />
                   Download Free
                 </button>
               ) : (
-                <button className="w-full bg-blue-600 text-white py-3 rounded-lg text-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
-                  <Download className="w-5 h-5" />
+                <button className="w-full bg-blue-600 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
+                  <Download className="w-4 h-4" />
                   Buy Now {resource.price}
                 </button>
               )}
               
-              <div className="mt-6 space-y-3 text-sm text-gray-700">
+              <div className="mt-5 space-y-2 text-xs text-gray-700">
                 <div className="flex justify-between">
-                  <span className="font-medium">File Size:</span>
+                  <span className="font-medium text-gray-800">File Size:</span>
                   <span>{resource.fileSize}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="font-medium">Format:</span>
+                  <span className="font-medium text-gray-800">Format:</span>
                   <span>{resource.format}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="font-medium">Category:</span>
+                  <span className="font-medium text-gray-800">Category:</span>
                   <span>{resource.category}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="font-medium">Downloads:</span>
+                  <span className="font-medium text-gray-800">Downloads:</span>
                   <span>{resource.downloads}</span>
                 </div>
               </div>

@@ -74,31 +74,31 @@ export function NavBar() {
       path: "/tests",
       hasDropdown: false
     },
-    {
-      name: "Jobs",
-      icon: BriefcaseIcon,
-      path: "/jobs",
-      hasDropdown: false
-    },
+    // {
+    //   name: "Jobs",
+    //   icon: BriefcaseIcon,
+    //   path: "/jobs",
+    //   hasDropdown: false
+    // },
     {
       name: "Library",
       icon: LibraryIcon,
       path: "/library",
       hasDropdown: false
     },
-    {
-      name: "Community",
-      icon: UsersIcon,
-      path: "/community",
-      hasDropdown: true,
-      dropdownItems: [
-        { name: "All Communities", icon: UsersIcon, path: "/community/all" },
-        { name: "College", icon: GraduationCapIcon, path: "/community/college" },
-        { name: "Company", icon: BuildingIcon, path: "/community/company" },
-        { name: "Exam Prep", icon: FileTextIcon, path: "/community/exam-prep" },
-        { name: "Skills", icon: AwardIcon, path: "/community/skills" }
-      ]
-    }
+    // {
+    //   name: "Community",
+    //   icon: UsersIcon,
+    //   path: "/community",
+    //   hasDropdown: true,
+    //   dropdownItems: [
+    //     { name: "All Communities", icon: UsersIcon, path: "/community/all" },
+    //     { name: "College", icon: GraduationCapIcon, path: "/community/college" },
+    //     { name: "Company", icon: BuildingIcon, path: "/community/company" },
+    //     { name: "Exam Prep", icon: FileTextIcon, path: "/community/exam-prep" },
+    //     { name: "Skills", icon: AwardIcon, path: "/community/skills" }
+    //   ]
+    // }
   ];
 
   // Profile menu items
