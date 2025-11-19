@@ -2,8 +2,9 @@
 import '@fontsource/inter'; // Import the Inter font
 import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { mainContext } from '../../context/MainContext';
 import { Play, Sparkles } from 'lucide-react';
+import { mainContext } from '../../../context/MainContext';
+
 
 const HeroSection = () => {
   const {user, token} = useContext(mainContext);

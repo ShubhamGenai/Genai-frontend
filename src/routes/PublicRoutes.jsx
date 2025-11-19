@@ -1,11 +1,11 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useContext } from "react";
 import { mainContext } from "../context/MainContext";
-import HomepgMain1 from "../pages/homepage/main";
+import HomepgMain1 from "../pages/homepage/Homepage";
 import LoginLandingPage from "../pages/auth-pages/Loginlanding";
 import SignupPage from "../pages/auth-pages/Signup-page";
 import LoginPage from "../pages/auth-pages/Login-page";
-import LeaderBoardPage from "../pages/student/leaderBoard/LeaderBoard";
+// import LeaderBoardPage from "../pages/student/leaderBoard/LeaderBoard";
 import AuthCallback from "../hooks/AuthCallback";
 import { CourseDetails } from "../pages/coursespage/course-details-page/course-details-main";
 import EmployerRegistration from "../pages/auth-pages/employer-auth/Employer-Signup";
@@ -15,7 +15,7 @@ import LearnMainPage from "../pages/student/learn/LearnMain";
 import ContentLogin from "../pages/auth-pages/content-auth/Content-login";
 import CoursePlayer from "../pages/student/learn/course-player/Course-Player";
 import AdaptiveLayout from "../component/layout/AdaptiveLayout";
-import TestPage from "../pages/student/test/TestPage";
+// import TestPage from "../pages/student/test/TestPage";
 import TestDetailsPage from "../pages/student/test/testDetails/TestDetailsNew";
 import TestTakingPage from "../pages/student/test/TestTakingPage";
 import LibraryPage from "../pages/student/library/LibraryPage";
@@ -139,7 +139,7 @@ const PublicRoutes = () => {
         <Route path="articles" element={<LibraryPage />} />
         <Route path="details/:id" element={<LibraryDetailsPage />} />
         <Route path="learn" element={<LearnMainPage />} />
-        <Route path="tests" element={<TestPage/>} />
+        {/* <Route path="tests" element={<TestPage/>} /> */}
         <Route path="jobs" element={<JobsPanel />} />
         <Route path="community" element={<AllCommunitiesPage />} />
         <Route path="community/all" element={<AllCommunitiesPage />} />
@@ -158,7 +158,7 @@ const PublicRoutes = () => {
         <Route path="exam-prep" element={<ExamPrepCommunityPage />} />
         <Route path="skills" element={<SkillsCommunityPage />} />
         <Route path="learn" element={<LearnMainPage />} />
-        <Route path="tests" element={<TestPage/>} />
+        {/* <Route path="tests" element={<TestPage/>} /> */}
         <Route path="jobs" element={<JobsPanel />} />
         <Route path="library" element={<LibraryPage />} />
       </Route>
@@ -216,9 +216,9 @@ const PublicRoutes = () => {
       
       <Route path="test-taking" element={<TestTakingPage />} />
 
-      <Route path="leaderboard" element={<AdaptiveLayout />}>
+      {/* <Route path="leaderboard" element={<AdaptiveLayout />}>
         <Route index element={<LeaderBoardPage />} />
-      </Route>
+      </Route> */}
 
       <Route path="testss" element={<AdaptiveLayout />}>
         <Route index element={<CoursePlayer />} />
