@@ -1,9 +1,9 @@
 import React, { useMemo, useState } from 'react';
 import { Star, Users, Clock, Layers, PlayCircle, ChevronDown, CheckCircle, User, ShoppingCart } from 'lucide-react';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
-import { LEARN_COURSES } from './mockCatalog';
+import { LEARN_COURSES } from '../mockCatalog';
 import { useContext } from 'react';
-import { mainContext } from '../../../context/MainContext';
+import { mainContext } from '../../../../context/MainContext';
 
 const LearnDetails = () => {
   const [expandedModule, setExpandedModule] = useState(null);

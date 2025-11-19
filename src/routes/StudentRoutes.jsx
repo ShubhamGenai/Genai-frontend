@@ -6,18 +6,12 @@ import EnrolledCoursesPage from "../pages/student/enrolled/Mylist";
 import ProfileMain from "../pages/student/profile/ProfileMain";
 import StudentDashboardLayout from "./StudentDashLayout";
 import Dashboard from "../pages/student/dashboard/Dashboard";
-// import LearnMainPage from "../pages/student/learn/LearnMain";
-// import TestPage from "../pages/student/test/TestPage";
-import JobsPage from "../pages/student/jobs/JobsMain";
-// import LeaderBoardPage from "../pages/student/leaderBoard/LeaderBoard";
 import { CourseDetails } from "../pages/coursespage/course-details-page/course-details-main";
 import TestDetailsPage from "../pages/student/test/testDetails/TestDetailsNew";
 import TestPlayer from "../pages/student/test/testDetails/Test-Player";
 import TestTakingPage from "../pages/student/test/TestTakingPage";
-import JobDetails from "../pages/student/jobs/JobDetails";
-import CoursePlayer from "../pages/student/learn/course-player/Course-Player";
-import LearnDetails from "../pages/student/learn/LearnDetails";
-import CourseTakingPage from "../pages/student/learn/CourseTakingPage";
+import CoursePlayer from "../pages/student/learn/new/Course-Player";
+import LearnDetails from "../pages/student/learn/new/LearnDetails";
 import LearningPlatform from "../pages/student/learn/new/Learnpage";
 import TestPlatform from "../pages/student/test/new/TestPage-new";
 import JobsPlatform from "../pages/student/jobs/new/JobsPanel";
@@ -27,7 +21,6 @@ import MyJobApplications from "../pages/student/progress/MyJobApplications";
 import MyDocuments from "../pages/student/progress/MyDocuments";
 import MyNotes from "../pages/student/progress/MyNotes";
 import Profile from "../pages/student/progress/Profile";
-import AllCommunitiesPage from "../pages/student/community/AllCommunitiesPage";
 import CollegeCommunityPage from "../pages/student/community/CollegeCommunityPage";
 import CompanyCommunityPage from "../pages/student/community/CompanyCommunityPage";
 import ExamPrepCommunityPage from "../pages/student/community/ExamPrepCommunityPage";
@@ -68,12 +61,12 @@ const StudentRoutes = () => {
         <Route path="learn/details/:id" element={<LearnDetails />} />
         <Route path="course-details" element={<CourseDetails />} />
         <Route path="course-player" element={<CoursePlayer />} />
-        <Route path="course-taking/:id" element={<CourseTakingPage />} />
+        {/* <Route path="course-taking/:id" element={<CourseTakingPage />} /> */}
         <Route path="tests" element={<TestPlatform />} />
         <Route path="test-details" element={<TestDetailsPage />} />
         <Route path="test-player" element={<TestPlayer />} />
         <Route path="jobs" element={<JobsPlatform />} />
-        <Route path="job-details" element={<JobDetails />} />
+        {/* <Route path="job-details" element={<JobDetails />} /> */}
         
         {/* Community Submenu Routes */}
         <Route path="community/all" element={<CommunityPage />} />
