@@ -7,8 +7,8 @@ import ProfileMain from "../pages/student/profile/ProfileMain";
 import StudentDashboardLayout from "./StudentDashLayout";
 import Dashboard from "../pages/student/dashboard/Dashboard";
 import { CourseDetails } from "../pages/coursespage/course-details-page/course-details-main";
-import TestDetailsPage from "../pages/student/test/testDetails/TestDetailsNew";
-import TestPlayer from "../pages/student/test/testDetails/Test-Player";
+import TestDetailsPage from "../pages/student/test/new/testDetails/TestDetailsNew";
+// import TestPlayer from "../pages/student/test/new/testDetails/Test-Player";
 import TestTakingPage from "../pages/student/test/TestTakingPage";
 import CoursePlayer from "../pages/student/learn/new/Course-Player";
 import LearnDetails from "../pages/student/learn/new/LearnDetails";
@@ -64,7 +64,7 @@ const StudentRoutes = () => {
         {/* <Route path="course-taking/:id" element={<CourseTakingPage />} /> */}
         <Route path="tests" element={<TestPlatform />} />
         <Route path="test-details" element={<TestDetailsPage />} />
-        <Route path="test-player" element={<TestPlayer />} />
+        {/* <Route path="test-player" element={<TestPlayer />} /> */}
         <Route path="jobs" element={<JobsPlatform />} />
         {/* <Route path="job-details" element={<JobDetails />} /> */}
         

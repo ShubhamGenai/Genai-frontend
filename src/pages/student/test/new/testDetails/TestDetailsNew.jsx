@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { Clock, FileText, Award, BarChart2, CheckCircle, Star, Users, Target, PlayCircle, ChevronDown, ChevronRight, X, Circle, ShoppingCart } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { MOCK_TESTS } from '../mockTestCatalog';
+import { MOCK_TESTS } from '../../mockTestCatalog';
+
 
 const TestDetailsNew = () => {
   const navigate = useNavigate();

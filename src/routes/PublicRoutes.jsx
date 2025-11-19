@@ -15,7 +15,7 @@ import AdminLogin from "../pages/auth-pages/admin-auth/AdminLogin";
 import ContentLogin from "../pages/auth-pages/content-auth/Content-login";
 import CoursePlayer from "../pages/student/learn/new/Course-Player";
 import AdaptiveLayout from "../component/layout/AdaptiveLayout";
-import TestDetailsPage from "../pages/student/test/testDetails/TestDetailsNew";
+import TestDetailsPage from "../pages/student/test/new/testDetails/TestDetailsNew";
 import TestTakingPage from "../pages/student/test/TestTakingPage";
 import LibraryPage from "../pages/student/library/LibraryPage";
 import CommunityPage from "../pages/student/community/CommunityPage";
@@ -37,6 +37,7 @@ import MyDocuments from "../pages/student/progress/MyDocuments";
 import MyNotes from "../pages/student/progress/MyNotes";
 import Profile from "../pages/student/progress/Profile";
 import AIChatPage from "../pages/student/ai-chat/AIChatPage";
+import CourseTakingPage from "../pages/student/learn/CourseTakingPage";
 
 // Configuration objects for better organization
 const AUTH_ROUTES = {
@@ -110,6 +111,7 @@ const PublicRoutes = () => {
       <Route path="learn" element={<AdaptiveLayout />}>
         <Route index element={<LearningPlatform />} />
         <Route path="details/:id" element={<LearnDetails />} />
+        <Route path="course-taking/:id" element={<CourseTakingPage />} />
         {SHARED_NAV_ROUTES.map(({ path, element: Element }) => (
           <Route key={path} path={path} element={<Element />} />
         ))}
