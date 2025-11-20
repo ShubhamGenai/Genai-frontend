@@ -9,12 +9,25 @@ import { useLocation } from 'react-router-dom';
 import { fetchCourseById } from '../../../redux/DataSlice';
 import { addToCart, checkItemInCart } from '../../../redux/CartSlice';
 import { toast } from 'react-toastify';
+import TopTabs from '../../../component/baseComponents/TopTabs';
 
 export const CourseDetails = () => {
 
   const dispatch = useDispatch();
   const query = new URLSearchParams(useLocation().search);
   const id = query.get("id");
+
+  const [activeTab, setActiveTab] = React.useState('Courses');
+
+  const tabsData = [
+    { id: 'Courses', label: 'Courses', count: 0, countLabel: 'courses', path: '/learn' },
+    { id: 'Jobs', label: 'Jobs', count: 45, countLabel: 'jobs', path: '/jobs' },
+    { id: 'Tests', label: 'Tests', count: 28, countLabel: 'tests', path: '/tests' },
+  ];
+
+  const handleTabClick = (tabId) => {
+    setActiveTab(tabId);
+  };
 
 
   const { courseDetails } = useSelector((state) => state.data);
@@ -32,6 +45,7 @@ export const CourseDetails = () => {
       
   return (
     <div className="min-h-screen font-sans relative">
+      <TopTabs tabs={tabsData} activeTabId={activeTab} onTabClick={handleTabClick} />
       {/* Full-width header background container */}
       <div className="w-full bg-gray-200 absolute top-0 h-100 z-0"></div>
 

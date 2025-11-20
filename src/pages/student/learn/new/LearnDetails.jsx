@@ -4,12 +4,13 @@ import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import { LEARN_COURSES } from '../mockCatalog';
 import { useContext } from 'react';
 import { mainContext } from '../../../../context/MainContext';
+import TopTabs from '../../../../component/baseComponents/TopTabs';
+
 
 const LearnDetails = () => {
   const [expandedModule, setExpandedModule] = useState(null);
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('Courses');
   const {user}= useContext(mainContext)
 
   const location = useLocation();
@@ -17,6 +18,14 @@ const LearnDetails = () => {
   const query = new URLSearchParams(location.search);
   const queryId = query.get('id');
   const paramsId = params?.id;
+
+  const tabsData = [    { id: 'Courses', label: 'Courses', count: LEARN_COURSES.length, countLabel: 'courses', path: '/learn' },    { id: 'Jobs', label: 'Jobs', count: 45, countLabel: 'jobs', path: '/jobs' },    { id: 'Tests', label: 'Tests', count: 28, countLabel: 'tests', path: '/tests' },  ];
+
+  const [activeTab, setActiveTab] = useState(tabsData[0].id);
+
+  const handleTabClick = (tabId) => {
+    setActiveTab(tabId);
+  };
 
   // Prefer course data passed via navigation state (from clicked card)
   const stateCourse = useMemo(() => {
@@ -103,40 +112,10 @@ const LearnDetails = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Top Tabs */}
-      <div className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex items-center gap-6 h-12">
-            <button
-              onClick={() => setActiveTab('Courses')}
-              className={`relative text-sm font-light ${activeTab === 'Courses' ? 'text-blue-600' : 'text-black hover:text-blue-600'}`}
-            >
-              Courses
-              <span className="ml-2 text-[10px] bg-gray-900 text-white px-2 py-0.5 rounded-full align-middle">{LEARN_COURSES.length} courses</span>
-              {activeTab === 'Courses' && <span className="absolute -bottom-3 left-0 w-full h-0.5 bg-blue-600"></span>}
-            </button>
-            <button
-              onClick={() => setActiveTab('Jobs')}
-              className={`relative text-sm font-light ${activeTab === 'Jobs' ? 'text-blue-600' : 'text-black hover:text-blue-600'}`}
-            >
-              Jobs
-              <span className="ml-2 text-[10px] bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full align-middle">45 jobs</span>
-              {activeTab === 'Jobs' && <span className="absolute -bottom-3 left-0 w-full h-0.5 bg-blue-600"></span>}
-            </button>
-            <button
-              onClick={() => setActiveTab('Tests')}
-              className={`relative text-sm font-light ${activeTab === 'Tests' ? 'text-blue-600' : 'text-black hover:text-blue-600'}`}
-            >
-              Tests
-              <span className="ml-2 text-[10px] bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full align-middle">28 tests</span>
-              {activeTab === 'Tests' && <span className="absolute -bottom-3 left-0 w-full h-0.5 bg-blue-600"></span>}
-            </button>
-          </div>
-        </div>
-      </div>
+      <TopTabs tabs={tabsData} activeTabId={activeTab} onTabClick={handleTabClick} />
       {/* Hero Section */}
       <div className="bg-blue-600 text-white">
-        <div className="max-w-7xl mx-auto px-4 py-12">
+        <div className="w-full mx-auto px-4 py-12">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Left Content */}
             <div className="lg:col-span-2">
@@ -283,7 +262,7 @@ const LearnDetails = () => {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="w-full mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Content - Course Details */}
           <div className="lg:col-span-2 space-y-8">

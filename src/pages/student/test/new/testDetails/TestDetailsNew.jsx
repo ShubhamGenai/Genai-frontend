@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Clock, FileText, Award, BarChart2, CheckCircle, Star, Users, Target, PlayCircle, ChevronDown, ChevronRight, X, Circle, ShoppingCart } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { MOCK_TESTS } from '../../mockTestCatalog';
+import TopTabs from '../../../../../component/baseComponents/TopTabs';
 
 
 const TestDetailsNew = () => {
@@ -58,6 +59,16 @@ const TestDetailsNew = () => {
   const [activeTab, setActiveTab] = useState('Tests');
   const [expandedSections, setExpandedSections] = useState({});
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
+
+  const tabsData = [
+    { id: 'Courses', label: 'Courses', count: 0, countLabel: 'courses', path: isStudentRoute ? '/student/learn' : '/learn' },
+    { id: 'Jobs', label: 'Jobs', count: 45, countLabel: 'jobs', path: isStudentRoute ? '/student/jobs' : '/jobs' },
+    { id: 'Tests', label: 'Tests', count: MOCK_TESTS.length, countLabel: 'tests', path: isStudentRoute ? '/student/tests' : '/tests' },
+  ];
+
+  const handleTabClick = (tabId) => {
+    setActiveTab(tabId);
+  };
 
   // If no test found, show error
   if (!test) {
@@ -139,35 +150,7 @@ const TestDetailsNew = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      {/* Top Tabs */}
-      <div className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex items-center gap-6 h-12">
-            <button 
-              onClick={() => setActiveTab('Courses')} 
-              className={`relative text-sm font-light ${activeTab === 'Courses' ? 'text-blue-600' : 'text-black hover:text-blue-600'}`}
-            >
-              Courses <span className="ml-2 text-[10px] bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full align-middle">0 courses</span>
-              {activeTab === 'Courses' && <span className="absolute -bottom-3 left-0 w-full h-0.5 bg-blue-600"></span>}
-            </button>
-            <button 
-              onClick={() => setActiveTab('Jobs')} 
-              className={`relative text-sm font-light ${activeTab === 'Jobs' ? 'text-blue-600' : 'text-black hover:text-blue-600'}`}
-            >
-              Jobs <span className="ml-2 text-[10px] bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full align-middle">45 jobs</span>
-              {activeTab === 'Jobs' && <span className="absolute -bottom-3 left-0 w-full h-0.5 bg-blue-600"></span>}
-            </button>
-            <button 
-              onClick={() => setActiveTab('Tests')} 
-              className={`relative text-sm font-light ${activeTab === 'Tests' ? 'text-blue-600' : 'text-black hover:text-blue-600'}`}
-            >
-              Tests <span className="ml-2 text-[10px] bg-gray-900 text-white px-2 py-0.5 rounded-full align-middle">{MOCK_TESTS.length} tests</span>
-              {activeTab === 'Tests' && <span className="absolute -bottom-3 left-0 w-full h-0.5 bg-blue-600"></span>}
-            </button>
-          </div>
-        </div>
-      </div>
-
+      <TopTabs tabs={tabsData} activeTabId={activeTab} onTabClick={handleTabClick} />
       {/* Hero */}
       <div className="bg-blue-600 text-white">
         <div className="max-w-7xl mx-auto px-4 py-12">
