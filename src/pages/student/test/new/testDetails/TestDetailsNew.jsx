@@ -1,13 +1,16 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useContext } from 'react';
 import { Clock, FileText, Award, BarChart2, CheckCircle, Star, Users, Target, PlayCircle, ChevronDown, ChevronRight, X, Circle, ShoppingCart } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { MOCK_TESTS } from '../../mockTestCatalog';
 import TopTabs from '../../../../../component/baseComponents/TopTabs';
+import { mainContext } from '../../../../../context/MainContext';
+
 
 
 const TestDetailsNew = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const {user} = useContext(mainContext)
   
   // Determine if we're in student routes or public routes
   const isStudentRoute = location.pathname.startsWith('/student');
@@ -59,6 +62,7 @@ const TestDetailsNew = () => {
   const [activeTab, setActiveTab] = useState('Tests');
   const [expandedSections, setExpandedSections] = useState({});
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
+  const [showRazorpayModal, setShowRazorpayModal] = useState(false);
 
   const tabsData = [
     { id: 'Courses', label: 'Courses', count: 0, countLabel: 'courses', path: isStudentRoute ? '/student/learn' : '/learn' },
@@ -232,7 +236,15 @@ const TestDetailsNew = () => {
                 {/* Preview Image with play */}
                 <div className="relative">
                   <img src={formatted.image} alt={formatted.title} className="w-full h-48 object-cover" />
-                  <button type="button" className="absolute inset-0 flex items-center justify-center group" aria-label="Preview Test">
+                  <button type="button" className="absolute inset-0 flex items-center justify-center group" aria-label="Preview Test"
+                  onClick={() => {
+                    if (user?.role) {
+                      setShowRazorpayModal(true);
+                    } else {
+                      setShowPurchaseModal(true);
+                    }
+                  }}
+                  >
                     <span className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/90 shadow-md group-hover:scale-105 transition-transform">
                       <PlayCircle className="w-8 h-8 text-blue-600" />
                     </span>
@@ -264,7 +276,15 @@ const TestDetailsNew = () => {
                           <ShoppingCart className="w-4 h-4" />
                           Add To Cart
                         </button>
-                        <button className="w-full bg-blue-600 text-white py-2 rounded-lg font-light text-sm hover:bg-blue-700 transition-colors" onClick={() => setShowPurchaseModal(true)}>
+                        <button className="w-full bg-blue-600 text-white py-2 rounded-lg font-light text-sm hover:bg-blue-700 transition-colors"
+                        onClick={() => {
+                          if (user?.role) {
+                            setShowRazorpayModal(true);
+                          } else {
+                            setShowPurchaseModal(true);
+                          }
+                        }}
+                        >
                           Buy Now
                         </button>
                       </div>
@@ -291,7 +311,15 @@ const TestDetailsNew = () => {
                               <ShoppingCart className="w-4 h-4" />
                               Add To Cart
                             </button>
-                            <button className="w-full bg-blue-600 text-white py-2 rounded-lg font-light text-sm hover:bg-blue-700 transition-colors" onClick={() => setShowPurchaseModal(true)}>
+                            <button className="w-full bg-blue-600 text-white py-2 rounded-lg font-light text-sm hover:bg-blue-700 transition-colors"
+                            onClick={() => {
+                              if (user?.role) {
+                                setShowRazorpayModal(true);
+                              } else {
+                                setShowPurchaseModal(true);
+                              }
+                            }}
+                            >
                               Buy Now
                             </button>
                           </div>
@@ -316,8 +344,61 @@ const TestDetailsNew = () => {
             <p className="text-sm text-gray-600 mb-4">Please log in to purchase this test. Already have an account? Sign in or create a new account to continue.</p>
             <div className="flex items-center justify-end gap-3">
               <button className="px-4 py-2 rounded-md border border-gray-200 text-sm text-gray-700 hover:bg-gray-50" onClick={() => setShowPurchaseModal(false)}>Cancel</button>
-              <button className="px-4 py-2 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700" onClick={() => { window.location.href = '/login'; }}>Sign In</button>
-              <button className="px-4 py-2 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700" onClick={() => { window.location.href = '/signup'; }}>Sign Up</button>
+              <button className="px-4 py-2 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700"
+                onClick={() => {
+                  navigate('/login', {
+                    state: {
+                      from: location.pathname,
+                      itemId: test.id,
+                      itemType: 'test'
+                    }
+                  });
+                }}
+              >
+                Sign In
+              </button>
+              <button className="px-4 py-2 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700"
+                onClick={() => {
+                  navigate('/signup', {
+                    state: {
+                      from: location.pathname,
+                      itemId: test.id,
+                      itemType: 'test'
+                    }
+                  });
+                }}
+              >
+                Sign Up
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* RazorPay Payment Modal */}
+      {showRazorpayModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setShowRazorpayModal(false)}></div>
+          <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
+            <h3 className="text-base font-light text-gray-900 mb-2">Initiate Payment</h3>
+            <p className="text-sm text-gray-600 mb-4">
+              You are logged in. Proceed with RazorPay payment.
+              <br />
+              (RazorPay integration goes here)
+            </p>
+            <div className="flex items-center justify-end gap-3">
+              <button
+                className="px-4 py-2 rounded-md border border-gray-200 text-sm text-gray-700 hover:bg-gray-50"
+                onClick={() => setShowRazorpayModal(false)}
+              >
+                Cancel Payment
+              </button>
+              <button
+                className="px-4 py-2 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700"
+                onClick={() => { /* Implement RazorPay payment logic here */ alert('Initiating RazorPay...'); setShowRazorpayModal(false); }}
+              >
+                Pay Now
+              </button>
             </div>
           </div>
         </div>

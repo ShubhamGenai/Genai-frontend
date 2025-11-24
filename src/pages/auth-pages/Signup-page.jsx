@@ -27,6 +27,18 @@ const SignupPage = () => {
     role:role
   });
 
+  // Mobile signup states
+  const [showMobileSignup, setShowMobileSignup] = useState(false);
+  const [mobileFormData, setMobileFormData] = useState({
+    name: '',
+    email: '',
+    mobile: ''
+  });
+  const [showOtpSection, setShowOtpSection] = useState(false);
+  const [mobileOtp, setMobileOtp] = useState('');
+  const [mobileLoading, setMobileLoading] = useState(false);
+  const [otpLoading, setOtpLoading] = useState(false);
+
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -165,6 +177,110 @@ useEffect(() => {
   return () => clearInterval(timerInterval);
 }, [step, resendTimer]);
 
+const handleMobileChange = (e) => {
+  const { name, value } = e.target;
+  setMobileFormData(prev => ({
+    ...prev,
+    [name]: value
+  }));
+};
+
+const handleMobileSignup = () => {
+  setShowMobileSignup(true);
+  setShowOtpSection(false);
+  setMobileFormData({ name: '', email: '', mobile: '' });
+  setMobileOtp('');
+};
+
+const handleSendMobileOtp = async (e) => {
+  e.preventDefault();
+  setMobileLoading(true);
+  setError('');
+
+  const { name, email, mobile } = mobileFormData;
+
+  if (!name?.trim() || !email?.trim() || !mobile?.trim()) {
+    const message = "All fields are required!";
+    setError(message);
+    toast.error(message);
+    setMobileLoading(false);
+    return;
+  }
+
+  // Validate mobile number (basic validation)
+  if (!/^\d{10}$/.test(mobile.trim())) {
+    const message = "Please enter a valid 10-digit mobile number!";
+    setError(message);
+    toast.error(message);
+    setMobileLoading(false);
+    return;
+  }
+
+  try {
+    const response = await axios.post(`${API_BASE_URL}/auth/signup/send-otp`, {
+      name: name.trim(),
+      email: email.trim(),
+      mobile: mobile.trim(),
+      role: role || 'student'
+    });
+
+    if (response.data?.success) {
+      toast.success('OTP sent successfully!');
+      setShowOtpSection(true);
+    } else {
+      toast.error(response.data?.message || 'Failed to send OTP.');
+    }
+  } catch (error) {
+    console.error("Send OTP error:", error.response?.data || error);
+    const errorMessage = error.response?.data?.message || "Failed to send OTP. Please try again.";
+    setError(errorMessage);
+    toast.error(errorMessage);
+  } finally {
+    setMobileLoading(false);
+  }
+};
+
+const handleVerifyMobileOtp = async (e) => {
+  e.preventDefault();
+  setOtpLoading(true);
+  setError('');
+
+  if (!mobileOtp?.trim()) {
+    const message = "Please enter the OTP!";
+    setError(message);
+    toast.error(message);
+    setOtpLoading(false);
+    return;
+  }
+
+  try {
+    const response = await axios.post(`${API_BASE_URL}/auth/signup/verify-otp`, {
+      mobile: mobileFormData.mobile.trim(),
+      otp: mobileOtp.trim()
+    });
+
+    if (response.data?.token) {
+      setToken(response.data.token);
+      setUser(response.data.user);
+      
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.user || {}));
+
+      toast.success('Signup successful!');
+      navigate('/');
+    } else {
+      toast.error(response.data?.message || 'Invalid OTP.');
+    }
+  } catch (error) {
+    console.error("Verify OTP error:", error.response?.data || error);
+    const errorMessage = error.response?.data?.message || "Invalid OTP. Please try again.";
+    setError(errorMessage);
+    toast.error(errorMessage);
+  } finally {
+    setOtpLoading(false);
+  }
+};
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-[#F5F8FA]">
 
@@ -180,6 +296,8 @@ useEffect(() => {
 
       <div className="bg-white p-6 rounded-xl shadow w-full max-w-sm">
         {step === 1 ? (
+          <>
+          {!showMobileSignup && (
           <form className="space-y-4" onSubmit={registerUser}>
             <h2 className="text-2xl font-semibold mb-2">Sign Up</h2>
             <p className="text-gray-700 text-base mb-3">
@@ -258,9 +376,13 @@ useEffect(() => {
               </button>
               <button
                 type="button"
-                className="px-3 py-2 border border-gray-300 rounded-lg flex items-center justify-center space-x-2 hover:bg-gray-50 transition text-sm">
-                <img src="/icons/linkedin.png" alt="LinkedIn" className="w-4 h-4" />
-                <span>LinkedIn</span>
+                className="px-3 py-2 border border-gray-300 rounded-lg flex items-center justify-center space-x-2 hover:bg-gray-50 transition text-sm"
+                onClick={handleMobileSignup}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+                <span>Mobile</span>
               </button>
             </div>
             <p className="text-center text-sm text-gray-600 mt-3">
@@ -271,6 +393,133 @@ useEffect(() => {
             </p>
 
           </form>
+          )}
+
+          {/* Mobile Signup Form */}
+          {showMobileSignup && (
+            <div>
+              <h2 className="text-2xl font-semibold mb-2">Mobile Signup</h2>
+              <p className="text-gray-700 text-base mb-3">
+                Enter your details to create your account
+              </p>
+              <form onSubmit={handleSendMobileOtp} className="space-y-4">
+                <div>
+                  <label htmlFor="mobile-name" className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                  <input
+                    type="text"
+                    id="mobile-name"
+                    name="name"
+                    placeholder="Your full name"
+                    className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-200 outline-none transition-all text-sm"
+                    value={mobileFormData.name}
+                    onChange={handleMobileChange}
+                    required
+                    disabled={showOtpSection}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="mobile-email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                  <input
+                    type="email"
+                    id="mobile-email"
+                    name="email"
+                    placeholder="you@example.com"
+                    className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-200 outline-none transition-all text-sm"
+                    value={mobileFormData.email}
+                    onChange={handleMobileChange}
+                    required
+                    disabled={showOtpSection}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="mobile-number" className="block text-sm font-medium text-gray-700 mb-1">Mobile Number</label>
+                  <input
+                    type="tel"
+                    id="mobile-number"
+                    name="mobile"
+                    placeholder="10-digit mobile number"
+                    className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-200 outline-none transition-all text-sm"
+                    value={mobileFormData.mobile}
+                    onChange={handleMobileChange}
+                    maxLength="10"
+                    required
+                    disabled={showOtpSection}
+                  />
+                </div>
+
+                {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+                
+                {!showOtpSection && (
+                  <button
+                    type="submit"
+                    className="w-full py-2 bg-blue-600 text-white rounded-lg flex items-center justify-center font-medium text-base hover:bg-blue-700 transition"
+                    disabled={mobileLoading}
+                  >
+                    {mobileLoading && <svg className="animate-spin h-5 w-5 mr-3 border-t-2 border-white rounded-full" viewBox="0 0 24 24"></svg>}
+                    Send OTP
+                  </button>
+                )}
+              </form>
+              
+              {/* OTP Section */}
+              {showOtpSection && (
+                <form onSubmit={handleVerifyMobileOtp} className="mt-4 pt-4 border-t border-gray-300 space-y-4">
+                  <div>
+                    <label htmlFor="mobile-otp" className="block text-sm font-medium text-gray-700 mb-1">Enter OTP</label>
+                    <input
+                      type="text"
+                      id="mobile-otp"
+                      name="otp"
+                      placeholder="Enter 6-digit OTP"
+                      className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-200 outline-none transition-all text-sm"
+                      value={mobileOtp}
+                      onChange={(e) => setMobileOtp(e.target.value)}
+                      maxLength="6"
+                      required
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="w-full py-2 bg-green-600 text-white rounded-lg flex items-center justify-center font-medium text-base hover:bg-green-700 transition"
+                    disabled={otpLoading}
+                  >
+                    {otpLoading && <svg className="animate-spin h-5 w-5 mr-3 border-t-2 border-white rounded-full" viewBox="0 0 24 24"></svg>}
+                    Verify & Sign Up
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSendMobileOtp}
+                    className="w-full py-2 text-blue-600 text-sm hover:underline"
+                    disabled={mobileLoading}
+                  >
+                    Resend OTP
+                  </button>
+                </form>
+              )}
+              
+              <button
+                type="button"
+                onClick={() => {
+                  setShowMobileSignup(false);
+                  setShowOtpSection(false);
+                  setError('');
+                  setMobileFormData({ name: '', email: '', mobile: '' });
+                  setMobileOtp('');
+                }}
+                className="w-full mt-4 py-2 text-gray-600 text-sm hover:underline"
+              >
+                ← Back to Sign Up
+              </button>
+
+              <p className="text-center text-sm text-gray-600 mt-3">
+                Already have an account?{" "}
+                <Link to="/login" className="text-blue-600 hover:underline">
+                  Log in
+                </Link>
+              </p>
+            </div>
+          )}
+          </>
         ) : (
           // OTP Verification Step
           <form className="space-y-4" onSubmit={verifyOtp}>

@@ -38,6 +38,7 @@ import MyNotes from "../pages/student/progress/MyNotes";
 import Profile from "../pages/student/progress/Profile";
 import AIChatPage from "../pages/student/ai-chat/AIChatPage";
 import CourseTakingPage from "../pages/student/learn/CourseTakingPage";
+import PaymentInitiationPage from "../pages/payment/PaymentInitiationPage";
 
 // Configuration objects for better organization
 const AUTH_ROUTES = {
@@ -197,6 +198,7 @@ const PublicRoutes = () => {
         <Route index element={<CoursePlayer />} />
       </Route>
       <Route path="auth/callback" element={<AuthCallback />} />
+      <Route path="payment/initiate/:itemType/:itemId" element={<PaymentInitiationPage />} />
 
       {/* Authentication Routes */}
       {Object.entries(AUTH_ROUTES).map(([path, Component]) => (

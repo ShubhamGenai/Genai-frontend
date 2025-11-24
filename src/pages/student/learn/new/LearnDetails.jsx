@@ -10,6 +10,7 @@ import TopTabs from '../../../../component/baseComponents/TopTabs';
 const LearnDetails = () => {
   const [expandedModule, setExpandedModule] = useState(null);
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
+  const [showRazorpayModal, setShowRazorpayModal] = useState(false);
   const navigate = useNavigate();
   const {user}= useContext(mainContext)
 
@@ -188,7 +189,13 @@ const LearnDetails = () => {
                   <button
                     type="button"
                     className="absolute inset-0 flex items-center justify-center group"
-                    onClick={() => setShowPurchaseModal(true)}
+                    onClick={() => {
+                      if (user?.role) {
+                        setShowRazorpayModal(true);
+                      } else {
+                        setShowPurchaseModal(true);
+                      }
+                    }}
                     aria-label="Preview Course"
                   >
                     <span className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/90 shadow-md group-hover:scale-105 transition-transform">
@@ -246,7 +253,13 @@ const LearnDetails = () => {
                           </button>
                           <button
                             className="w-full bg-blue-600 text-white py-2 rounded-lg font-light text-sm hover:bg-blue-700 transition-colors"
-                            onClick={() => setShowPurchaseModal(true)}
+                            onClick={() => {
+                              if (user?.role) {
+                                setShowRazorpayModal(true);
+                              } else {
+                                setShowPurchaseModal(true);
+                              }
+                            }}
                           >
                             Buy Now
                           </button>
@@ -291,7 +304,7 @@ const LearnDetails = () => {
                         <ChevronDown 
                           className={`w-4 h-4 text-gray-400 transition-transform ${
                             expandedModule === module.id ? 'rotate-180' : ''
-                          }`} 
+                          }`}
                         />
                       </div>
                     </button>
@@ -462,15 +475,60 @@ const LearnDetails = () => {
               </button>
               <button
                 className="px-4 py-2 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700"
-                onClick={() => { window.location.href = '/login'; }}
+                onClick={() => {
+                  navigate('/login', {
+                    state: {
+                      from: location.pathname,
+                      itemId: courseDetails.id,
+                      itemType: 'course'
+                    }
+                  });
+                }}
               >
                 Sign In
               </button>
               <button
                 className="px-4 py-2 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700"
-                onClick={() => { window.location.href = '/signup'; }}
+                onClick={() => {
+                  navigate('/signup', {
+                    state: {
+                      from: location.pathname,
+                      itemId: courseDetails.id,
+                      itemType: 'course'
+                    }
+                  });
+                }}
               >
                 Sign Up
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* RazorPay Payment Modal */}
+      {showRazorpayModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setShowRazorpayModal(false)}></div>
+          <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
+            <h3 className="text-base font-light text-gray-900 mb-2">Initiate Payment</h3>
+            <p className="text-sm text-gray-600 mb-4">
+              You are logged in. Proceed with RazorPay payment.
+              <br />
+              (RazorPay integration goes here)
+            </p>
+            <div className="flex items-center justify-end gap-3">
+              <button
+                className="px-4 py-2 rounded-md border border-gray-200 text-sm text-gray-700 hover:bg-gray-50"
+                onClick={() => setShowRazorpayModal(false)}
+              >
+                Cancel Payment
+              </button>
+              <button
+                className="px-4 py-2 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700"
+                onClick={() => { /* Implement RazorPay payment logic here */ alert('Initiating RazorPay...'); setShowRazorpayModal(false); }}
+              >
+                Pay Now
               </button>
             </div>
           </div>
