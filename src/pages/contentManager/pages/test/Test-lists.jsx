@@ -98,22 +98,25 @@ const TestList = () => {
   });
 
   return (
-    <div className="p-6 max-w-5xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">Tests</h1>
+    <div className="w-full min-h-full pb-8">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-white tracking-tight mb-2">Tests</h1>
+        <p className="text-slate-400 text-base font-light">Manage your test collection</p>
+      </div>
 
       {/* Search & Filter Controls */}
-      <div className="flex flex-col md:flex-row md:items-center md:space-x-4 mb-6">
+      <div className="flex flex-col md:flex-row md:items-center gap-4 mb-8">
         <input
           type="text"
           placeholder="Search by title or company..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="border rounded px-3 py-2 mb-4 md:mb-0 flex-grow"
+          className="flex-grow px-5 py-3 bg-slate-700/40 border border-slate-600/30 rounded-xl text-base text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all"
         />
         <select
           value={levelFilter}
           onChange={(e) => setLevelFilter(e.target.value)}
-          className="border rounded px-3 py-2"
+          className="px-5 py-3 bg-slate-700/40 border border-slate-600/30 rounded-xl text-base text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all"
         >
           <option value="">All Levels</option>
           {levels.map((lvl) => (
@@ -126,31 +129,37 @@ const TestList = () => {
 
       {/* Test Cards */}
       {filteredTests.length === 0 ? (
-        <p className="text-gray-600">No tests found.</p>
+        <div className="bg-slate-700/40 backdrop-blur-sm border border-slate-600/30 rounded-xl shadow-xl p-8 text-center">
+          <p className="text-slate-400 text-base">No tests found.</p>
+        </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {filteredTests.map((test) => (
-            <div key={test._id} className="border rounded shadow p-4 flex flex-col">
+          {filteredTests.map((test, index) => (
+            <div key={index} className="bg-slate-700/40 backdrop-blur-sm border border-slate-600/30 rounded-xl shadow-xl overflow-hidden hover:shadow-2xl transition-all hover:scale-[1.02]">
               <img
                 src={test.image}
                 alt={test.title}
-                className="h-40 w-full object-cover rounded mb-4"
+                className="h-48 w-full object-cover"
               />
-              <h2 className="text-xl font-semibold">{test.title}</h2>
-              <p className="text-gray-500">{test.company}</p>
-              <p className="mt-2">Duration: {test.duration} mins</p>
-              <p>Level: {test.level}</p>
-              <p>
-                Price: ₹{test.price.discounted}{" "}
-                {test.price.discounted < test.price.actual && (
-                  <span className="line-through text-gray-500 ml-2">
-                    ₹{test.price.actual}
-                  </span>
-                )}
-              </p>
-              <p>Total Questions: {test.numberOfQuestions}</p>
-              <p>Passing Score: {test.passingScore}</p>
-              <p>Average Rating: {test.averageRating.toFixed(1)} / 5 ({test.totalReviews} reviews)</p>
+              <div className="p-6">
+                <h2 className="text-xl font-bold text-white mb-2">{test.title}</h2>
+                <p className="text-slate-400 text-sm font-medium mb-4">{test.company}</p>
+                <div className="space-y-2 text-sm">
+                  <p className="text-slate-300"><span className="font-semibold">Duration:</span> {test.duration} mins</p>
+                  <p className="text-slate-300"><span className="font-semibold">Level:</span> {test.level}</p>
+                  <p className="text-slate-300">
+                    <span className="font-semibold">Price:</span> ₹{test.price.discounted}{" "}
+                    {test.price.discounted < test.price.actual && (
+                      <span className="line-through text-slate-500 ml-2">
+                        ₹{test.price.actual}
+                      </span>
+                    )}
+                  </p>
+                  <p className="text-slate-300"><span className="font-semibold">Total Questions:</span> {test.numberOfQuestions}</p>
+                  <p className="text-slate-300"><span className="font-semibold">Passing Score:</span> {test.passingScore}</p>
+                  <p className="text-slate-300"><span className="font-semibold">Average Rating:</span> {test.averageRating.toFixed(1)} / 5 ({test.totalReviews} reviews)</p>
+                </div>
+              </div>
             </div>
           ))}
         </div>

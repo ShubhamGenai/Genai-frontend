@@ -32,26 +32,30 @@ const ContentManagerDashboard = () => {
   ];
 
   return (
-    <div className=''>
-      <div className="mb-8 px-8  ">
-        <h1 className="text-2xl font-bold  text-gray-900">Dashboard</h1>
-        <p className="text-gray-600">Overview of your learning platform content</p>
+    <div className='w-full min-h-full pb-8'>
+      <div className="mb-10">
+        <h1 className="text-3xl font-bold text-white tracking-tight mb-2">Dashboard</h1>
+        <p className="text-slate-400 text-base font-light">Overview of your learning platform content</p>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5 mb-10">
         {stats.map((stat) => {
           const Icon = stat.icon;
           return (
-            <Link to={stat.link} key={stat.name} className="bg-white rounded-lg shadow hover:shadow-md transition-shadow duration-300">
+            <Link 
+              to={stat.link} 
+              key={stat.name} 
+              className="bg-slate-700/40 backdrop-blur-sm rounded-xl border border-slate-600/30 hover:bg-slate-700/60 hover:border-slate-500/50 transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-[1.02]"
+            >
               <div className="p-6">
-                <div className="flex items-center">
-                  <div className={`rounded-full p-3 ${stat.color} text-white`}>
-                    <Icon className="h-6 w-6" />
+                <div className="flex flex-col items-center text-center sm:flex-row sm:text-left sm:items-center">
+                  <div className={`rounded-xl p-4 ${stat.color} text-white shadow-lg mb-4 sm:mb-0`}>
+                    <Icon className="h-7 w-7" />
                   </div>
-                  <div className="ml-4">
-                    <h2 className="text-xl font-semibold text-gray-700">{stat.count}</h2>
-                    <p className="text-sm text-gray-500">{stat.name}</p>
+                  <div className="sm:ml-5">
+                    <h2 className="text-2xl font-bold text-white mb-1">{stat.count}</h2>
+                    <p className="text-sm font-medium text-slate-300 uppercase tracking-wide">{stat.name}</p>
                   </div>
                 </div>
               </div>
@@ -60,61 +64,76 @@ const ContentManagerDashboard = () => {
         })}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 pb-8">
         {/* Recent Activity */}
-        <div className="bg-white shadow rounded-lg">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-medium text-gray-900">Recent Activity</h2>
+        <div className="bg-slate-700/40 backdrop-blur-sm border border-slate-600/30 shadow-xl rounded-xl overflow-hidden">
+          <div className="px-6 py-5 border-b border-slate-600/30 bg-slate-800/30">
+            <h2 className="text-xl font-bold text-white tracking-tight">Recent Activity</h2>
           </div>
-          <div className="divide-y divide-gray-200">
+          <div className="divide-y divide-slate-600/30">
             {recentActivities.map((activity) => (
-              <div key={activity.id} className="px-6 py-4">
+              <div key={activity.id} className="px-6 py-4 hover:bg-slate-700/40 transition-colors duration-200">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-900">{activity.action}</p>
-                    <p className="text-sm text-gray-500">{activity.name}</p>
+                    <p className="text-base font-semibold text-white mb-1">{activity.action}</p>
+                    <p className="text-sm text-slate-400">{activity.name}</p>
                   </div>
-                  <span className="text-xs text-gray-500">{activity.time}</span>
+                  <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">{activity.time}</span>
                 </div>
               </div>
             ))}
           </div>
-          <div className="px-6 py-4 bg-gray-50 rounded-b-lg">
-            <a href="#" className="text-sm font-medium text-indigo-600 hover:text-indigo-500">
-              View all activity
+          <div className="px-6 py-4 bg-slate-800/30 border-t border-slate-600/30">
+            <a href="#" className="text-sm font-semibold text-blue-400 hover:text-blue-300 transition-colors duration-200">
+              View all activity →
             </a>
           </div>
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-white shadow rounded-lg">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-medium text-gray-900">Quick Actions</h2>
+        <div className="bg-slate-700/40 backdrop-blur-sm border border-slate-600/30 shadow-xl rounded-xl overflow-hidden">
+          <div className="px-6 py-5 border-b border-slate-600/30 bg-slate-800/30">
+            <h2 className="text-xl font-bold text-white tracking-tight">Quick Actions</h2>
           </div>
           <div className="p-6 grid grid-cols-2 gap-4">
-            <Link to="/content/course/add" className="flex flex-col items-center justify-center p-4 bg-indigo-50 rounded-lg hover:bg-indigo-100 transition-colors">
-              <AcademicCapIcon className="h-8 w-8 text-indigo-600" />
-              <span className="mt-2 text-sm font-medium text-gray-900">Add Course</span>
+            <Link 
+              to="/content/course/add" 
+              className="flex flex-col items-center justify-center p-5 bg-slate-800/40 border border-slate-600/30 rounded-xl hover:bg-slate-700/60 hover:border-blue-500/50 transition-all duration-300 group hover:scale-105"
+            >
+              <AcademicCapIcon className="h-9 w-9 text-blue-400 group-hover:text-blue-300 transition-colors mb-2" />
+              <span className="text-sm font-semibold text-white">Add Course</span>
             </Link>
-            <Link to="/content/modules/add" className="flex flex-col items-center justify-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
-              <CollectionIcon className="h-8 w-8 text-green-600" />
-              <span className="mt-2 text-sm font-medium text-gray-900">Add Module</span>
+            <Link 
+              to="/content/modules/add" 
+              className="flex flex-col items-center justify-center p-5 bg-slate-800/40 border border-slate-600/30 rounded-xl hover:bg-slate-700/60 hover:border-green-500/50 transition-all duration-300 group hover:scale-105"
+            >
+              <CollectionIcon className="h-9 w-9 text-green-400 group-hover:text-green-300 transition-colors mb-2" />
+              <span className="text-sm font-semibold text-white">Add Module</span>
             </Link>
-            <Link to="/content/lessons/add" className="flex flex-col items-center justify-center p-4 bg-yellow-50 rounded-lg hover:bg-yellow-100 transition-colors">
-              <VideoIcon className="h-8 w-8 text-yellow-600" />
-              <span className="mt-2 text-sm font-medium text-gray-900">Add Lesson</span>
+            <Link 
+              to="/content/lessons/add" 
+              className="flex flex-col items-center justify-center p-5 bg-slate-800/40 border border-slate-600/30 rounded-xl hover:bg-slate-700/60 hover:border-yellow-500/50 transition-all duration-300 group hover:scale-105"
+            >
+              <VideoIcon className="h-9 w-9 text-yellow-400 group-hover:text-yellow-300 transition-colors mb-2" />
+              <span className="text-sm font-semibold text-white">Add Lesson</span>
             </Link>
-            <Link to="/content/quizzes/add" className="flex flex-col items-center justify-center p-4 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">
-              <QuestionMarkCircleIcon className="h-8 w-8 text-red-600" />
-              <span className="mt-2 text-sm font-medium text-gray-900">Add Quiz</span>
+            <Link 
+              to="/content/quizzes/add" 
+              className="flex flex-col items-center justify-center p-5 bg-slate-800/40 border border-slate-600/30 rounded-xl hover:bg-slate-700/60 hover:border-red-500/50 transition-all duration-300 group hover:scale-105"
+            >
+              <QuestionMarkCircleIcon className="h-9 w-9 text-red-400 group-hover:text-red-300 transition-colors mb-2" />
+              <span className="text-sm font-semibold text-white">Add Quiz</span>
             </Link>
-            <Link to="/content/tests/add" className="flex flex-col items-center justify-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors">
-              <ClipboardCheckIcon className="h-8 w-8 text-purple-600" />
-              <span className="mt-2 text-sm font-medium text-gray-900">Add Test</span>
+            <Link 
+              to="/content/tests/add" 
+              className="flex flex-col items-center justify-center p-5 bg-slate-800/40 border border-slate-600/30 rounded-xl hover:bg-slate-700/60 hover:border-purple-500/50 transition-all duration-300 group hover:scale-105"
+            >
+              <ClipboardCheckIcon className="h-9 w-9 text-purple-400 group-hover:text-purple-300 transition-colors mb-2" />
+              <span className="text-sm font-semibold text-white">Add Test</span>
             </Link>
-            <div className="flex flex-col items-center justify-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
-              <UsersIcon className="h-8 w-8 text-blue-600" />
-              <span className="mt-2 text-sm font-medium text-gray-900">Manage Users</span>
+            <div className="flex flex-col items-center justify-center p-5 bg-slate-800/40 border border-slate-600/30 rounded-xl hover:bg-slate-700/60 hover:border-blue-500/50 transition-all duration-300 group cursor-pointer hover:scale-105">
+              <UsersIcon className="h-9 w-9 text-blue-400 group-hover:text-blue-300 transition-colors mb-2" />
+              <span className="text-sm font-semibold text-white">Manage Users</span>
             </div>
           </div>
         </div>

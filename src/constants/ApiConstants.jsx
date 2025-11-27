@@ -1,7 +1,7 @@
 // API base URL
 
-export const API_BASE_URL = 'https://genai-backend-three.vercel.app/api'
-// export const API_BASE_URL = 'http://localhost:8080/api' 
+// export const API_BASE_URL = 'https://genai-backend-three.vercel.app/api'
+export const API_BASE_URL = 'http://localhost:8080/api' 
 
 
 export const EMPLOYERENDPOINTS = {
@@ -101,6 +101,11 @@ export const CONTENTMANAGER = {
   ADD_LESSON:`${API_BASE_URL}/content/add-lesson`,
   GET_LESSONS:`${API_BASE_URL}/content/get-lesson`,
   LESSON_VIEW:`${API_BASE_URL}/content/lesson-view`,
+
+  GET_MODULES:`${API_BASE_URL}/content/get-module`,
+  GET_MODULEBYID:`${API_BASE_URL}/content/get-modulebyid`,
+  ADD_MODULE:`${API_BASE_URL}/content/add-module`,
+  ADD_COURSE:`${API_BASE_URL}/content/add-course`,
  
 }
 

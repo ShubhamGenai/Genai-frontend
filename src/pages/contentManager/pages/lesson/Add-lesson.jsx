@@ -101,20 +101,20 @@ const LessonForm = () => {
 };
 
   return (
-    <div className="max-w-8xl mx-auto p-6 bg-white">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Add New Lesson</h1>
-        <p className="text-gray-600">Create a comprehensive lesson with practice questions and quiz references.</p>
+    <div className="w-full min-h-full pb-8">
+      <div className="mb-10">
+        <h1 className="text-3xl font-bold text-white tracking-tight mb-2">Add New Lesson</h1>
+        <p className="text-slate-400 text-base font-light">Create a comprehensive lesson with practice questions and quiz references.</p>
       </div>
 
       <div className="space-y-8">
         {/* Basic Lesson Information */}
-        <div className="bg-gray-50 p-6 rounded-lg">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Lesson Information</h2>
-          
+        <div className="bg-slate-700/40 backdrop-blur-sm border border-slate-600/30 p-8 rounded-xl shadow-xl">
+          <h2 className="text-xl font-bold text-white mb-6 tracking-tight">Lesson Information</h2>
+            
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-base font-bold text-slate-300 mb-2">
                 Title *
               </label>
               <input
@@ -122,20 +122,20 @@ const LessonForm = () => {
                 required
                 value={lesson.title}
                 onChange={(e) => setLesson(prev => ({ ...prev, title: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-5 py-3 bg-slate-800/40 border border-slate-600/30 rounded-xl text-base text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
                 placeholder="Enter lesson title"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-base font-bold text-slate-300 mb-2">
                 Duration (minutes)
               </label>
               <input
                 type="number"
                 value={lesson.duration}
                 onChange={(e) => setLesson(prev => ({ ...prev, duration: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-5 py-3 bg-slate-800/40 border border-slate-600/30 rounded-xl text-base text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
                 placeholder="30"
                 min="1"
               />
@@ -143,7 +143,7 @@ const LessonForm = () => {
           </div>
 
           <div className="mt-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-base font-bold text-slate-300 mb-2">
               Content *
             </label>
             <textarea
@@ -151,47 +151,47 @@ const LessonForm = () => {
               value={lesson.content}
               onChange={(e) => setLesson(prev => ({ ...prev, content: e.target.value }))}
               rows={6}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-5 py-3 bg-slate-800/40 border border-slate-600/30 rounded-xl text-base text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
               placeholder="Enter the lesson content..."
             />
           </div>
         </div>
 
         {/* Practice Questions Section */}
-        <div className="bg-gray-50 p-6 rounded-lg">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold text-gray-800">Practice Questions</h2>
-            <button
-              type="button"
-              onClick={addPracticeQuestion}
-              className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
-            >
-              <Plus className="w-4 h-4" />
-              Add Question
-            </button>
-          </div>
+        <div className="bg-slate-700/40 backdrop-blur-sm border border-slate-600/30 p-8 rounded-xl shadow-xl">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-bold text-white tracking-tight">Practice Questions</h2>
+              <button
+                type="button"
+                onClick={addPracticeQuestion}
+                className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+                Add Question
+              </button>
+            </div>
 
           {lesson.practiceQuestions.length === 0 ? (
-            <p className="text-gray-500 text-center py-8">No practice questions added yet. Click "Add Question" to get started.</p>
+            <p className="text-slate-400 text-center py-8 text-base">No practice questions added yet. Click "Add Question" to get started.</p>
           ) : (
             <div className="space-y-6">
               {lesson.practiceQuestions.map((question, index) => (
-                <div key={index} className="bg-white p-4 rounded-lg border border-gray-200">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-medium text-gray-800">Question {index + 1}</h3>
-                    <button
-                      type="button"
-                      onClick={() => removePracticeQuestion(index)}
-                      className="flex items-center gap-1 px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors text-sm"
-                    >
-                      <Trash2 className="w-3 h-3" />
-                      Remove
-                    </button>
-                  </div>
+                <div key={index} className="bg-slate-800/40 p-6 rounded-xl border border-slate-600/30">
+                  <div className="flex items-center justify-between mb-5">
+                    <h3 className="text-lg font-bold text-white">Question {index + 1}</h3>
+                      <button
+                        type="button"
+                        onClick={() => removePracticeQuestion(index)}
+                        className="flex items-center gap-1 px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors text-sm"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                        Remove
+                      </button>
+                    </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div className="md:col-span-2">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-base font-bold text-slate-300 mb-2">
                         Question *
                       </label>
                       <input
@@ -199,59 +199,59 @@ const LessonForm = () => {
                         required
                         value={question.question}
                         onChange={(e) => updatePracticeQuestion(index, 'question', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-5 py-3 bg-slate-700/40 border border-slate-600/30 rounded-xl text-base text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
                         placeholder="Enter the question prompt"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-base font-bold text-slate-300 mb-2">
                         Description
                       </label>
                       <textarea
                         value={question.description}
                         onChange={(e) => updatePracticeQuestion(index, 'description', e.target.value)}
                         rows={3}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-5 py-3 bg-slate-700/40 border border-slate-600/30 rounded-xl text-base text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
                         placeholder="Additional information about the question"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-base font-bold text-slate-300 mb-2">
                         Instructions
                       </label>
                       <textarea
                         value={question.instructions}
                         onChange={(e) => updatePracticeQuestion(index, 'instructions', e.target.value)}
                         rows={3}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-5 py-3 bg-slate-700/40 border border-slate-600/30 rounded-xl text-base text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
                         placeholder="Step-by-step instructions"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-base font-bold text-slate-300 mb-2">
                         Code
                       </label>
                       <textarea
                         value={question.code}
                         onChange={(e) => updatePracticeQuestion(index, 'code', e.target.value)}
                         rows={4}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm"
+                        className="w-full px-5 py-3 bg-slate-700/40 border border-slate-600/30 rounded-xl text-base text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 font-mono transition-all"
                         placeholder="Starter code or example code"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-base font-bold text-slate-300 mb-2">
                         Expected Answer
                       </label>
                       <textarea
                         value={question.expectedAnswer}
                         onChange={(e) => updatePracticeQuestion(index, 'expectedAnswer', e.target.value)}
                         rows={4}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-5 py-3 bg-slate-700/40 border border-slate-600/30 rounded-xl text-base text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
                         placeholder="Expected answer or solution"
                       />
                     </div>
@@ -263,22 +263,22 @@ const LessonForm = () => {
         </div>
 
         {/* Quiz References Section */}
-        <div className="bg-gray-50 p-6 rounded-lg">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Quiz References</h2>
+        <div className="bg-slate-700/40 backdrop-blur-sm border border-slate-600/30 p-8 rounded-xl shadow-xl">
+          <h2 className="text-xl font-bold text-white mb-6 tracking-tight">Quiz References</h2>
           
           <div className="flex gap-3 mb-4">
             <input
               type="text"
               value={quizInput}
               onChange={(e) => setQuizInput(e.target.value)}
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="flex-1 px-5 py-3 bg-slate-800/40 border border-slate-600/30 rounded-xl text-base text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
               placeholder="Enter Quiz ID (e.g., 507f1f77bcf86cd799439011)"
               onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addQuizReference())}
             />
             <button
               type="button"
               onClick={addQuizReference}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all font-semibold"
             >
               Add Quiz
             </button>
@@ -286,14 +286,14 @@ const LessonForm = () => {
 
           {lesson.quiz.length > 0 && (
             <div className="space-y-2">
-              <h3 className="text-sm font-medium text-gray-700">Referenced Quizzes:</h3>
+              <h3 className="text-sm font-bold text-slate-300 uppercase tracking-wide">Referenced Quizzes:</h3>
               {lesson.quiz.map((quizId, index) => (
-                <div key={index} className="flex items-center justify-between bg-white px-3 py-2 rounded border">
-                  <span className="font-mono text-sm text-gray-700">{quizId}</span>
+                <div key={index} className="flex items-center justify-between bg-slate-800/40 px-4 py-3 rounded-xl border border-slate-600/30">
+                  <span className="font-mono text-sm font-semibold text-white">{quizId}</span>
                   <button
                     type="button"
                     onClick={() => removeQuizReference(index)}
-                    className="text-red-600 hover:text-red-800 transition-colors"
+                    className="text-red-400 hover:text-red-300 transition-colors"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -304,10 +304,10 @@ const LessonForm = () => {
         </div>
       </div>
 
-      <div className="flex justify-end pt-6 border-t border-gray-200">
+      <div className="flex justify-end pt-8 border-t border-slate-600/30">
         <button
           onClick={handleSubmit}
-          className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+          className="flex items-center gap-2 px-8 py-4 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all font-semibold text-base shadow-xl hover:shadow-2xl"
         >
           <Save className="w-5 h-5" />
           Save Lesson

@@ -36,27 +36,27 @@ useEffect(() => {
   );
 
   return (
-    <div>
-      <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between">
+    <div className="w-full min-h-full pb-8">
+      <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Quizzes</h1>
-          <p className="text-gray-600">Manage your quizzes</p>
+          <h1 className="text-3xl font-bold text-white tracking-tight mb-2">Quizzes</h1>
+          <p className="text-slate-400 text-base font-light">Manage your quizzes</p>
         </div>
-        <Link
-          to="/content/quizzes/add"
-          className="mt-4 md:mt-0 flex items-center justify-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
-        >
-          <PlusIcon className="h-5 w-5 mr-2" />
-          Add New Quiz
-        </Link>
-      </div>
+          <Link
+            to="/content/quizzes/add"
+            className="mt-4 md:mt-0 flex items-center justify-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
+          >
+            <PlusIcon className="h-5 w-5 mr-2" />
+            Add New Quiz
+          </Link>
+        </div>
 
       {/* Search Bar */}
       <div className="mb-6">
         <input
           type="text"
           placeholder="Search quizzes..."
-          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="w-full px-5 py-3 bg-slate-700/40 border border-slate-600/30 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all text-base"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
@@ -65,33 +65,35 @@ useEffect(() => {
       {/* Quiz List */}
       {isLoading ? (
         <div className="flex justify-center items-center h-40">
-          <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-600"></div>
+          <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500"></div>
         </div>
       ) : filteredQuizzes.length === 0 ? (
-        <div className="text-center text-gray-500">No quizzes found.</div>
+        <div className="bg-slate-700/40 backdrop-blur-sm border border-slate-600/30 rounded-xl shadow-xl p-8 text-center">
+          <p className="text-slate-400 text-base">No quizzes found.</p>
+        </div>
       ) : (
-        <div className="bg-white shadow rounded-md overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+        <div className="bg-slate-700/40 backdrop-blur-sm border border-slate-600/30 rounded-xl shadow-xl overflow-hidden">
+          <table className="min-w-full divide-y divide-slate-600/30">
+            <thead className="bg-slate-800/40">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Duration</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Questions</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider">Title</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider">Duration</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider">Questions</th>
+                <th className="px-6 py-4 text-right text-xs font-bold text-slate-300 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-slate-700/20 divide-y divide-slate-600/30">
               {filteredQuizzes.map((quiz) => (
-                <tr key={quiz._id}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{quiz.title}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{quiz.duration} mins</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{quiz.questions.length}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
-                    <div className="flex justify-end space-x-2">
-                      <Link to={`/quizzes/edit/${quiz._id}`} className="text-indigo-600 hover:text-indigo-900">
+                <tr key={quiz._id} className="hover:bg-slate-700/40 transition-colors">
+                  <td className="px-6 py-5 whitespace-nowrap text-base font-semibold text-white">{quiz.title}</td>
+                  <td className="px-6 py-5 whitespace-nowrap text-base font-medium text-slate-300">{quiz.duration} mins</td>
+                  <td className="px-6 py-5 whitespace-nowrap text-base font-medium text-slate-300">{quiz.questions?.length || 0}</td>
+                  <td className="px-6 py-5 whitespace-nowrap text-right text-sm">
+                    <div className="flex justify-end space-x-3">
+                      <Link to={`/quizzes/edit/${quiz._id}`} className="text-blue-400 hover:text-blue-300 transition-colors">
                         <PencilIcon className="h-5 w-5" />
                       </Link>
-                      <button onClick={() => handleDelete(quiz._id)} className="text-red-600 hover:text-red-900">
+                      <button onClick={() => handleDelete(quiz._id)} className="text-red-400 hover:text-red-300 transition-colors">
                         <TrashIcon className="h-5 w-5" />
                       </button>
                     </div>

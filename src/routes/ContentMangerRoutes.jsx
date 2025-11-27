@@ -8,7 +8,7 @@ import CourseForm from "../component/contentManagerComponents/CourseForm";
 import AddQuiz from "../pages/contentManager/pages/quiz/Add-quiz";
 import Quizzes from "../pages/contentManager/pages/quiz/Quiz-list";
 import ModuleList from "../pages/contentManager/pages/module/Module-list";
-import AddModule from "../pages/contentManager/pages/module/Add-Module";
+// import AddModule from "../pages/contentManager/pages/module/Add-Module";
 import LessonList from "../pages/contentManager/pages/lesson/Lesson-list";
 import LessonForm from "../pages/contentManager/pages/lesson/Add-lesson";
 import TestList from "../pages/contentManager/pages/test/Test-lists";
@@ -21,11 +21,11 @@ const ContentWrapper = ({ children }) => {
   
   return (
     <div 
-      className={`flex-1 transition-all duration-300 ease-in-out ${
-        isOpen ? 'md:ml-64' : 'md:ml-16'
+      className={`flex-1 w-full transition-all duration-300 ease-in-out flex flex-col ${
+        isOpen ? 'md:ml-56' : 'md:ml-14'
       }`}
     >
-      <main className="p-6 py-16 overflow-y-auto">
+      <main className="flex-1 overflow-y-auto pb-20 px-8 pt-8">
         {children}
       </main>
     </div>
@@ -35,11 +35,11 @@ const ContentWrapper = ({ children }) => {
 const ContentManagerRoutes = () => {
   return (
     <SidebarProvider>
-      <div className="flex h-fit overflow-hidden bg-gray-50">
+      <div className="flex min-h-screen w-full bg-gradient-to-b from-slate-800 to-slate-900">
         {/* Sidebar */}
         <Sidebar />
 
-        {/* Main Content */}
+        {/* Main Content - blends with sidebar */}
         <ContentWrapper>
           <Routes>
             <Route
@@ -103,14 +103,14 @@ const ContentManagerRoutes = () => {
                 </ProtectedRoute>
               }
             />
-              <Route
+              {/* <Route
               path="modules/add"
               element={
                 <ProtectedRoute allowedRoles={["content"]}>
                   <AddModule />
                 </ProtectedRoute>
               }
-            />
+            /> */}
 
              <Route
               path="lessons"

@@ -80,57 +80,56 @@ export default function AddQuiz() {
 };
 
   return (
-    <div className=" min-h-screen">
-      <div className="container mx-auto px-4 py-6">
-        <div className="max-w-7xl mx-auto">
-          {/* Header */}
-          <div className="bg-white rounded-xl shadow-lg mb-8 p-6">
-            <h1 className="text-3xl font-bold text-indigo-800 text-center">Create Your Quiz</h1>
-            <p className="text-gray-600 text-center mt-2">Design engaging quizzes with multiple-choice questions</p>
+    <div className="w-full min-h-full pb-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-10">
+          <h1 className="text-3xl font-bold text-white text-center tracking-tight mb-2">Create Your Quiz</h1>
+          <p className="text-slate-400 text-center text-base font-light">Design engaging quizzes with multiple-choice questions</p>
+        </div>
+
+        {/* Main Form */}
+        <div className="bg-slate-700/40 backdrop-blur-sm border border-slate-600/30 rounded-xl shadow-xl p-8">
+          {/* Quiz Title & Duration */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div>
+              <label className="block text-base font-bold text-slate-300 mb-2">Quiz Title</label>
+              <input
+                type="text"
+                className="w-full bg-slate-800/40 border border-slate-600/30 rounded-xl px-5 py-3 text-base text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Enter quiz title..."
+              />
+            </div>
+            <div>
+              <label className="block text-base font-bold text-slate-300 mb-2">Duration (minutes)</label>
+              <input
+                type="number"
+                className="w-full bg-slate-800/40 border border-slate-600/30 rounded-xl px-5 py-3 text-base text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all"
+                value={duration}
+                onChange={(e) => setDuration(e.target.value)}
+                placeholder="Enter time limit..."
+                min={1}
+              />
+            </div>
           </div>
 
-          {/* Main Form */}
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            {/* Quiz Title & Duration */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-              <div>
-                <label className="block text-gray-700 font-semibold mb-2">Quiz Title</label>
-                <input
-                  type="text"
-                  className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Enter quiz title..."
-                />
-              </div>
-              <div>
-                <label className="block text-gray-700 font-semibold mb-2">Duration (minutes)</label>
-                <input
-                  type="number"
-                  className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-                  value={duration}
-                  onChange={(e) => setDuration(e.target.value)}
-                  placeholder="Enter time limit..."
-                  min={1}
-                />
-              </div>
-            </div>
+          <hr className="border-slate-600/30 mb-8" />
 
-            <hr className="border-gray-200 mb-8" />
-
-            {/* Questions Section */}
-            <div className="mb-8">
-              <h2 className="text-xl font-bold text-gray-800 mb-4">Questions</h2>
-              
-              <div className="space-y-6">
-                {questions.map((q, i) => (
-                  <div key={i} className="bg-indigo-50 rounded-xl p-6 shadow-sm transition-all hover:shadow-md border border-indigo-100">
-                    <div className="flex justify-between items-center mb-4">
-                      <h3 className="text-lg font-semibold text-indigo-700">Question {i + 1}</h3>
+          {/* Questions Section */}
+          <div className="mb-8">
+            <h2 className="text-xl font-bold text-white mb-6 tracking-tight">Questions</h2>
+            
+            <div className="space-y-6">
+              {questions.map((q, i) => (
+                <div key={i} className="bg-slate-800/40 rounded-xl p-6 shadow-sm transition-all hover:shadow-md border border-slate-600/30">
+                  <div className="flex justify-between items-center mb-5">
+                    <h3 className="text-lg font-bold text-white">Question {i + 1}</h3>
                       {questions.length > 1 && (
                         <button
                           type="button"
-                          className="text-red-500 hover:text-red-700 flex items-center transition-colors"
+                          className="text-red-400 hover:text-red-300 flex items-center transition-colors"
                           onClick={() => removeQuestion(i)}
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
@@ -141,99 +140,98 @@ export default function AddQuiz() {
                       )}
                     </div>
                     
-                    <div className="mb-4">
-                      <label className="block text-gray-700 font-medium mb-2">Question Text</label>
-                      <input
-                        type="text"
-                        className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-                        value={q.questionText}
-                        onChange={(e) => handleQuestionChange(i, 'questionText', e.target.value)}
-                        placeholder="Enter your question..."
-                      />
-                    </div>
-                    
-                    <div className="mb-4">
-                      <label className="block text-gray-700 font-medium mb-2">Options</label>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {q.options.map((opt, j) => (
-                          <div key={j} className="relative">
-                            <div className="absolute top-3 left-3 flex items-center justify-center w-6 h-6 bg-indigo-100 rounded-full">
-                              <span className="text-indigo-700 font-medium">{j + 1}</span>
-                            </div>
-                            <input
-                              type="text"
-                              className="w-full border border-gray-300 rounded-lg pl-12 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-                              value={opt}
-                              onChange={(e) => handleOptionChange(i, j, e.target.value)}
-                              placeholder={`Option ${j + 1}...`}
-                            />
+                  <div className="mb-5">
+                    <label className="block text-base font-bold text-slate-300 mb-2">Question Text</label>
+                    <input
+                      type="text"
+                      className="w-full bg-slate-700/40 border border-slate-600/30 rounded-xl px-5 py-3 text-base text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all"
+                      value={q.questionText}
+                      onChange={(e) => handleQuestionChange(i, 'questionText', e.target.value)}
+                      placeholder="Enter your question..."
+                    />
+                  </div>
+                  
+                  <div className="mb-5">
+                    <label className="block text-base font-bold text-slate-300 mb-2">Options</label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {q.options.map((opt, j) => (
+                        <div key={j} className="relative">
+                          <div className="absolute top-3 left-3 flex items-center justify-center w-7 h-7 bg-indigo-600 rounded-full">
+                            <span className="text-white font-bold text-xs">{j + 1}</span>
                           </div>
-                        ))}
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <label className="block text-gray-700 font-medium mb-2">Correct Answer</label>
-                      <select
-                        className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-                        value={q.answer}
-                        onChange={(e) => handleQuestionChange(i, 'answer', e.target.value)}
-                      >
-                        <option value="">Select correct answer</option>
-                        {q.options.map((opt, idx) => (
-                          opt && <option key={idx} value={opt}>{opt}</option>
-                        ))}
-                      </select>
+                          <input
+                            type="text"
+                            className="w-full bg-slate-700/40 border border-slate-600/30 rounded-xl pl-12 pr-4 py-3 text-base text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all"
+                            value={opt}
+                            onChange={(e) => handleOptionChange(i, j, e.target.value)}
+                            placeholder={`Option ${j + 1}...`}
+                          />
+                        </div>
+                      ))}
                     </div>
                   </div>
-                ))}
-              </div>
-              
-              <button
-                type="button"
-                onClick={addQuestion}
-                className="mt-6 flex items-center bg-indigo-100 text-indigo-700 px-6 py-3 rounded-lg font-medium hover:bg-indigo-200 transition-colors"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
-                </svg>
-                Add Question
-              </button>
+                  
+                  <div>
+                    <label className="block text-base font-bold text-slate-300 mb-2">Correct Answer</label>
+                    <select
+                      className="w-full bg-slate-800/40 border border-slate-600/30 rounded-xl px-5 py-3 text-base text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all"
+                      value={q.answer}
+                      onChange={(e) => handleQuestionChange(i, 'answer', e.target.value)}
+                    >
+                      <option value="">Select correct answer</option>
+                      {q.options.map((opt, idx) => (
+                        opt && <option key={idx} value={opt}>{opt}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              ))}
             </div>
-
-            <hr className="border-gray-200 mb-8" />
-
-            {/* Submit Button */}
-            <div className="flex justify-center">
-              <button
-                onClick={handleSubmit}
-                className="bg-indigo-600 text-white font-medium px-8 py-4 rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={loading}
-              >
-                {loading ? (
-                  <span className="flex items-center">
-                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Creating Quiz...
-                  </span>
-                ) : (
-                  <span className="flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    Create Quiz
-                  </span>
-                )}
-              </button>
-            </div>
+            
+            <button
+              type="button"
+              onClick={addQuestion}
+              className="mt-6 flex items-center bg-indigo-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-indigo-700 transition-all text-base"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+              </svg>
+              Add Question
+            </button>
           </div>
-          
-          {/* Footer */}
-          <div className="mt-8 text-center text-gray-600">
-            <p>Enhance your teaching experience with interactive quizzes</p>
+
+          <hr className="border-slate-600/30 mb-8" />
+
+          {/* Submit Button */}
+          <div className="flex justify-center">
+            <button
+              onClick={handleSubmit}
+              className="bg-indigo-600 text-white font-semibold px-8 py-4 rounded-xl shadow-xl hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-base"
+              disabled={loading}
+            >
+              {loading ? (
+                <span className="flex items-center">
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Creating Quiz...
+                </span>
+              ) : (
+                <span className="flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  Create Quiz
+                </span>
+              )}
+            </button>
           </div>
+        </div>
+        
+        {/* Footer */}
+        <div className="mt-8 text-center text-slate-400 text-base">
+          <p>Enhance your teaching experience with interactive quizzes</p>
         </div>
       </div>
     </div>
