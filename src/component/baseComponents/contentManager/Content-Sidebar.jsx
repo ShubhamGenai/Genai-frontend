@@ -125,7 +125,8 @@ const Sidebar = () => {
       submenus: [
         { name: 'All Quizzes', path: '/content/quizzes', icon: QuestionMarkCircleIcon },
         { name: 'Create Quiz', path: '/content/quizzes/add', icon: PlusIcon },
-        { name: 'Question Bank', path: '/content/quizzes/question-bank', icon: ClipboardListIcon }
+        { name: 'Question Bank', path: '/content/quizzes/question-bank', icon: ClipboardListIcon },
+        { name: 'Bulk Upload', path: '/content/quizzes/bulk-upload', icon: DocumentDuplicateIcon }
       ]
     },
     { 

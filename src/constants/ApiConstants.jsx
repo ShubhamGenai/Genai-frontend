@@ -106,6 +106,7 @@ export const CONTENTMANAGER = {
   GET_MODULEBYID:`${API_BASE_URL}/content/get-modulebyid`,
   ADD_MODULE:`${API_BASE_URL}/content/add-module`,
   ADD_COURSE:`${API_BASE_URL}/content/add-course`,
+  BULK_UPLOAD_TESTS:`${API_BASE_URL}/content/tests/bulk-upload`,
  
 }
 

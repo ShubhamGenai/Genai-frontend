@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { PlusIcon, PencilIcon, TrashIcon } from '@heroicons/react/outline';
+import { PlusIcon, PencilIcon, TrashIcon, EyeIcon } from '@heroicons/react/outline';
 import { CONTENTMANAGER } from '../../../../constants/ApiConstants';
 import axios from 'axios';
 
@@ -90,6 +90,13 @@ useEffect(() => {
                   <td className="px-6 py-5 whitespace-nowrap text-base font-medium text-slate-300">{quiz.questions?.length || 0}</td>
                   <td className="px-6 py-5 whitespace-nowrap text-right text-sm">
                     <div className="flex justify-end space-x-3">
+                      <Link
+                        to={`/content/quizzes/${quiz._id}`}
+                        className="text-slate-300 hover:text-white transition-colors"
+                        title="View quiz"
+                      >
+                        <EyeIcon className="h-5 w-5" />
+                      </Link>
                       <Link to={`/quizzes/edit/${quiz._id}`} className="text-blue-400 hover:text-blue-300 transition-colors">
                         <PencilIcon className="h-5 w-5" />
                       </Link>

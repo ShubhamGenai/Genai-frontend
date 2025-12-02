@@ -7,6 +7,8 @@ import Courses from "../pages/contentManager/pages/Course-list";
 import CourseForm from "../component/contentManagerComponents/CourseForm";
 import AddQuiz from "../pages/contentManager/pages/quiz/Add-quiz";
 import Quizzes from "../pages/contentManager/pages/quiz/Quiz-list";
+import QuizBulkUpload from "../pages/contentManager/pages/quiz/Quiz-BulkUpload";
+import QuizView from "../pages/contentManager/pages/quiz/Quiz-View";
 import ModuleList from "../pages/contentManager/pages/module/Module-list";
 // import AddModule from "../pages/contentManager/pages/module/Add-Module";
 import LessonList from "../pages/contentManager/pages/lesson/Lesson-list";
@@ -14,6 +16,7 @@ import LessonForm from "../pages/contentManager/pages/lesson/Add-lesson";
 import TestList from "../pages/contentManager/pages/test/Test-lists";
 import LessonView from "../pages/contentManager/pages/lesson/Lesson-View";
 import EditLesson from "../pages/contentManager/pages/lesson/Lesson_edit";
+import TestBulkUpload from "../pages/contentManager/pages/test/Test-BulkUpload";
 
 // Component that wraps our content and responds to sidebar state
 const ContentWrapper = ({ children }) => {
@@ -95,6 +98,24 @@ const ContentManagerRoutes = () => {
               }
             />
 
+            <Route
+              path="quizzes/bulk-upload"
+              element={
+                <ProtectedRoute allowedRoles={["content"]}>
+                  <QuizBulkUpload />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="quizzes/:quizId"
+              element={
+                <ProtectedRoute allowedRoles={["content"]}>
+                  <QuizView />
+                </ProtectedRoute>
+              }
+            />
+
                <Route
               path="modules"
               element={
@@ -150,6 +171,15 @@ const ContentManagerRoutes = () => {
               element={
                 <ProtectedRoute allowedRoles={["content"]}>
                   <TestList />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="tests/bulk-upload"
+              element={
+                <ProtectedRoute allowedRoles={["content"]}>
+                  <TestBulkUpload />
                 </ProtectedRoute>
               }
             />
