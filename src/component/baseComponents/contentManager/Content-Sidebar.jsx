@@ -94,28 +94,9 @@ const Sidebar = () => {
       icon: BookOpenIcon,
       submenus: [
         { name: 'All Courses', path: '/content/courses-list', icon: BookOpenIcon },
-        { name: 'Create Course', path: '/content/courses/add', icon: PlusIcon },
-        { name: 'Categories', path: '/content/courses/categories', icon: CollectionIcon }
-      ]
-    },
-    { 
-      name: 'Modules', 
-      path: '/content/modules', 
-      icon: CollectionIcon,
-      submenus: [
-        { name: 'All Modules', path: '/content/modules', icon: CollectionIcon },
-        { name: 'Create Module', path: '/content/modules/add', icon: PlusIcon },
-        { name: 'Templates', path: '/content/modules/templates', icon: DocumentDuplicateIcon }
-      ]
-    },
-    { 
-      name: 'Lessons', 
-      path: '/content/lessons', 
-      icon: VideoCameraIcon,
-      submenus: [
-        { name: 'All Lessons', path: '/content/lessons', icon: VideoCameraIcon },
-        { name: 'Create Lesson', path: '/content/lessons/add', icon: PlusIcon },
-        { name: 'Resources', path: '/content/lessons/resources', icon: DocumentDuplicateIcon }
+        { name: 'Create Course', path: '/content/course/add', icon: PlusIcon },
+        { name: 'Modules', path: '/content/modules', icon: CollectionIcon },
+        { name: 'Lessons', path: '/content/lessons', icon: VideoCameraIcon }
       ]
     },
     { 
@@ -142,37 +123,37 @@ const Sidebar = () => {
     },
     { 
       name: 'Library', 
-      path: '/library', 
+      path: '/content/library', 
       icon: LibraryIcon,
       submenus: [
-        { name: 'All Files', path: '/library/resources', icon: LibraryIcon },
-        { name: 'Documents', path: '/library/documents', icon: DocumentDuplicateIcon },
-        { name: 'Media', path: '/library/videos', icon: VideoCameraIcon },
-        { name: 'Audio', path: '/library/audio', icon: MusicNoteIcon },
-        { name: 'Images', path: '/library/images', icon: PhotographIcon }
+        { name: 'All Files', path: '/content/library/resources', icon: LibraryIcon },
+        { name: 'Documents', path: '/content/library/documents', icon: DocumentDuplicateIcon },
+        { name: 'Media', path: '/content/library/videos', icon: VideoCameraIcon },
+        { name: 'Audio', path: '/content/library/audio', icon: MusicNoteIcon },
+        { name: 'Images', path: '/content/library/images', icon: PhotographIcon }
       ]
     },
     { 
       name: 'Classes', 
-      path: '/classes', 
+      path: '/content/classes', 
       icon: AcademicCapIcon,
       submenus: [
-        { name: 'All Classes', path: '/classes/all', icon: AcademicCapIcon },
-        { name: 'Create Class', path: '/classes/create', icon: PlusIcon },
-        { name: 'Schedule', path: '/classes/schedules', icon: CalendarIcon },
-        { name: 'Attendance', path: '/classes/attendance', icon: ClipboardListIcon }
+        { name: 'All Classes', path: '/content/classes/all', icon: AcademicCapIcon },
+        { name: 'Create Class', path: '/content/classes/create', icon: PlusIcon },
+        { name: 'Schedule', path: '/content/classes/schedules', icon: CalendarIcon },
+        { name: 'Attendance', path: '/content/classes/attendance', icon: ClipboardListIcon }
       ]
     },
     { 
       name: 'Exam Types', 
-      path: '/exam-types', 
+      path: '/content/exam-types', 
       icon: ClipboardListIcon,
       submenus: [
-        { name: 'Multiple Choice', path: '/exam-types/mcq', icon: CheckCircleIcon },
-        { name: 'Essay', path: '/exam-types/essay', icon: PencilIcon },
-        { name: 'Practical', path: '/exam-types/practical', icon: CogIcon },
-        { name: 'Oral', path: '/exam-types/oral', icon: MicrophoneIcon },
-        { name: 'Mixed', path: '/exam-types/mixed', icon: CollectionIcon }
+        { name: 'Multiple Choice', path: '/content/exam-types/mcq', icon: CheckCircleIcon },
+        { name: 'Essay', path: '/content/exam-types/essay', icon: PencilIcon },
+        { name: 'Practical', path: '/content/exam-types/practical', icon: CogIcon },
+        { name: 'Oral', path: '/content/exam-types/oral', icon: MicrophoneIcon },
+        { name: 'Mixed', path: '/content/exam-types/mixed', icon: CollectionIcon }
       ]
     }
   ];

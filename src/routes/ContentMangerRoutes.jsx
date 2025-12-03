@@ -4,6 +4,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import ContentManagerDashboard from "../pages/contentManager/homepage/Landing";
 import Sidebar, { SidebarProvider, useSidebar } from "../component/baseComponents/contentManager/Content-Sidebar";
 import Courses from "../pages/contentManager/pages/Course-list";
+import CourseView from "../pages/contentManager/pages/Course-View";
 import CourseForm from "../component/contentManagerComponents/CourseForm";
 import AddQuiz from "../pages/contentManager/pages/quiz/Add-quiz";
 import Quizzes from "../pages/contentManager/pages/quiz/Quiz-list";
@@ -17,6 +18,11 @@ import TestList from "../pages/contentManager/pages/test/Test-lists";
 import LessonView from "../pages/contentManager/pages/lesson/Lesson-View";
 import EditLesson from "../pages/contentManager/pages/lesson/Lesson_edit";
 import TestBulkUpload from "../pages/contentManager/pages/test/Test-BulkUpload";
+import TestView from "../pages/contentManager/pages/test/Test-View";
+import TestCreate from "../pages/contentManager/pages/test/Test-Create";
+import PlaceholderPage from "../pages/contentManager/pages/PlaceholderPage";
+import LibraryAllFiles from "../pages/contentManager/pages/library/LibraryAllFiles";
+import LibraryUploadDocument from "../pages/contentManager/pages/library/LibraryUploadDocument";
 
 // Component that wraps our content and responds to sidebar state
 const ContentWrapper = ({ children }) => {
@@ -76,6 +82,15 @@ const ContentManagerRoutes = () => {
               element={
                 <ProtectedRoute allowedRoles={["content"]}>
                   <CourseForm />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="courses/:courseId"
+              element={
+                <ProtectedRoute allowedRoles={["content"]}>
+                  <CourseView />
                 </ProtectedRoute>
               }
             />
@@ -180,6 +195,190 @@ const ContentManagerRoutes = () => {
               element={
                 <ProtectedRoute allowedRoles={["content"]}>
                   <TestBulkUpload />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="tests/:testId"
+              element={
+                <ProtectedRoute allowedRoles={["content"]}>
+                  <TestView />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Tests: Create + Analytics */}
+            <Route
+              path="tests/add"
+              element={
+                <ProtectedRoute allowedRoles={["content"]}>
+                  <TestCreate />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="tests/analytics"
+              element={
+                <ProtectedRoute allowedRoles={["content"]}>
+                  <PlaceholderPage
+                    title="Test Analytics"
+                    description="This is a placeholder analytics page for tests. Add charts and metrics here."
+                  />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Library */}
+            <Route
+              path="library/resources"
+              element={
+                <ProtectedRoute allowedRoles={["content"]}>
+                  <LibraryAllFiles />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="library/documents"
+              element={
+                <ProtectedRoute allowedRoles={["content"]}>
+                  <LibraryUploadDocument />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="library/videos"
+              element={
+                <ProtectedRoute allowedRoles={["content"]}>
+                  <PlaceholderPage
+                    title="Library - Media"
+                    description="Manage video assets used across lessons and courses."
+                  />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="library/audio"
+              element={
+                <ProtectedRoute allowedRoles={["content"]}>
+                  <PlaceholderPage
+                    title="Library - Audio"
+                    description="Manage audio assets like podcasts or voiceovers."
+                  />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="library/images"
+              element={
+                <ProtectedRoute allowedRoles={["content"]}>
+                  <PlaceholderPage
+                    title="Library - Images"
+                    description="Manage image assets for courses, tests, and marketing."
+                  />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Classes placeholders */}
+            <Route
+              path="classes/all"
+              element={
+                <ProtectedRoute allowedRoles={["content"]}>
+                  <PlaceholderPage
+                    title="Classes - All"
+                    description="View and manage all live/recorded classes."
+                  />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="classes/create"
+              element={
+                <ProtectedRoute allowedRoles={["content"]}>
+                  <PlaceholderPage
+                    title="Create Class"
+                    description="Create new live or recorded classes for your learners."
+                  />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="classes/schedules"
+              element={
+                <ProtectedRoute allowedRoles={["content"]}>
+                  <PlaceholderPage
+                    title="Class Schedules"
+                    description="Manage schedules and calendars for classes."
+                  />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="classes/attendance"
+              element={
+                <ProtectedRoute allowedRoles={["content"]}>
+                  <PlaceholderPage
+                    title="Class Attendance"
+                    description="Review attendance details for each class session."
+                  />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Exam Types placeholders */}
+            <Route
+              path="exam-types/mcq"
+              element={
+                <ProtectedRoute allowedRoles={["content"]}>
+                  <PlaceholderPage
+                    title="Exam Types - Multiple Choice"
+                    description="Configure MCQ-style exam templates and settings."
+                  />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="exam-types/essay"
+              element={
+                <ProtectedRoute allowedRoles={["content"]}>
+                  <PlaceholderPage
+                    title="Exam Types - Essay"
+                    description="Configure essay-style exams and evaluation rubrics."
+                  />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="exam-types/practical"
+              element={
+                <ProtectedRoute allowedRoles={["content"]}>
+                  <PlaceholderPage
+                    title="Exam Types - Practical"
+                    description="Configure practical exams and associated workflows."
+                  />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="exam-types/oral"
+              element={
+                <ProtectedRoute allowedRoles={["content"]}>
+                  <PlaceholderPage
+                    title="Exam Types - Oral"
+                    description="Configure oral/viva-style exams and schedules."
+                  />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="exam-types/mixed"
+              element={
+                <ProtectedRoute allowedRoles={["content"]}>
+                  <PlaceholderPage
+                    title="Exam Types - Mixed"
+                    description="Combine multiple exam types into mixed assessments."
+                  />
                 </ProtectedRoute>
               }
             />

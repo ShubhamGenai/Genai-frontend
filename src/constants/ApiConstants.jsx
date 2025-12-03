@@ -98,6 +98,8 @@ export const CONTENTMANAGER = {
   CONTENT_SIGNIN:`${API_BASE_URL}/auth/content-manager-signin`,
   ADD_QUIZ:`${API_BASE_URL}/content/add-quiz`,
   GET_QUIZ:`${API_BASE_URL}/content/get-quiz`,
+  GET_TESTS:`${API_BASE_URL}/content/get-tests`,
+  GET_COURSES:`${API_BASE_URL}/content/get-courses`,
   ADD_LESSON:`${API_BASE_URL}/content/add-lesson`,
   GET_LESSONS:`${API_BASE_URL}/content/get-lesson`,
   LESSON_VIEW:`${API_BASE_URL}/content/lesson-view`,
@@ -107,6 +109,7 @@ export const CONTENTMANAGER = {
   ADD_MODULE:`${API_BASE_URL}/content/add-module`,
   ADD_COURSE:`${API_BASE_URL}/content/add-course`,
   BULK_UPLOAD_TESTS:`${API_BASE_URL}/content/tests/bulk-upload`,
+  ADD_TEST:`${API_BASE_URL}/content/add-test`,
  
 }
 

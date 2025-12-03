@@ -1,64 +1,52 @@
-// pages/Courses.js
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { PencilIcon, TrashIcon, PlusIcon } from '@heroicons/react/outline';
+import { PencilIcon, TrashIcon, PlusIcon, EyeIcon } from '@heroicons/react/outline';
+import axios from 'axios';
+import { CONTENTMANAGER } from '../../../constants/ApiConstants';
 
 const Courses = () => {
   const [courses, setCourses] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  
-  // Fetch courses - in a real app this would be an API call
+  const [categoryFilter, setCategoryFilter] = useState('');
+  const [levelFilter, setLevelFilter] = useState('');
+  const [error, setError] = useState(null);
+
   useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      const mockCourses = [
-        {
-          _id: '1',
-          title: 'Introduction to Artificial Intelligence',
-          category: 'Computer Science',
-          instructor: 'Dr. Jane Smith',
-          price: { actual: 99.99, discounted: 79.99 },
-          level: 'Beginner',
-          enrolledStudents: ['user1', 'user2', 'user3'],
-          imageUrl: 'https://res.cloudinary.com/djkbpwqpm/image/upload/v1746691773/designwithai_gobbbw.jpg',
-          averageRating: 4.5,
-          isBestSeller: true
-        },
-        {
-          _id: '2',
-          title: 'Advanced Prompt Engineering',
-          category: 'AI & Machine Learning',
-          instructor: 'Prof. Michael Johnson',
-          price: { actual: 129.99, discounted: 99.99 },
-          level: 'Advanced',
-          enrolledStudents: ['user1', 'user5'],
-          imageUrl: 'https://res.cloudinary.com/djkbpwqpm/image/upload/v1746691773/promptengineering_r2kosa.jpg',
-          averageRating: 4.8,
-          isBestSeller: true
-        },
-        {
-          _id: '3',
-          title: 'Data Analytics Fundamentals',
-          category: 'Data Science',
-          instructor: 'Sarah Williams',
-          price: { actual: 89.99, discounted: 69.99 },
-          level: 'Intermediate',
-          enrolledStudents: ['user3', 'user4', 'user5', 'user6'],
-          imageUrl: 'https://res.cloudinary.com/djkbpwqpm/image/upload/v1746691768/dataanalytics_xmodtp.jpg',
-          averageRating: 4.2,
-          isBestSeller: false
-        },
-      ];
-      setCourses(mockCourses);
-      setIsLoading(false);
-    }, 1000);
+    const fetchCourses = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const res = await axios.get(CONTENTMANAGER.GET_COURSES);
+        const data = Array.isArray(res.data) ? res.data : res.data.courses || [];
+        setCourses(data);
+      } catch (err) {
+        console.error('Failed to fetch courses', err);
+        setError('Failed to load courses. Please try again.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCourses();
   }, []);
 
-  // Handle search filtering
-  const filteredCourses = courses.filter(course => 
-    course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    course.category.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredCourses = useMemo(
+    () =>
+      courses.filter((course) => {
+        const matchesSearch =
+          course.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          course.category?.toLowerCase().includes(searchTerm.toLowerCase());
+
+        const matchesCategory = categoryFilter
+          ? course.category === categoryFilter
+          : true;
+
+        const matchesLevel = levelFilter ? course.level === levelFilter : true;
+
+        return matchesSearch && matchesCategory && matchesLevel;
+      }),
+    [courses, searchTerm, categoryFilter, levelFilter]
   );
 
   // Handle delete - in a real app this would be an API call
@@ -98,13 +86,21 @@ const Courses = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <select className="px-5 py-3 bg-slate-700/40 border border-slate-600/30 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all text-base">
+        <select
+          value={categoryFilter}
+          onChange={(e) => setCategoryFilter(e.target.value)}
+          className="px-5 py-3 bg-slate-700/40 border border-slate-600/30 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all text-base"
+        >
           <option value="">All Categories</option>
           <option value="Computer Science">Computer Science</option>
           <option value="AI & Machine Learning">AI & Machine Learning</option>
           <option value="Data Science">Data Science</option>
         </select>
-        <select className="px-5 py-3 bg-slate-700/40 border border-slate-600/30 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all text-base">
+        <select
+          value={levelFilter}
+          onChange={(e) => setLevelFilter(e.target.value)}
+          className="px-5 py-3 bg-slate-700/40 border border-slate-600/30 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all text-base"
+        >
           <option value="">All Levels</option>
           <option value="Beginner">Beginner</option>
           <option value="Intermediate">Intermediate</option>
@@ -116,6 +112,10 @@ const Courses = () => {
       {isLoading ? (
         <div className="flex justify-center items-center h-64">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+        </div>
+      ) : error ? (
+        <div className="bg-slate-700/40 backdrop-blur-sm border border-red-500/40 rounded-xl shadow-xl p-8 text-center">
+          <p className="text-red-300 text-sm">{error}</p>
         </div>
       ) : filteredCourses.length === 0 ? (
         <div className="bg-slate-700/40 backdrop-blur-sm border border-slate-600/30 rounded-xl shadow-xl p-8 text-center">
@@ -143,6 +143,9 @@ const Courses = () => {
                 </th>
                 <th scope="col" className="px-6 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider">
                   Rating
+                </th>
+                <th scope="col" className="px-6 py-4 text-right text-xs font-bold text-slate-300 uppercase tracking-wider">
+                  View
                 </th>
                 <th scope="col" className="px-6 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider">
                   Actions
@@ -192,7 +195,14 @@ const Courses = () => {
                     </div>
                   </td>
                   <td className="px-6 py-5 whitespace-nowrap text-right text-sm font-medium">
-                    <div className="flex space-x-3">
+                    <div className="flex space-x-3 justify-end">
+                      <Link
+                        to={`/content/courses/${course._id}`}
+                        className="text-slate-200 hover:text-white transition-colors"
+                        title="View course"
+                      >
+                        <EyeIcon className="h-5 w-5" />
+                      </Link>
                       <Link to={`/courses/edit/${course._id}`} className="text-blue-400 hover:text-blue-300 transition-colors">
                         <PencilIcon className="h-5 w-5" />
                       </Link>
