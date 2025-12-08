@@ -1,7 +1,7 @@
 // API base URL
 
-// export const API_BASE_URL = 'https://genai-backend-three.vercel.app/api'
-export const API_BASE_URL = 'http://localhost:8080/api' 
+export const API_BASE_URL = 'https://genai-backend-three.vercel.app/api'
+// export const API_BASE_URL = 'http://localhost:8080/api' 
 
 
 export const EMPLOYERENDPOINTS = {
@@ -97,19 +97,33 @@ export const CONTENTMANAGER = {
 
   CONTENT_SIGNIN:`${API_BASE_URL}/auth/content-manager-signin`,
   ADD_QUIZ:`${API_BASE_URL}/content/add-quiz`,
+  UPDATE_QUIZ:`${API_BASE_URL}/content/update-quiz`,
+  DELETE_QUIZ:`${API_BASE_URL}/content/delete-quiz`,
   GET_QUIZ:`${API_BASE_URL}/content/get-quiz`,
   GET_TESTS:`${API_BASE_URL}/content/get-tests`,
+  GET_TEST_BY_ID:`${API_BASE_URL}/content/get-test`,
   GET_COURSES:`${API_BASE_URL}/content/get-courses`,
+  GET_COURSE_BY_ID:`${API_BASE_URL}/content/get-course`,
   ADD_LESSON:`${API_BASE_URL}/content/add-lesson`,
+  UPDATE_LESSON:`${API_BASE_URL}/content/update-lesson`,
+  DELETE_LESSON:`${API_BASE_URL}/content/delete-lesson`,
   GET_LESSONS:`${API_BASE_URL}/content/get-lesson`,
   LESSON_VIEW:`${API_BASE_URL}/content/lesson-view`,
 
   GET_MODULES:`${API_BASE_URL}/content/get-module`,
   GET_MODULEBYID:`${API_BASE_URL}/content/get-modulebyid`,
   ADD_MODULE:`${API_BASE_URL}/content/add-module`,
+  UPDATE_MODULE:`${API_BASE_URL}/content/update-module`,
+  DELETE_MODULE:`${API_BASE_URL}/content/delete-module`,
   ADD_COURSE:`${API_BASE_URL}/content/add-course`,
+  UPDATE_COURSE:`${API_BASE_URL}/content/update-course`,
+  DELETE_COURSE:`${API_BASE_URL}/content/delete-course`,
   BULK_UPLOAD_TESTS:`${API_BASE_URL}/content/tests/bulk-upload`,
   ADD_TEST:`${API_BASE_URL}/content/add-test`,
+  UPLOAD_LIBRARY_DOCUMENT:`${API_BASE_URL}/content/upload-library-document`,
+  GET_LIBRARY_DOCUMENTS:`${API_BASE_URL}/content/get-library-documents`,
+  DASHBOARD_STATS:`${API_BASE_URL}/content/dashboard-stats`,
+  RECENT_ACTIVITIES:`${API_BASE_URL}/content/recent-activities`,
  
 }
 

@@ -87,6 +87,15 @@ const ContentManagerRoutes = () => {
             />
 
             <Route
+              path="course/edit/:id"
+              element={
+                <ProtectedRoute allowedRoles={["content"]}>
+                  <CourseForm />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
               path="courses/:courseId"
               element={
                 <ProtectedRoute allowedRoles={["content"]}>

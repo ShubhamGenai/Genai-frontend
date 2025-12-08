@@ -3,20 +3,26 @@ import { Link } from 'react-router-dom';
 import { PlusIcon, PencilIcon, TrashIcon, EyeIcon } from '@heroicons/react/outline';
 import { CONTENTMANAGER } from '../../../../constants/ApiConstants';
 import axios from 'axios';
+import DeleteConfirmationModal from '../../../../component/contentManagerComponents/DeleteConfirmationModal';
 
 const Quizzes = () => {
   const [quizzes, setQuizzes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [quizToDelete, setQuizToDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
 useEffect(() => {
   const fetchQuizzes = async () => {
+    setIsLoading(true);
     try {
-      const response = await axios.get(CONTENTMANAGER.GET_QUIZ); // Adjust endpoint if needed
+      const response = await axios.get(CONTENTMANAGER.GET_QUIZ);
       setQuizzes(response.data);
-      setIsLoading(false);
     } catch (error) {
       console.error('Error fetching quizzes:', error);
+      alert('Failed to load quizzes. Please try again.');
+    } finally {
       setIsLoading(false);
     }
   };
@@ -24,11 +30,38 @@ useEffect(() => {
   fetchQuizzes();
 }, []);
 
-  const handleDelete = (id) => {
-    if (window.confirm('Are you sure you want to delete this quiz?')) {
-      setQuizzes(quizzes.filter((q) => q._id !== id));
-      alert('Quiz deleted successfully');
+  // Handle delete click - open confirmation modal
+  const handleDeleteClick = (quiz) => {
+    setQuizToDelete(quiz);
+    setDeleteModalOpen(true);
+  };
+
+  // Handle delete confirmation
+  const handleDeleteConfirm = async () => {
+    if (!quizToDelete) return;
+
+    setIsDeleting(true);
+    try {
+      await axios.delete(`${CONTENTMANAGER.DELETE_QUIZ}/${quizToDelete._id}`);
+      
+      // Remove quiz from state
+      setQuizzes(quizzes.filter(quiz => quiz._id !== quizToDelete._id));
+      
+      // Close modal and reset state
+      setDeleteModalOpen(false);
+      setQuizToDelete(null);
+    } catch (err) {
+      console.error('Failed to delete quiz', err);
+      alert(`Failed to delete quiz: ${err.response?.data?.error || err.message}`);
+    } finally {
+      setIsDeleting(false);
     }
+  };
+
+  // Handle delete cancel
+  const handleDeleteCancel = () => {
+    setDeleteModalOpen(false);
+    setQuizToDelete(null);
   };
 
   const filteredQuizzes = quizzes.filter((quiz) =>
@@ -36,27 +69,27 @@ useEffect(() => {
   );
 
   return (
-    <div className="w-full min-h-full pb-8">
-      <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between">
+    <div className="w-full min-h-full pb-4">
+      <div className="mb-4 flex flex-col md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white tracking-tight mb-2">Quizzes</h1>
-          <p className="text-slate-400 text-base font-light">Manage your quizzes</p>
+          <h1 className="text-xl font-bold text-white tracking-tight mb-1">Quizzes</h1>
+          <p className="text-slate-400 text-sm font-light">Manage your quizzes</p>
         </div>
           <Link
             to="/content/quizzes/add"
-            className="mt-4 md:mt-0 flex items-center justify-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
+            className="mt-3 md:mt-0 flex items-center justify-center px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm"
           >
-            <PlusIcon className="h-5 w-5 mr-2" />
+            <PlusIcon className="h-4 w-4 mr-1.5" />
             Add New Quiz
           </Link>
         </div>
 
       {/* Search Bar */}
-      <div className="mb-6">
+      <div className="mb-3">
         <input
           type="text"
           placeholder="Search quizzes..."
-          className="w-full px-5 py-3 bg-slate-700/40 border border-slate-600/30 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all text-base"
+          className="w-full px-3 py-2 bg-slate-700/40 border border-slate-600/30 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all text-sm"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
@@ -64,44 +97,48 @@ useEffect(() => {
 
       {/* Quiz List */}
       {isLoading ? (
-        <div className="flex justify-center items-center h-40">
-          <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500"></div>
+        <div className="flex justify-center items-center h-32">
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-indigo-500"></div>
         </div>
       ) : filteredQuizzes.length === 0 ? (
-        <div className="bg-slate-700/40 backdrop-blur-sm border border-slate-600/30 rounded-xl shadow-xl p-8 text-center">
-          <p className="text-slate-400 text-base">No quizzes found.</p>
+        <div className="bg-slate-700/40 backdrop-blur-sm border border-slate-600/30 rounded-lg shadow-xl p-4 text-center">
+          <p className="text-slate-400 text-sm">No quizzes found.</p>
         </div>
       ) : (
-        <div className="bg-slate-700/40 backdrop-blur-sm border border-slate-600/30 rounded-xl shadow-xl overflow-hidden">
+        <div className="bg-slate-700/40 backdrop-blur-sm border border-slate-600/30 rounded-lg shadow-xl overflow-hidden">
           <table className="min-w-full divide-y divide-slate-600/30">
             <thead className="bg-slate-800/40">
               <tr>
-                <th className="px-6 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider">Title</th>
-                <th className="px-6 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider">Duration</th>
-                <th className="px-6 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider">Questions</th>
-                <th className="px-6 py-4 text-right text-xs font-bold text-slate-300 uppercase tracking-wider">Actions</th>
+                <th className="px-3 py-2 text-left text-xs font-bold text-slate-300 uppercase tracking-wider">Title</th>
+                <th className="px-3 py-2 text-left text-xs font-bold text-slate-300 uppercase tracking-wider">Duration</th>
+                <th className="px-3 py-2 text-left text-xs font-bold text-slate-300 uppercase tracking-wider">Questions</th>
+                <th className="px-3 py-2 text-right text-xs font-bold text-slate-300 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="bg-slate-700/20 divide-y divide-slate-600/30">
               {filteredQuizzes.map((quiz) => (
                 <tr key={quiz._id} className="hover:bg-slate-700/40 transition-colors">
-                  <td className="px-6 py-5 whitespace-nowrap text-base font-semibold text-white">{quiz.title}</td>
-                  <td className="px-6 py-5 whitespace-nowrap text-base font-medium text-slate-300">{quiz.duration} mins</td>
-                  <td className="px-6 py-5 whitespace-nowrap text-base font-medium text-slate-300">{quiz.questions?.length || 0}</td>
-                  <td className="px-6 py-5 whitespace-nowrap text-right text-sm">
-                    <div className="flex justify-end space-x-3">
+                  <td className="px-3 py-2 whitespace-nowrap text-sm font-semibold text-white">{quiz.title}</td>
+                  <td className="px-3 py-2 whitespace-nowrap text-sm font-medium text-slate-300">{quiz.duration} mins</td>
+                  <td className="px-3 py-2 whitespace-nowrap text-sm font-medium text-slate-300">{quiz.questions?.length || 0}</td>
+                  <td className="px-3 py-2 whitespace-nowrap text-right text-xs">
+                    <div className="flex justify-end space-x-2">
                       <Link
                         to={`/content/quizzes/${quiz._id}`}
-                        className="text-slate-300 hover:text-white transition-colors"
+                        className="text-slate-200 hover:text-white transition-colors"
                         title="View quiz"
                       >
-                        <EyeIcon className="h-5 w-5" />
+                        <EyeIcon className="h-4 w-4" />
                       </Link>
-                      <Link to={`/quizzes/edit/${quiz._id}`} className="text-blue-400 hover:text-blue-300 transition-colors">
-                        <PencilIcon className="h-5 w-5" />
+                      <Link to={`/content/quizzes/edit/${quiz._id}`} className="text-blue-400 hover:text-blue-300 transition-colors" title="Edit quiz">
+                        <PencilIcon className="h-4 w-4" />
                       </Link>
-                      <button onClick={() => handleDelete(quiz._id)} className="text-red-400 hover:text-red-300 transition-colors">
-                        <TrashIcon className="h-5 w-5" />
+                      <button 
+                        onClick={() => handleDeleteClick(quiz)} 
+                        className="text-red-400 hover:text-red-300 transition-colors"
+                        title="Delete quiz"
+                      >
+                        <TrashIcon className="h-4 w-4" />
                       </button>
                     </div>
                   </td>
@@ -111,6 +148,17 @@ useEffect(() => {
           </table>
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={deleteModalOpen}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Quiz"
+        message={`Are you sure you want to delete the quiz "${quizToDelete?.title}"? This action cannot be undone.`}
+        itemName={quizToDelete?.title}
+        isDeleting={isDeleting}
+      />
     </div>
   );
 };

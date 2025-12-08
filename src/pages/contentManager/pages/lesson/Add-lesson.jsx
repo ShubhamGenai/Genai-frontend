@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Plus, Trash2, Save } from 'lucide-react';
 import { CONTENTMANAGER } from '../../../../constants/ApiConstants';
 import axios from 'axios';
+import QuizSelectorPopup from '../../../../component/contentManagerComponents/QuizSelectorPopup';
 
 const LessonForm = () => {
   const [lesson, setLesson] = useState({
@@ -12,7 +13,8 @@ const LessonForm = () => {
     quiz: []
   });
 
-  const [quizInput, setQuizInput] = useState('');
+  const [quizModalOpen, setQuizModalOpen] = useState(false);
+  const [selectedQuizzes, setSelectedQuizzes] = useState([]);
 
   // Add a new practice question
   const addPracticeQuestion = () => {
@@ -49,23 +51,30 @@ const LessonForm = () => {
     }));
   };
 
-  // Add quiz reference
-  const addQuizReference = () => {
-    if (quizInput.trim()) {
-      setLesson(prev => ({
-        ...prev,
-        quiz: [...prev.quiz, quizInput.trim()]
-      }));
-      setQuizInput('');
-    }
+  // Handle quiz selection from modal
+  const handleQuizSelect = (quizzes) => {
+    setSelectedQuizzes(quizzes);
+    // Extract quiz IDs and update lesson state
+    const quizIds = quizzes.map(quiz => quiz._id || quiz.id || quiz);
+    setLesson(prev => ({
+      ...prev,
+      quiz: quizIds
+    }));
   };
 
   // Remove quiz reference
   const removeQuizReference = (index) => {
-    setLesson(prev => ({
-      ...prev,
-      quiz: prev.quiz.filter((_, i) => i !== index)
-    }));
+    setLesson(prev => {
+      const newQuiz = prev.quiz.filter((_, i) => i !== index);
+      // Also update selectedQuizzes to keep them in sync
+      setSelectedQuizzes(prevQuizzes => 
+        prevQuizzes.filter((_, i) => i !== index)
+      );
+      return {
+        ...prev,
+        quiz: newQuiz
+      };
+    });
   };
 
   // Handle form submission
@@ -85,15 +94,23 @@ const LessonForm = () => {
   }
 
   try {
-    const response = await axios.post(CONTENTMANAGER.ADD_LESSON, lesson); // Change endpoint if needed
+    // Prepare lesson data with quiz IDs
+    const lessonData = {
+      ...lesson,
+      quiz: lesson.quiz.map(q => typeof q === 'string' ? q : q._id || q.id || q)
+    };
+    
+    const response = await axios.post(CONTENTMANAGER.ADD_LESSON, lessonData);
     console.log('Lesson created:', response.data);
     alert('Lesson created successfully!');
     setLesson({
-        title: '',
-    content: '',
-    duration: '',
-    practiceQuestions: [],
-    quiz: []})
+      title: '',
+      content: '',
+      duration: '',
+      practiceQuestions: [],
+      quiz: []
+    });
+    setSelectedQuizzes([]);
   } catch (error) {
     console.error('Error creating lesson:', error.response?.data || error.message);
     alert('Failed to create lesson. Check console for details.');
@@ -101,20 +118,20 @@ const LessonForm = () => {
 };
 
   return (
-    <div className="w-full min-h-full pb-8">
-      <div className="mb-10">
-        <h1 className="text-3xl font-bold text-white tracking-tight mb-2">Add New Lesson</h1>
-        <p className="text-slate-400 text-base font-light">Create a comprehensive lesson with practice questions and quiz references.</p>
+    <div className="w-full min-h-full pb-4">
+      <div className="mb-4">
+        <h1 className="text-xl font-bold text-white tracking-tight mb-1">Add New Lesson</h1>
+        <p className="text-slate-400 text-sm font-light">Create a comprehensive lesson with practice questions and quiz references.</p>
       </div>
 
-      <div className="space-y-8">
+      <div className="space-y-3">
         {/* Basic Lesson Information */}
-        <div className="bg-slate-700/40 backdrop-blur-sm border border-slate-600/30 p-8 rounded-xl shadow-xl">
-          <h2 className="text-xl font-bold text-white mb-6 tracking-tight">Lesson Information</h2>
+        <div className="bg-slate-700/40 backdrop-blur-sm border border-slate-600/30 p-3 rounded-lg shadow-xl">
+          <h2 className="text-base font-bold text-white mb-3 tracking-tight">Lesson Information</h2>
             
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-              <label className="block text-base font-bold text-slate-300 mb-2">
+              <label className="block text-sm font-bold text-slate-300 mb-1">
                 Title *
               </label>
               <input
@@ -122,76 +139,76 @@ const LessonForm = () => {
                 required
                 value={lesson.title}
                 onChange={(e) => setLesson(prev => ({ ...prev, title: e.target.value }))}
-                className="w-full px-5 py-3 bg-slate-800/40 border border-slate-600/30 rounded-xl text-base text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
+                className="w-full px-3 py-1.5 bg-slate-800/40 border border-slate-600/30 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
                 placeholder="Enter lesson title"
               />
             </div>
 
             <div>
-              <label className="block text-base font-bold text-slate-300 mb-2">
+              <label className="block text-sm font-bold text-slate-300 mb-1">
                 Duration (minutes)
               </label>
               <input
                 type="number"
                 value={lesson.duration}
                 onChange={(e) => setLesson(prev => ({ ...prev, duration: e.target.value }))}
-                className="w-full px-5 py-3 bg-slate-800/40 border border-slate-600/30 rounded-xl text-base text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
+                className="w-full px-3 py-1.5 bg-slate-800/40 border border-slate-600/30 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
                 placeholder="30"
                 min="1"
               />
             </div>
           </div>
 
-          <div className="mt-6">
-            <label className="block text-base font-bold text-slate-300 mb-2">
+          <div className="mt-3">
+            <label className="block text-sm font-bold text-slate-300 mb-1">
               Content *
             </label>
             <textarea
               required
               value={lesson.content}
               onChange={(e) => setLesson(prev => ({ ...prev, content: e.target.value }))}
-              rows={6}
-              className="w-full px-5 py-3 bg-slate-800/40 border border-slate-600/30 rounded-xl text-base text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
+              rows={4}
+              className="w-full px-3 py-1.5 bg-slate-800/40 border border-slate-600/30 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
               placeholder="Enter the lesson content..."
             />
           </div>
         </div>
 
         {/* Practice Questions Section */}
-        <div className="bg-slate-700/40 backdrop-blur-sm border border-slate-600/30 p-8 rounded-xl shadow-xl">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-white tracking-tight">Practice Questions</h2>
+        <div className="bg-slate-700/40 backdrop-blur-sm border border-slate-600/30 p-3 rounded-lg shadow-xl">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-base font-bold text-white tracking-tight">Practice Questions</h2>
               <button
                 type="button"
                 onClick={addPracticeQuestion}
-                className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
               >
-                <Plus className="w-4 h-4" />
+                <Plus className="w-3 h-3" />
                 Add Question
               </button>
             </div>
 
           {lesson.practiceQuestions.length === 0 ? (
-            <p className="text-slate-400 text-center py-8 text-base">No practice questions added yet. Click "Add Question" to get started.</p>
+            <p className="text-slate-400 text-center py-4 text-sm">No practice questions added yet. Click "Add Question" to get started.</p>
           ) : (
-            <div className="space-y-6">
+            <div className="space-y-3">
               {lesson.practiceQuestions.map((question, index) => (
-                <div key={index} className="bg-slate-800/40 p-6 rounded-xl border border-slate-600/30">
-                  <div className="flex items-center justify-between mb-5">
-                    <h3 className="text-lg font-bold text-white">Question {index + 1}</h3>
+                <div key={index} className="bg-slate-800/40 p-3 rounded-lg border border-slate-600/30">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-sm font-bold text-white">Question {index + 1}</h3>
                       <button
                         type="button"
                         onClick={() => removePracticeQuestion(index)}
-                        className="flex items-center gap-1 px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors text-sm"
+                        className="flex items-center gap-1 px-2 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-xs"
                       >
                         <Trash2 className="w-3 h-3" />
                         Remove
                       </button>
                     </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div className="md:col-span-2">
-                      <label className="block text-base font-bold text-slate-300 mb-2">
+                      <label className="block text-sm font-bold text-slate-300 mb-1">
                         Question *
                       </label>
                       <input
@@ -199,59 +216,59 @@ const LessonForm = () => {
                         required
                         value={question.question}
                         onChange={(e) => updatePracticeQuestion(index, 'question', e.target.value)}
-                        className="w-full px-5 py-3 bg-slate-700/40 border border-slate-600/30 rounded-xl text-base text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
+                        className="w-full px-3 py-1.5 bg-slate-700/40 border border-slate-600/30 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
                         placeholder="Enter the question prompt"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-base font-bold text-slate-300 mb-2">
+                      <label className="block text-sm font-bold text-slate-300 mb-1">
                         Description
                       </label>
                       <textarea
                         value={question.description}
                         onChange={(e) => updatePracticeQuestion(index, 'description', e.target.value)}
-                        rows={3}
-                        className="w-full px-5 py-3 bg-slate-700/40 border border-slate-600/30 rounded-xl text-base text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
+                        rows={2}
+                        className="w-full px-3 py-1.5 bg-slate-700/40 border border-slate-600/30 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
                         placeholder="Additional information about the question"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-base font-bold text-slate-300 mb-2">
+                      <label className="block text-sm font-bold text-slate-300 mb-1">
                         Instructions
                       </label>
                       <textarea
                         value={question.instructions}
                         onChange={(e) => updatePracticeQuestion(index, 'instructions', e.target.value)}
-                        rows={3}
-                        className="w-full px-5 py-3 bg-slate-700/40 border border-slate-600/30 rounded-xl text-base text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
+                        rows={2}
+                        className="w-full px-3 py-1.5 bg-slate-700/40 border border-slate-600/30 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
                         placeholder="Step-by-step instructions"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-base font-bold text-slate-300 mb-2">
+                      <label className="block text-sm font-bold text-slate-300 mb-1">
                         Code
                       </label>
                       <textarea
                         value={question.code}
                         onChange={(e) => updatePracticeQuestion(index, 'code', e.target.value)}
-                        rows={4}
-                        className="w-full px-5 py-3 bg-slate-700/40 border border-slate-600/30 rounded-xl text-base text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 font-mono transition-all"
+                        rows={3}
+                        className="w-full px-3 py-1.5 bg-slate-700/40 border border-slate-600/30 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 font-mono transition-all"
                         placeholder="Starter code or example code"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-base font-bold text-slate-300 mb-2">
+                      <label className="block text-sm font-bold text-slate-300 mb-1">
                         Expected Answer
                       </label>
                       <textarea
                         value={question.expectedAnswer}
                         onChange={(e) => updatePracticeQuestion(index, 'expectedAnswer', e.target.value)}
-                        rows={4}
-                        className="w-full px-5 py-3 bg-slate-700/40 border border-slate-600/30 rounded-xl text-base text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
+                        rows={3}
+                        className="w-full px-3 py-1.5 bg-slate-700/40 border border-slate-600/30 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
                         placeholder="Expected answer or solution"
                       />
                     </div>
@@ -263,56 +280,67 @@ const LessonForm = () => {
         </div>
 
         {/* Quiz References Section */}
-        <div className="bg-slate-700/40 backdrop-blur-sm border border-slate-600/30 p-8 rounded-xl shadow-xl">
-          <h2 className="text-xl font-bold text-white mb-6 tracking-tight">Quiz References</h2>
-          
-          <div className="flex gap-3 mb-4">
-            <input
-              type="text"
-              value={quizInput}
-              onChange={(e) => setQuizInput(e.target.value)}
-              className="flex-1 px-5 py-3 bg-slate-800/40 border border-slate-600/30 rounded-xl text-base text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
-              placeholder="Enter Quiz ID (e.g., 507f1f77bcf86cd799439011)"
-              onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addQuizReference())}
-            />
+        <div className="bg-slate-700/40 backdrop-blur-sm border border-slate-600/30 p-3 rounded-lg shadow-xl">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-base font-bold text-white tracking-tight">Quiz References</h2>
             <button
               type="button"
-              onClick={addQuizReference}
-              className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all font-semibold"
+              onClick={() => setQuizModalOpen(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
             >
-              Add Quiz
+              <Plus className="w-3 h-3" />
+              Select Quizzes
             </button>
           </div>
 
-          {lesson.quiz.length > 0 && (
+          {selectedQuizzes.length > 0 ? (
             <div className="space-y-2">
-              <h3 className="text-sm font-bold text-slate-300 uppercase tracking-wide">Referenced Quizzes:</h3>
-              {lesson.quiz.map((quizId, index) => (
-                <div key={index} className="flex items-center justify-between bg-slate-800/40 px-4 py-3 rounded-xl border border-slate-600/30">
-                  <span className="font-mono text-sm font-semibold text-white">{quizId}</span>
+              <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wide">
+                Selected Quizzes ({selectedQuizzes.length}):
+              </h3>
+              {selectedQuizzes.map((quiz, index) => (
+                <div key={quiz._id || quiz.id || index} className="flex items-center justify-between bg-slate-800/40 px-3 py-2 rounded-lg border border-slate-600/30">
+                  <div className="flex-1">
+                    <span className="text-sm font-semibold text-white">{quiz.title || 'Untitled Quiz'}</span>
+                    {quiz.duration && (
+                      <span className="text-xs text-slate-400 ml-2">({quiz.duration} min)</span>
+                    )}
+                  </div>
                   <button
                     type="button"
                     onClick={() => removeQuizReference(index)}
-                    className="text-red-400 hover:text-red-300 transition-colors"
+                    className="text-red-400 hover:text-red-300 transition-colors ml-2"
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="w-3 h-3" />
                   </button>
                 </div>
               ))}
             </div>
+          ) : (
+            <p className="text-slate-400 text-center py-4 text-sm">
+              No quizzes selected. Click "Select Quizzes" to add quizzes to this lesson.
+            </p>
           )}
         </div>
       </div>
 
-      <div className="flex justify-end pt-8 border-t border-slate-600/30">
+      <div className="flex justify-end pt-3 border-t border-slate-600/30">
         <button
           onClick={handleSubmit}
-          className="flex items-center gap-2 px-8 py-4 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all font-semibold text-base shadow-xl hover:shadow-2xl"
+          className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-semibold text-sm shadow-xl hover:shadow-2xl"
         >
-          <Save className="w-5 h-5" />
+          <Save className="w-4 h-4" />
           Save Lesson
         </button>
       </div>
+
+      {/* Quiz Selector Modal */}
+      <QuizSelectorPopup
+        isOpen={quizModalOpen}
+        onClose={() => setQuizModalOpen(false)}
+        selectedQuizzes={selectedQuizzes}
+        onSelect={handleQuizSelect}
+      />
     </div>
   );
 };
