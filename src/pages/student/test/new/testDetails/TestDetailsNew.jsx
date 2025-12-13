@@ -30,6 +30,7 @@ const TestDetailsNew = () => {
   const [expandedSections, setExpandedSections] = useState({});
   const [expandedQuizzes, setExpandedQuizzes] = useState({});
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
+  const [isEnrolled, setIsEnrolled] = useState(false);
 
   // Map backend test data to frontend format
   const mapBackendTestToFrontend = (backendTest) => {
@@ -364,6 +365,32 @@ const TestDetailsNew = () => {
     return Number(formatted.price) === 0;
   }, [formatted]);
 
+  // Check if test is enrolled/purchased
+  useEffect(() => {
+    if (test && user && (user.id || user._id)) {
+      const userId = user.id || user._id;
+      const userIdStr = String(userId);
+      
+      // Check if user ID is in enrolledStudents array
+      const enrolled = test.enrolledStudents && Array.isArray(test.enrolledStudents) 
+        ? test.enrolledStudents.some(studentId => {
+            // Handle different formats: ObjectId, string, or object with _id/id
+            let studentIdStr;
+            if (typeof studentId === 'object' && studentId !== null) {
+              studentIdStr = String(studentId._id || studentId.id || studentId);
+            } else {
+              studentIdStr = String(studentId);
+            }
+            return studentIdStr === userIdStr;
+          })
+        : false;
+      
+      setIsEnrolled(enrolled);
+    } else {
+      setIsEnrolled(false);
+    }
+  }, [test, user]);
+
   const discountPercent = useMemo(() => {
     if (!formatted || isFree) return null;
     const p = Number(formatted.price);
@@ -431,6 +458,8 @@ const TestDetailsNew = () => {
 
             if (verifyRes.data.success) {
               toast.success('Payment successful! Test enrolled ✅');
+              // Update enrollment status immediately
+              setIsEnrolled(true);
               // Refresh test data to show enrollment status
               const testId = formatted.id;
               try {
@@ -605,70 +634,53 @@ const TestDetailsNew = () => {
                 </div>
 
                 <div className="p-4">
-                  {formatted.isPremium && (
+                  {(isFree || isEnrolled) ? (
+                    // Free Test or Enrolled Test - Show only "Take Test" button
+                    <button 
+                      className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-light text-sm hover:bg-blue-700 transition-colors"
+                      onClick={() => navigate(testTakingPath, { 
+                        state: { 
+                          test: test,
+                          quizzes: formatted.quizzes,
+                          testId: formatted.id
+                        } 
+                      })}
+                    >
+                      Take Test
+                    </button>
+                  ) : (
+                    // Paid Test - Show price, Add to Cart, and Buy Now buttons
                     <>
-                      <div className="mb-2 flex items-center justify-between">
-                        <span className="inline-block bg-blue-600 text-white px-3 py-1 rounded-lg text-xs font-light">
-                          Premium Test
-                        </span>
-                        {discountPercent != null && (
-                          <span className="text-[10px] px-2.5 py-0.5 bg-blue-600 text-white rounded-full">{discountPercent}% OFF</span>
-                        )}
-                      </div>
-                      {(!isFree && Number(formatted.price) > 0) && (
-                        <div className="text-sm text-gray-900 mb-2">
+                      {formatted.isPremium && (
+                        <div className="mb-2">
+                          <span className="inline-block bg-blue-600 text-white px-3 py-1 rounded-lg text-xs font-light">
+                            Premium Test
+                          </span>
+                        </div>
+                      )}
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="text-lg font-light text-gray-900">
                           ₹{formatted.price}
                           {Number(formatted.originalPrice) > Number(formatted.price) && (
                             <span className="text-xs text-gray-500 line-through ml-2">₹{formatted.originalPrice}</span>
                           )}
                         </div>
-                      )}
+                        {discountPercent != null && (
+                          <span className="text-[10px] px-2.5 py-0.5 bg-blue-600 text-white rounded-full">{discountPercent}% OFF</span>
+                        )}
+                      </div>
                       <div className="flex flex-col gap-2.5">
                         <button className="w-full bg-white text-gray-900 py-2 rounded-lg font-light text-sm hover:bg-gray-50 transition-colors border border-gray-200 flex items-center justify-center gap-2">
                           <ShoppingCart className="w-4 h-4" />
                           Add To Cart
                         </button>
-                        <button className="w-full bg-blue-600 text-white py-2 rounded-lg font-light text-sm hover:bg-blue-700 transition-colors"
-                        onClick={handleBuyNow}
+                        <button 
+                          className="w-full bg-blue-600 text-white py-2 rounded-lg font-light text-sm hover:bg-blue-700 transition-colors"
+                          onClick={handleBuyNow}
                         >
                           Buy Now
                         </button>
                       </div>
-                    </>
-                  )}
-                  
-                  {!formatted.isPremium && (
-                    <>
-                      {!isFree ? (
-                        <>
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="text-lg font-light text-gray-900">
-                              ₹{formatted.price}
-                              {Number(formatted.originalPrice) > Number(formatted.price) && (
-                                <span className="text-xs text-gray-500 line-through ml-2">₹{formatted.originalPrice}</span>
-                              )}
-                            </div>
-                            {discountPercent != null && (
-                              <span className="text-[10px] px-2.5 py-0.5 bg-blue-600 text-white rounded-full">{discountPercent}% OFF</span>
-                            )}
-                          </div>
-                          <div className="flex flex-col gap-2.5">
-                            <button className="w-full bg-white text-gray-900 py-2 rounded-lg font-light text-sm hover:bg-gray-50 transition-colors border border-gray-200 flex items-center justify-center gap-2">
-                              <ShoppingCart className="w-4 h-4" />
-                              Add To Cart
-                            </button>
-                            <button className="w-full bg-blue-600 text-white py-2 rounded-lg font-light text-sm hover:bg-blue-700 transition-colors"
-                            onClick={handleBuyNow}
-                            >
-                              Buy Now
-                            </button>
-                          </div>
-                        </>
-                      ) : (
-                        <button className="w-full bg-blue-600 text-white py-2 rounded-lg font-light text-sm hover:bg-blue-700 transition-colors" onClick={() => navigate(testTakingPath, { state: { test } })}>
-                          Start Test
-                        </button>
-                      )}
                     </>
                   )}
                 </div>
@@ -999,18 +1011,27 @@ const TestDetailsNew = () => {
                     </div>
                   )}
                 </div>
-                <button 
-                  onClick={() => navigate(testTakingPath, { 
-                    state: { 
-                      test: test,
-                      quizzes: formatted.quizzes,
-                      testId: formatted.id
-                    } 
-                  })}
-                  className="w-full bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 transition-colors text-sm font-light mt-6"
-                >
-                  Start Test
-                </button>
+                {(isFree || isEnrolled) ? (
+                  <button 
+                    onClick={() => navigate(testTakingPath, { 
+                      state: { 
+                        test: test,
+                        quizzes: formatted.quizzes,
+                        testId: formatted.id
+                      } 
+                    })}
+                    className="w-full bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 transition-colors text-sm font-light mt-6"
+                  >
+                    Take Test
+                  </button>
+                ) : (
+                  <button 
+                    onClick={handleBuyNow}
+                    className="w-full bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 transition-colors text-sm font-light mt-6"
+                  >
+                    Buy Now
+                  </button>
+                )}
               </div>
             </div>
           </div>
