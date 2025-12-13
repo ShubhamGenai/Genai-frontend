@@ -272,15 +272,45 @@ const Dashboard = () => {
             <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Test Scores</h3>
               <div className="space-y-4">
-                {recentTests.map((test, index) => (
-                  <div key={index} className="border-b border-gray-100 pb-4 last:border-b-0 last:pb-0">
-                    <h4 className="font-medium text-gray-900 mb-1">{test.title}</h4>
-                    <p className="text-sm text-gray-600 mb-2">{test.subjects}</p>
-                    <div className="flex items-center justify-between">
-                      <span className={`text-lg font-bold ${test.scoreColor}`}>{test.score}%</span>
+                {recentTests.length > 0 ? (
+                  recentTests.map((test, index) => (
+                    <div key={index} className="border-b border-gray-100 pb-4 last:border-b-0 last:pb-0">
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="flex-1">
+                          <h4 className="font-medium text-gray-900 mb-1">{test.title}</h4>
+                          <p className="text-sm text-gray-600 mb-2">{test.subjects}</p>
+                          <div className="flex items-center gap-2">
+                            <span className={`text-lg font-bold ${test.scoreColor}`}>{test.score}%</span>
+                            {test.status && (
+                              <span className={`text-xs px-2 py-0.5 rounded-full ${
+                                test.status === 'passed' 
+                                  ? 'bg-green-100 text-green-700' 
+                                  : 'bg-red-100 text-red-700'
+                              }`}>
+                                {test.status === 'passed' ? 'Passed' : 'Failed'}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        {test.submissionId && (
+                          <Link
+                            to="/student/test-results"
+                            state={{ 
+                              submissionId: test.submissionId,
+                              test: { _id: test.testId, title: test.title },
+                              fromHistory: true 
+                            }}
+                            className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+                          >
+                            View Results
+                          </Link>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))
+                ) : (
+                  <p className="text-sm text-gray-500 text-center py-4">No test submissions yet</p>
+                )}
                 <button 
                   onClick={() => setActiveTab("My Tests")}
                   className="text-blue-600 text-sm font-medium hover:text-blue-700 flex items-center"

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Clock, FileText, Award, Star, PlayCircle, Loader, CheckCircle, XCircle } from 'lucide-react';
+import { Clock, FileText, Award, Star, PlayCircle, Loader, CheckCircle, XCircle, ChevronDown, ChevronUp, BarChart3, Calendar } from 'lucide-react';
 import axios from 'axios';
 import { mainContext } from '../../../context/MainContext';
 import { USERENDPOINTS } from '../../../constants/ApiConstants';
@@ -12,6 +12,9 @@ const MyTests = () => {
   const [loading, setLoading] = useState(true);
   const [enrolledTests, setEnrolledTests] = useState([]);
   const [error, setError] = useState(null);
+  const [expandedTests, setExpandedTests] = useState({});
+  const [submissionHistory, setSubmissionHistory] = useState({});
+  const [loadingHistory, setLoadingHistory] = useState({});
 
   useEffect(() => {
     const fetchEnrolledTests = async () => {
@@ -60,6 +63,49 @@ const MyTests = () => {
       return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
     }
     return `${minutes}m`;
+  };
+
+  const toggleTestExpansion = (testId) => {
+    setExpandedTests(prev => ({
+      ...prev,
+      [testId]: !prev[testId]
+    }));
+
+    // Fetch submission history if not already loaded
+    if (!expandedTests[testId] && !submissionHistory[testId] && !loadingHistory[testId]) {
+      fetchSubmissionHistory(testId);
+    }
+  };
+
+  const fetchSubmissionHistory = async (testId) => {
+    setLoadingHistory(prev => ({ ...prev, [testId]: true }));
+    try {
+      const response = await axios.get(`${USERENDPOINTS.GET_TEST_SUBMISSION_HISTORY}/${testId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (response.data.success) {
+        setSubmissionHistory(prev => ({
+          ...prev,
+          [testId]: response.data
+        }));
+      }
+    } catch (err) {
+      console.error('Error fetching submission history:', err);
+      toast.error('Failed to load submission history');
+    } finally {
+      setLoadingHistory(prev => ({ ...prev, [testId]: false }));
+    }
+  };
+
+  const viewSubmissionDetails = (submissionId, test) => {
+    navigate('/student/test-results', {
+      state: {
+        submissionId,
+        test,
+        fromHistory: true
+      }
+    });
   };
 
   if (loading) {
@@ -169,16 +215,25 @@ const MyTests = () => {
                   {/* Latest Score */}
                   {test.latestScore !== null && (
                     <div className="mb-3 p-2 bg-gray-50 rounded">
-                      <div className="flex items-center justify-between text-xs">
+                      <div className="flex items-center justify-between text-xs mb-2">
                         <span className="text-gray-600">Latest Score:</span>
                         <span className={`font-medium ${test.latestStatus === 'passed' ? 'text-green-600' : 'text-red-600'}`}>
                           {test.latestScore}% {test.latestStatus === 'passed' ? '✓' : '✗'}
                         </span>
                       </div>
                       {test.latestAttemptDate && (
-                        <div className="text-xs text-gray-500 mt-1">
+                        <div className="text-xs text-gray-500 mb-2">
                           Attempted: {formatDate(test.latestAttemptDate)}
                         </div>
+                      )}
+                      {test.latestSubmissionId && (
+                        <button
+                          onClick={() => viewSubmissionDetails(test.latestSubmissionId, test)}
+                          className="w-full text-xs bg-blue-600 text-white py-1.5 px-3 rounded hover:bg-blue-700 transition-colors flex items-center justify-center gap-1"
+                        >
+                          <BarChart3 className="w-3 h-3" />
+                          View Latest Results
+                        </button>
                       )}
                     </div>
                   )}

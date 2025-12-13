@@ -10,6 +10,7 @@ import { CourseDetails } from "../pages/coursespage/course-details-page/course-d
 import TestDetailsPage from "../pages/student/test/new/testDetails/TestDetailsNew";
 // import TestPlayer from "../pages/student/test/new/testDetails/Test-Player";
 import TestTakingPage from "../pages/student/test/TestTakingPage";
+import TestResultsPage from "../pages/student/test/TestResultsPage";
 import CoursePlayer from "../pages/student/learn/new/Course-Player";
 import LearnDetails from "../pages/student/learn/new/LearnDetails";
 import LearningPlatform from "../pages/student/learn/new/Learnpage";
@@ -52,6 +53,7 @@ const StudentRoutes = () => {
         }
       >
         <Route index element={<Dashboard />} /> {/* Dashboard as landing */}
+        <Route path="dashboard" element={<Dashboard />} /> {/* Explicit dashboard route */}
         <Route path="cart" element={<CartPage />} />
         <Route path="list" element={<EnrolledCoursesPage />} />
         <Route path="profile" element={<ProfileMain />} />
@@ -64,6 +66,7 @@ const StudentRoutes = () => {
         {/* <Route path="course-taking/:id" element={<CourseTakingPage />} /> */}
         <Route path="tests" element={<TestPlatform />} />
         <Route path="test-details" element={<TestDetailsPage />} />
+        <Route path="test-results" element={<TestResultsPage />} />
         {/* <Route path="test-player" element={<TestPlayer />} /> */}
         <Route path="jobs" element={<JobsPlatform />} />
         {/* <Route path="job-details" element={<JobDetails />} /> */}

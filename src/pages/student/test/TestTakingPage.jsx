@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Flag, ChevronLeft, ChevronRight, Maximize, Minimize, Trophy, Flame, Clock, Pause, ArrowRight, Loader } from 'lucide-react';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 import { mainContext } from '../../../context/MainContext';
 import { USERENDPOINTS } from '../../../constants/ApiConstants';
 import { MOCK_TESTS } from './mockTestCatalog';
@@ -327,12 +328,71 @@ const TestTakingPage = () => {
   }, []);
 
   // Handle submit function
-  const handleSubmitTest = React.useCallback(() => {
-    if (window.confirm('Are you sure you want to submit the test? You cannot change your answers after submission.')) {
-      // Navigate to results page
-      navigate('/student/test-results', { state: { test, answers: selectedAnswers, questions } });
+  const handleSubmitTest = React.useCallback(async () => {
+    if (!window.confirm('Are you sure you want to submit the test? You cannot change your answers after submission.')) {
+      return;
     }
-  }, [test, selectedAnswers, questions, navigate]);
+
+    try {
+      const testId = test?._id || test?.id || location.state?.testId;
+      const startTime = new Date().getTime() - (timeLeft * 1000); // Approximate start time
+      const endTime = new Date().getTime();
+      const duration = Math.floor((endTime - startTime) / 1000); // Duration in seconds
+
+      // If user is authenticated, submit to backend
+      if (token && user && testId) {
+        try {
+          const response = await axios.post(
+            USERENDPOINTS.SUBMIT_TEST,
+            {
+              testId,
+              answers: selectedAnswers,
+              questions,
+              startTime: new Date(startTime),
+              endTime: new Date(endTime),
+              duration: `${Math.floor(duration / 60)}m ${duration % 60}s`,
+              markedQuestions: Array.from(markedQuestions)
+            },
+            {
+              headers: { Authorization: `Bearer ${token}` }
+            }
+          );
+
+          if (response.data.success) {
+            // Navigate to results page with backend data
+            navigate('/student/test-results', {
+              state: {
+                test,
+                answers: selectedAnswers,
+                questions,
+                submissionData: response.data
+              }
+            });
+          } else {
+            throw new Error('Submission failed');
+          }
+        } catch (submitError) {
+          console.error('Error submitting to backend:', submitError);
+          // Fallback to client-side calculation
+          navigate('/student/test-results', {
+            state: { test, answers: selectedAnswers, questions }
+          });
+        }
+      } else {
+        // Not authenticated, calculate results client-side
+        navigate('/student/test-results', {
+          state: { test, answers: selectedAnswers, questions }
+        });
+      }
+    } catch (error) {
+      console.error('Error submitting test:', error);
+      toast.error('Error submitting test. Showing results...');
+      // Still navigate to results page
+      navigate('/student/test-results', {
+        state: { test, answers: selectedAnswers, questions }
+      });
+    }
+  }, [test, selectedAnswers, questions, markedQuestions, timeLeft, token, user, navigate, location.state]);
 
   // Timer countdown
   useEffect(() => {

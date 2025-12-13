@@ -63,6 +63,7 @@ export const USERENDPOINTS = {
    REMOVE_FROM_CART:`${API_BASE_URL}/student/removeFromCart`,
    GET_QUIZ:`${API_BASE_URL}/student/getQuiz`,
    SUBMIT_QUIZ:`${API_BASE_URL}/student/submitQuiz`,
+   SUBMIT_TEST:`${API_BASE_URL}/student/submitTest`,
    CREATE_PAYMENT:`${API_BASE_URL}/student/create-payment`,
    VERIFY_PAYMENT:`${API_BASE_URL}/student/verify-payment`,
 
@@ -77,6 +78,8 @@ export const USERENDPOINTS = {
    GET_LATEST_COURSES_AND_TESTS: `${API_BASE_URL}/student/get-latest-Course-test`, // Fetch latest courses and tests
    GET_ENROLLED_TESTS: `${API_BASE_URL}/student/getEnrolledTests`, // Fetch enrolled/purchased tests
    GET_DASHBOARD_OVERVIEW: `${API_BASE_URL}/student/getDashboardOverview`, // Fetch dashboard overview data
+   GET_TEST_SUBMISSION_HISTORY: `${API_BASE_URL}/student/getTestSubmissionHistory`, // Get test submission history
+   GET_TEST_SUBMISSION_DETAILS: `${API_BASE_URL}/student/getTestSubmissionDetails`, // Get detailed submission results
    
    
 }
