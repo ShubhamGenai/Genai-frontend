@@ -76,6 +76,7 @@ export const USERENDPOINTS = {
 
    GET_LATEST_COURSES_AND_TESTS: `${API_BASE_URL}/student/get-latest-Course-test`, // Fetch latest courses and tests
    GET_ENROLLED_TESTS: `${API_BASE_URL}/student/getEnrolledTests`, // Fetch enrolled/purchased tests
+   GET_DASHBOARD_OVERVIEW: `${API_BASE_URL}/student/getDashboardOverview`, // Fetch dashboard overview data
    
    
 }
