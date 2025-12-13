@@ -1,47 +1,216 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Flag, ChevronLeft, ChevronRight, Maximize, Minimize, Trophy, Flame, Clock, Pause, ArrowRight } from 'lucide-react';
+import { Flag, ChevronLeft, ChevronRight, Maximize, Minimize, Trophy, Flame, Clock, Pause, ArrowRight, Loader } from 'lucide-react';
+import axios from 'axios';
+import { mainContext } from '../../../context/MainContext';
+import { USERENDPOINTS } from '../../../constants/ApiConstants';
 import { MOCK_TESTS } from './mockTestCatalog';
 
 const TestTakingPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { user, token } = useContext(mainContext);
   
-  // Get test data from state or URL or find from mock
-  const getTestData = () => {
-    if (location.state?.test) {
-      return location.state.test;
-    }
-    const queryId = new URLSearchParams(location.search).get('id');
-    if (queryId) {
-      const foundTest = MOCK_TESTS.find(t => String(t.id) === String(queryId));
-      if (foundTest) return foundTest;
-    }
-    return MOCK_TESTS[0]; // Fallback
-  };
-
-  const test = getTestData();
-  
-  // Calculate test properties
-  const totalQuestions = test?.questions || test?.numberOfQuestions || 180;
-  const durationMinutes = test?.durationMinutes || test?.duration || 180;
-  const testTitle = test?.title || 'Test';
-  const testSubject = test?.subject || 'General';
+  const [test, setTest] = useState(null);
+  const [questions, setQuestions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState({});
   const [markedQuestions, setMarkedQuestions] = useState(new Set());
-  const [timeLeft, setTimeLeft] = useState(durationMinutes * 60); // in seconds
+  const [timeLeft, setTimeLeft] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [answeredCount, setAnsweredCount] = useState(0);
 
-  // Generate mock questions based on test data
-  const generateMockQuestions = (testData, questionCount, duration) => {
+  // Map backend quiz questions to frontend format
+  const mapQuizQuestionsToFrontend = (quizzes) => {
+    const allQuestions = [];
+    let questionIndex = 1;
+    
+    quizzes.forEach((quiz, quizIndex) => {
+      if (quiz.questions && Array.isArray(quiz.questions)) {
+        quiz.questions.forEach((q) => {
+          allQuestions.push({
+            id: q._id || q.id || questionIndex,
+            question: q.questionText || q.question || '',
+            questionText: q.questionText || q.question || '',
+            options: Array.isArray(q.options) ? q.options : [],
+            subject: quiz.title || 'General',
+            difficulty: 'Medium', // Default difficulty
+            correctAnswer: q.answer || '',
+            marks: q.marks || 1,
+            quizId: quiz._id || quiz.id,
+            quizTitle: quiz.title || quiz.name || ''
+          });
+          questionIndex++;
+        });
+      }
+    });
+    
+    return allQuestions;
+  };
+
+  // Fetch test data and quizzes from backend
+  useEffect(() => {
+    const fetchTestData = async () => {
+      setLoading(true);
+      setError(null);
+      
+      try {
+        // Get test ID from state or URL
+        const testId = location.state?.testId || 
+                      location.state?.test?.id || 
+                      location.state?.test?._id ||
+                      new URLSearchParams(location.search).get('id');
+        
+        if (!testId) {
+          // Fallback to mock data if no test ID
+          const mockTest = location.state?.test || MOCK_TESTS[0];
+          if (mockTest) {
+            setTest(mockTest);
+            const totalQuestions = mockTest.questions || mockTest.numberOfQuestions || 180;
+            const durationMinutes = mockTest.durationMinutes || mockTest.duration || 180;
+            setTimeLeft(durationMinutes * 60);
+            // Generate mock questions
+            const mockQuestions = generateMockQuestions(mockTest, totalQuestions);
+            setQuestions(mockQuestions);
+            setLoading(false);
+            return;
+          }
+          setError('Test ID not provided');
+          setLoading(false);
+          return;
+        }
+
+        // Check if user is authenticated
+        const isAuthenticated = !!(user && token && Object.keys(user).length > 0);
+        const headers = isAuthenticated ? { Authorization: `Bearer ${token}` } : {};
+
+        // Fetch test details
+        try {
+          const testResponse = await axios.get(`${USERENDPOINTS.GETTESTSBYID}/${testId}`, { headers });
+          const testData = testResponse.data.test || testResponse.data;
+          setTest(testData);
+
+          const durationMinutes = testData.duration || 180;
+          setTimeLeft(durationMinutes * 60);
+
+          // Fetch quizzes if test has quiz IDs
+          if (testData.quizzes && testData.quizzes.length > 0) {
+            const quizIds = testData.quizzes.map(q => {
+              if (typeof q === 'object' && q !== null) {
+                return q._id || q.id || q;
+              }
+              return q;
+            }).filter(id => id);
+
+            if (quizIds.length > 0) {
+              try {
+                const quizResponse = await axios.post(USERENDPOINTS.GET_QUIZ, 
+                  { ids: quizIds },
+                  { headers }
+                );
+                
+                const quizzes = Array.isArray(quizResponse.data) ? quizResponse.data : [];
+                const mappedQuestions = mapQuizQuestionsToFrontend(quizzes);
+                
+                if (mappedQuestions.length > 0) {
+                  setQuestions(mappedQuestions);
+                } else {
+                  // If no questions from quizzes, generate mock questions
+                  const totalQuestions = testData.numberOfQuestions || 180;
+                  const mockQuestions = generateMockQuestions(testData, totalQuestions);
+                  setQuestions(mockQuestions);
+                }
+              } catch (quizError) {
+                console.error('Error fetching quizzes:', quizError);
+                // If 401, try without auth
+                if (quizError.response?.status === 401 && isAuthenticated) {
+                  try {
+                    const guestQuizResponse = await axios.post(USERENDPOINTS.GET_QUIZ, 
+                      { ids: quizIds }
+                    );
+                    const quizzes = Array.isArray(guestQuizResponse.data) ? guestQuizResponse.data : [];
+                    const mappedQuestions = mapQuizQuestionsToFrontend(quizzes);
+                    setQuestions(mappedQuestions.length > 0 ? mappedQuestions : generateMockQuestions(testData, testData.numberOfQuestions || 180));
+                  } catch (guestQuizError) {
+                    console.error('Error fetching quizzes as guest:', guestQuizError);
+                    const totalQuestions = testData.numberOfQuestions || 180;
+                    setQuestions(generateMockQuestions(testData, totalQuestions));
+                  }
+                } else {
+                  const totalQuestions = testData.numberOfQuestions || 180;
+                  setQuestions(generateMockQuestions(testData, totalQuestions));
+                }
+              }
+            } else {
+              const totalQuestions = testData.numberOfQuestions || 180;
+              setQuestions(generateMockQuestions(testData, totalQuestions));
+            }
+          } else {
+            // No quizzes, generate mock questions
+            const totalQuestions = testData.numberOfQuestions || 180;
+            setQuestions(generateMockQuestions(testData, totalQuestions));
+          }
+        } catch (apiError) {
+          console.error('Error fetching test:', apiError);
+          
+          // If 401 and authenticated, try without auth
+          if (apiError.response?.status === 401 && isAuthenticated) {
+            try {
+              const guestResponse = await axios.get(`${USERENDPOINTS.GETTESTSBYID}/${testId}`);
+              const testData = guestResponse.data.test || guestResponse.data;
+              setTest(testData);
+              const durationMinutes = testData.duration || 180;
+              setTimeLeft(durationMinutes * 60);
+              const totalQuestions = testData.numberOfQuestions || 180;
+              setQuestions(generateMockQuestions(testData, totalQuestions));
+            } catch (guestError) {
+              console.error('Error fetching test as guest:', guestError);
+              // Fallback to mock data
+              const mockTest = location.state?.test || MOCK_TESTS.find(t => String(t.id) === String(testId)) || MOCK_TESTS[0];
+              setTest(mockTest);
+              const totalQuestions = mockTest.questions || mockTest.numberOfQuestions || 180;
+              const durationMinutes = mockTest.durationMinutes || mockTest.duration || 180;
+              setTimeLeft(durationMinutes * 60);
+              setQuestions(generateMockQuestions(mockTest, totalQuestions));
+            }
+          } else {
+            // Fallback to mock data
+            const mockTest = location.state?.test || MOCK_TESTS.find(t => String(t.id) === String(testId)) || MOCK_TESTS[0];
+            setTest(mockTest);
+            const totalQuestions = mockTest.questions || mockTest.numberOfQuestions || 180;
+            const durationMinutes = mockTest.durationMinutes || mockTest.duration || 180;
+            setTimeLeft(durationMinutes * 60);
+            setQuestions(generateMockQuestions(mockTest, totalQuestions));
+          }
+        }
+      } catch (err) {
+        console.error('Error:', err);
+        setError('Failed to load test data');
+        // Fallback to mock data
+        const mockTest = location.state?.test || MOCK_TESTS[0];
+        setTest(mockTest);
+        const totalQuestions = mockTest.questions || mockTest.numberOfQuestions || 180;
+        const durationMinutes = mockTest.durationMinutes || mockTest.duration || 180;
+        setTimeLeft(durationMinutes * 60);
+        setQuestions(generateMockQuestions(mockTest, totalQuestions));
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTestData();
+  }, [location.state, location.search, user, token]);
+
+  // Generate mock questions as fallback
+  const generateMockQuestions = (testData, questionCount) => {
     if (!testData) return [];
     
     const questions = [];
     const difficulties = ['Easy', 'Medium', 'Hard'];
-    const subjects = testData.testSections?.map(s => s.subject) || [testData.subject || 'Physics'];
+    const subjects = testData.testSections?.map(s => s.subject) || [testData.subject || testData.company || 'General'];
     
     for (let i = 0; i < questionCount; i++) {
       const subject = subjects[i % subjects.length];
@@ -50,6 +219,7 @@ const TestTakingPage = () => {
       questions.push({
         id: i + 1,
         question: `Question ${i + 1}: Which of the following statements about ${subject} is correct?`,
+        questionText: `Question ${i + 1}: Which of the following statements about ${subject} is correct?`,
         options: [
           `Option A: This is the first possible answer to the question`,
           `Option B: This is the second possible answer to the question`,
@@ -58,22 +228,11 @@ const TestTakingPage = () => {
         ],
         subject: subject,
         difficulty: difficulty,
-        correctAnswer: 0 // Mock correct answer
+        correctAnswer: 0
       });
     }
     return questions;
   };
-
-  const [questions, setQuestions] = useState([]);
-
-  // Initialize questions and timer when test data is available
-  useEffect(() => {
-    if (test && totalQuestions > 0) {
-      const generatedQuestions = generateMockQuestions(test, totalQuestions, durationMinutes);
-      setQuestions(generatedQuestions);
-      setTimeLeft(durationMinutes * 60);
-    }
-  }, [test?.id, totalQuestions, durationMinutes]);
 
   // Fullscreen state
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -321,13 +480,42 @@ const TestTakingPage = () => {
     }
   };
 
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader className="w-12 h-12 text-blue-600 animate-spin mx-auto mb-4" />
+          <p className="text-gray-600">Loading test...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error && (!test || questions.length === 0)) {
+    return (
+      <div className="h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center bg-white p-8 rounded-lg shadow-md max-w-md">
+          <p className="text-red-600 text-lg mb-4">{error}</p>
+          <button
+            onClick={() => navigate(-1)}
+            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   // Show loading if questions not initialized
   if (!test || questions.length === 0) {
     return (
       <div className="h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading test...</p>
+          <Loader className="w-12 h-12 text-blue-600 animate-spin mx-auto mb-4" />
+          <p className="text-gray-600">Preparing test questions...</p>
         </div>
       </div>
     );
@@ -343,6 +531,12 @@ const TestTakingPage = () => {
       </div>
     );
   }
+
+  // Calculate test properties
+  const totalQuestions = questions.length || test?.questions || test?.numberOfQuestions || 180;
+  const durationMinutes = test?.durationMinutes || test?.duration || 180;
+  const testTitle = test?.title || 'Test';
+  const testSubject = test?.subject || test?.company || 'General';
 
   const progress = ((answeredCount / totalQuestions) * 100).toFixed(1);
   const notVisitedCount = totalQuestions - Object.keys(selectedAnswers).filter(k => selectedAnswers[k] !== null && selectedAnswers[k] !== undefined).length - markedQuestions.size;
@@ -522,13 +716,15 @@ const TestTakingPage = () => {
                   </span>
                 </div>
                 <span className="bg-gray-900 text-white px-3 py-1 rounded text-xs font-medium">
-                  {currentQuestion.subject}
+                  {currentQuestion.subject || currentQuestion.quizTitle || testSubject}
                 </span>
               </div>
 
               {/* Question Text */}
               <div className="mb-6">
-                <p className="text-base text-gray-900 leading-relaxed">{currentQuestion.question}</p>
+                <p className="text-base text-gray-900 leading-relaxed">
+                  {currentQuestion.questionText || currentQuestion.question || 'Question text not available'}
+                </p>
               </div>
 
               {/* Answer Options */}
