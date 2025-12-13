@@ -1,5 +1,8 @@
-import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import React, { useState, useEffect, useContext } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { mainContext } from "../../../context/MainContext";
+import { USERENDPOINTS } from "../../../constants/ApiConstants";
 import MyCourses from "../progress/MyCourses";
 import MyTests from "../progress/MyTests";
 import MyJobApplications from "../progress/MyJobApplications";
@@ -30,7 +33,12 @@ const ProfileComponent = () => (
 
 const Dashboard = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, token } = useContext(mainContext);
   const [activeTab, setActiveTab] = useState("Overview");
+  const [loading, setLoading] = useState(true);
+  const [dashboardData, setDashboardData] = useState(null);
+  const [error, setError] = useState(null);
 
   const navItems = [
     { name: "Overview" },
@@ -40,128 +48,109 @@ const Dashboard = () => {
     { name: "Profile" },
   ];
 
-  // Summary Cards Data
-  const summaryCards = [
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      if (activeTab !== "Overview" || !token || !user) {
+        setLoading(false);
+        return;
+      }
+
+      setLoading(true);
+      setError(null);
+
+      try {
+        const response = await axios.get(USERENDPOINTS.GET_DASHBOARD_OVERVIEW, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (response.data.success && response.data.data) {
+          setDashboardData(response.data.data);
+        } else {
+          setError('Failed to load dashboard data');
+        }
+      } catch (err) {
+        console.error('Error fetching dashboard overview:', err);
+        setError('Failed to load dashboard data. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, [activeTab, token, user]);
+
+  // Default/fallback data
+  const summaryCards = dashboardData?.summaryCards ? [
     {
       title: "Total Courses",
-      value: "6",
-      subtitle: "2 completed",
+      value: dashboardData.summaryCards.totalCourses.value.toString(),
+      subtitle: dashboardData.summaryCards.totalCourses.subtitle,
       icon: BookOpenIcon,
       color: "text-blue-600"
     },
     {
       title: "Tests Taken",
-      value: "6",
-      subtitle: "2 completed",
+      value: dashboardData.summaryCards.testsTaken.value.toString(),
+      subtitle: dashboardData.summaryCards.testsTaken.subtitle,
       icon: FileTextIcon,
       color: "text-blue-600"
     },
     {
       title: "Job Applications",
-      value: "6",
-      subtitle: "2 applied",
+      value: dashboardData.summaryCards.jobApplications.value.toString(),
+      subtitle: dashboardData.summaryCards.jobApplications.subtitle,
       icon: BriefcaseIcon,
       color: "text-blue-600"
     },
     {
       title: "Avg. Test Score",
-      value: "90%",
-      subtitle: "+5%",
+      value: dashboardData.summaryCards.avgTestScore.value,
+      subtitle: dashboardData.summaryCards.avgTestScore.subtitle,
       icon: TrophyIcon,
       color: "text-green-600",
-      trend: "up"
+      trend: dashboardData.summaryCards.avgTestScore.trend
+    }
+  ] : [
+    {
+      title: "Total Courses",
+      value: "0",
+      subtitle: "0 completed",
+      icon: BookOpenIcon,
+      color: "text-blue-600"
+    },
+    {
+      title: "Tests Taken",
+      value: "0",
+      subtitle: "0 completed",
+      icon: FileTextIcon,
+      color: "text-blue-600"
+    },
+    {
+      title: "Job Applications",
+      value: "0",
+      subtitle: "0 applied",
+      icon: BriefcaseIcon,
+      color: "text-blue-600"
+    },
+    {
+      title: "Avg. Test Score",
+      value: "0%",
+      subtitle: "0%",
+      icon: TrophyIcon,
+      color: "text-green-600"
     }
   ];
 
-  // Concept Clarity Data
-  const conceptClarity = [
-    {
-      subject: "Physics - Mechanics",
-      progress: 85,
-      level: "Strong",
-      levelColor: "text-green-600",
-      progressColor: "bg-green-500"
-    },
-    {
-      subject: "Chemistry - Organic",
-      progress: 72,
-      level: "Good",
-      levelColor: "text-blue-600",
-      progressColor: "bg-blue-500"
-    },
-    {
-      subject: "Mathematics - Calculus",
-      progress: 65,
-      level: "Improving",
-      levelColor: "text-orange-600",
-      progressColor: "bg-orange-500"
-    },
-    {
-      subject: "Digital Marketing - SEO",
-      progress: 90,
-      level: "Strong",
-      levelColor: "text-green-600",
-      progressColor: "bg-green-500"
-    }
-  ];
+  const conceptClarity = dashboardData?.conceptClarity || [];
+  const recentTests = dashboardData?.recentTestScores || [];
+  const learningJourney = dashboardData?.learningJourney ? dashboardData.learningJourney.map(stage => ({
+    ...stage,
+    color: stage.completed ? "border-green-500" : stage.progress > 0 ? "border-blue-500" : "border-gray-300",
+    icon: stage.completed ? CheckCircleIcon : stage.progress > 0 ? ClockIcon : TargetIcon,
+    iconColor: stage.completed ? "text-green-600" : stage.progress > 0 ? "text-blue-600" : "text-gray-400"
+  })) : [];
 
-  // Recent Test Scores
-  const recentTests = [
-    {
-      title: "JEE Main Mock Test 2024",
-      subjects: "Physics, Chemistry, Mathematics",
-      score: 92,
-      scoreColor: "text-green-600"
-    },
-    {
-      title: "NEET Chemistry Practice",
-      subjects: "Organic & Inorganic Chemistry",
-      score: 88,
-      scoreColor: "text-blue-600"
-    }
-  ];
-
-  // Learning Journey
-  const learningJourney = [
-    {
-      stage: "Foundation",
-      courses: "3 courses",
-      progress: 75,
-      color: "border-green-500",
-      icon: CheckCircleIcon,
-      iconColor: "text-green-600",
-      completed: true
-    },
-    {
-      stage: "Intermediate",
-      courses: "4 courses",
-      progress: 60,
-      color: "border-blue-500",
-      icon: ClockIcon,
-      iconColor: "text-blue-600",
-      completed: false
-    },
-    {
-      stage: "Advanced",
-      courses: "0 courses",
-      progress: 0,
-      color: "border-gray-300",
-      icon: TargetIcon,
-      iconColor: "text-gray-400",
-      completed: false
-    },
-    {
-      stage: "Specialization",
-      courses: "0 courses",
-      progress: 0,
-      color: "border-gray-300",
-      icon: AwardIcon,
-      iconColor: "text-gray-400",
-      completed: false
-    }
-  ];
-
-  // AI Career Recommendations
+  // AI Career Recommendations (placeholder - can be enhanced later)
   const careerRecommendations = [
     {
       title: "Software Engineering",
@@ -186,27 +175,11 @@ const Dashboard = () => {
     }
   ];
 
-  // Actionable Items
-  const actionableItems = [
-    {
-      title: "Continue Learning",
-      count: "4 courses in progress",
-      icon: BookOpenIcon,
-      color: "text-blue-600"
-    },
-    {
-      title: "Resume Tests",
-      count: "4 tests pending",
-      icon: FileTextIcon,
-      color: "text-blue-600"
-    },
-    {
-      title: "Complete Applications",
-      count: "4 drafts to finish",
-      icon: BriefcaseIcon,
-      color: "text-blue-600"
-    }
-  ];
+  const actionableItems = dashboardData?.actionableItems ? dashboardData.actionableItems.map(item => ({
+    ...item,
+    icon: item.icon === "BookOpenIcon" ? BookOpenIcon : item.icon === "FileTextIcon" ? FileTextIcon : BriefcaseIcon,
+    color: "text-blue-600"
+  })) : [];
 
   return (
     <div className="p-6 space-y-8">
@@ -229,8 +202,22 @@ const Dashboard = () => {
       {/* Conditional rendering based on activeTab */}
       {activeTab === "Overview" && (
         <>
-          {/* Summary Cards Row */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {loading && (
+            <div className="text-center py-12">
+              <p className="text-gray-600">Loading dashboard data...</p>
+            </div>
+          )}
+          
+          {error && (
+            <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-lg mb-6">
+              <p>{error}</p>
+            </div>
+          )}
+
+          {!loading && !error && (
+            <>
+              {/* Summary Cards Row */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {summaryCards.map((card, index) => {
               const Icon = card.icon;
               return (
@@ -294,7 +281,10 @@ const Dashboard = () => {
                     </div>
                   </div>
                 ))}
-                <button className="text-blue-600 text-sm font-medium hover:text-blue-700 flex items-center">
+                <button 
+                  onClick={() => setActiveTab("My Tests")}
+                  className="text-blue-600 text-sm font-medium hover:text-blue-700 flex items-center"
+                >
                   View All Tests
                   <ChevronRightIcon className="w-4 h-4 ml-1" />
                 </button>
@@ -376,6 +366,8 @@ const Dashboard = () => {
               );
             })}
           </div>
+            </>
+          )}
         </>
       )}
 
