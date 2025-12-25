@@ -20,6 +20,7 @@ import EditLesson from "../pages/contentManager/pages/lesson/Lesson_edit";
 import TestBulkUpload from "../pages/contentManager/pages/test/Test-BulkUpload";
 import TestView from "../pages/contentManager/pages/test/Test-View";
 import TestCreate from "../pages/contentManager/pages/test/Test-Create";
+import TestPDFUpload from "../pages/contentManager/pages/test/Test-PDFUpload";
 import PlaceholderPage from "../pages/contentManager/pages/PlaceholderPage";
 import LibraryAllFiles from "../pages/contentManager/pages/library/LibraryAllFiles";
 import LibraryUploadDocument from "../pages/contentManager/pages/library/LibraryUploadDocument";
@@ -223,6 +224,14 @@ const ContentManagerRoutes = () => {
               element={
                 <ProtectedRoute allowedRoles={["content"]}>
                   <TestCreate />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="tests/pdf-upload"
+              element={
+                <ProtectedRoute allowedRoles={["content"]}>
+                  <TestPDFUpload />
                 </ProtectedRoute>
               }
             />
