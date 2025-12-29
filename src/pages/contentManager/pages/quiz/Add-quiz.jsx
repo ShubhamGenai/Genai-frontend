@@ -5,6 +5,7 @@ import QuestionImageUpload from '../../../../component/contentManagerComponents/
 import FormulaRenderer from '../../../../component/contentManagerComponents/FormulaRenderer';
 import FormulaHelper from '../../../../component/contentManagerComponents/FormulaHelper';
 import ErrorBoundary from '../../../../component/contentManagerComponents/ErrorBoundary';
+import QuizQuestionBank from './Quiz-QuestionBank';
 
 export default function AddQuiz() {
   const [title, setTitle] = useState('');
@@ -20,6 +21,7 @@ export default function AddQuiz() {
   const [loading, setLoading] = useState(false);
   const [imageUploadModal, setImageUploadModal] = useState({ open: false, questionIndex: null });
   const [formulaHelper, setFormulaHelper] = useState({ open: false, targetField: null, questionIndex: null, optionIndex: null });
+  const [questionBankOpen, setQuestionBankOpen] = useState(false);
 
   const handleQuestionChange = (index, field, value) => {
     const updatedQuestions = [...questions];
@@ -52,6 +54,12 @@ export default function AddQuiz() {
   const removeQuestion = (index) => {
     const updated = questions.filter((_, i) => i !== index);
     setQuestions(updated);
+  };
+
+  const handleQuestionsFromBank = (selectedQuestions) => {
+    // Add selected questions from question bank to the current quiz
+    setQuestions([...questions, ...selectedQuestions]);
+    setQuestionBankOpen(false);
   };
 
  const handleSubmit = async (e) => {
@@ -383,16 +391,29 @@ export default function AddQuiz() {
               ))}
             </div>
             
-            <button
-              type="button"
-              onClick={addQuestion}
-              className="mt-3 flex items-center bg-indigo-600 text-white px-3 py-1.5 rounded-lg font-semibold hover:bg-indigo-700 transition-all text-sm"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1.5" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
-              </svg>
-              Add Question
-            </button>
+            <div className="mt-3 flex gap-2">
+              <button
+                type="button"
+                onClick={addQuestion}
+                className="flex items-center bg-indigo-600 text-white px-3 py-1.5 rounded-lg font-semibold hover:bg-indigo-700 transition-all text-sm"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1.5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+                </svg>
+                Add Question
+              </button>
+              {/* Question Bank button commented out */}
+              {/* <button
+                type="button"
+                onClick={() => setQuestionBankOpen(true)}
+                className="flex items-center bg-emerald-600 text-white px-3 py-1.5 rounded-lg font-semibold hover:bg-emerald-700 transition-all text-sm"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1.5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
+                </svg>
+                Question Bank (PDF)
+              </button> */}
+            </div>
           </div>
 
           <hr className="border-slate-600/30 mb-3" />
@@ -486,6 +507,18 @@ export default function AddQuiz() {
             }}
           />
         </ErrorBoundary>
+      )}
+
+      {/* Question Bank Modal */}
+      {questionBankOpen && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 overflow-y-auto">
+          <div className="min-h-full p-4">
+            <QuizQuestionBank
+              onQuestionsSelected={handleQuestionsFromBank}
+              onClose={() => setQuestionBankOpen(false)}
+            />
+          </div>
+        </div>
       )}
     </div>
   );
