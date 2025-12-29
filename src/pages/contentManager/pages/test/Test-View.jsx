@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { ArrowLeftIcon, QuestionMarkCircleIcon, ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/outline";
 import { CONTENTMANAGER } from "../../../../constants/ApiConstants";
+import FormulaRenderer from "../../../../component/contentManagerComponents/FormulaRenderer";
 
 const TestView = () => {
   const { testId } = useParams();
@@ -293,10 +294,27 @@ const TestView = () => {
                                     <span className="bg-indigo-500/20 text-indigo-300 rounded px-2 py-0.5 text-xs font-semibold mr-2">
                                       Q{qIndex + 1}
                                     </span>
-                                    <p className="text-base font-semibold text-white">
-                                      {question.questionText || "Question text not available"}
-                                    </p>
+                                    <div className="text-base font-semibold text-white flex-1">
+                                      <FormulaRenderer text={question.questionText || "Question text not available"} className="text-white" />
+                                    </div>
                                   </div>
+                                  
+                                  {/* Display question image if available */}
+                                  {question.imageUrl && question.imageUrl.trim() !== '' && (
+                                    <div className="mb-3 ml-8 rounded-lg overflow-hidden bg-slate-900/50 border border-slate-600/30 p-2">
+                                      <img
+                                        src={question.imageUrl}
+                                        alt={`Question ${qIndex + 1} diagram`}
+                                        className="max-w-full max-h-48 object-contain rounded mx-auto"
+                                        crossOrigin="anonymous"
+                                        loading="lazy"
+                                        onError={(e) => {
+                                          console.error('Image failed to load:', question.imageUrl);
+                                          e.target.style.display = 'none';
+                                        }}
+                                      />
+                                    </div>
+                                  )}
                                 </div>
                                 <button
                                   onClick={() => toggleQuestion(questionKey)}
@@ -327,17 +345,17 @@ const TestView = () => {
                                                 : "bg-slate-800/60 border-slate-600/30"
                                             }`}
                                           >
-                                            <div className="flex items-center">
-                                              <span className="text-xs font-semibold text-slate-400 mr-2 w-6">
+                                            <div className="flex items-center gap-2">
+                                              <span className="text-xs font-semibold text-slate-400 w-6">
                                                 {String.fromCharCode(65 + optIndex)}.
                                               </span>
-                                              <span className={`text-sm ${
+                                              <span className={`text-sm flex-1 ${
                                                 isCorrect ? "text-green-300 font-semibold" : "text-slate-200"
                                               }`}>
-                                                {option || "Empty option"}
+                                                <FormulaRenderer text={option || "Empty option"} className={isCorrect ? "text-green-300" : "text-slate-200"} />
                                               </span>
                                               {isCorrect && (
-                                                <span className="ml-2 text-xs text-green-400 font-semibold">
+                                                <span className="ml-2 text-xs text-green-400 font-semibold whitespace-nowrap">
                                                   ✓ Correct Answer
                                                 </span>
                                               )}
@@ -350,7 +368,9 @@ const TestView = () => {
                                   {answer && (
                                     <div className="mt-3 pt-3 border-t border-slate-600/30">
                                       <p className="text-xs font-semibold text-slate-400 mb-1">Correct Answer:</p>
-                                      <p className="text-sm text-green-300 font-semibold">{answer}</p>
+                                      <p className="text-sm text-green-300 font-semibold">
+                                        <FormulaRenderer text={answer} className="text-green-300" />
+                                      </p>
                                     </div>
                                   )}
                                 </div>

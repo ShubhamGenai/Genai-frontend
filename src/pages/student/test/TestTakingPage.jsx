@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import { mainContext } from '../../../context/MainContext';
 import { USERENDPOINTS } from '../../../constants/ApiConstants';
 import { MOCK_TESTS } from './mockTestCatalog';
+import FormulaRenderer from '../../../component/contentManagerComponents/FormulaRenderer';
 
 const TestTakingPage = () => {
   const location = useLocation();
@@ -42,7 +43,8 @@ const TestTakingPage = () => {
             correctAnswer: q.answer || '',
             marks: q.marks || 1,
             quizId: quiz._id || quiz.id,
-            quizTitle: quiz.title || quiz.name || ''
+            quizTitle: quiz.title || quiz.name || '',
+            imageUrl: q.imageUrl || '' // Include image URL for question diagrams
           });
           questionIndex++;
         });
@@ -782,10 +784,27 @@ const TestTakingPage = () => {
 
               {/* Question Text */}
               <div className="mb-6">
-                <p className="text-base text-gray-900 leading-relaxed">
-                  {currentQuestion.questionText || currentQuestion.question || 'Question text not available'}
-                </p>
+                <div className="text-base text-gray-900 leading-relaxed">
+                  <FormulaRenderer text={currentQuestion.questionText || currentQuestion.question || 'Question text not available'} className="text-gray-900" />
+                </div>
               </div>
+
+              {/* Question Image if available */}
+              {currentQuestion.imageUrl && currentQuestion.imageUrl.trim() !== '' && (
+                <div className="mb-6 rounded-lg overflow-hidden bg-gray-100 border border-gray-200 p-4">
+                  <img
+                    src={currentQuestion.imageUrl}
+                    alt={`Question ${currentQuestionIndex + 1} diagram`}
+                    className="max-w-full max-h-64 object-contain rounded mx-auto"
+                    crossOrigin="anonymous"
+                    loading="lazy"
+                    onError={(e) => {
+                      console.error('Image failed to load:', currentQuestion.imageUrl);
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                </div>
+              )}
 
               {/* Answer Options */}
               <div className="space-y-3 mb-8">
@@ -817,7 +836,7 @@ const TestTakingPage = () => {
                         />
                         <span className="flex-1 text-sm text-gray-700">
                           <span className="font-medium mr-2">Option {optionLetters[idx]}:</span>
-                          {option}
+                          <FormulaRenderer text={option || ''} className="text-gray-700" />
                         </span>
                       </label>
                     </div>

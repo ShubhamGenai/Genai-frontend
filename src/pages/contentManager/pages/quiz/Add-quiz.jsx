@@ -2,6 +2,9 @@ import axios from 'axios';
 import React, { useState } from 'react';
 import { CONTENTMANAGER } from '../../../../constants/ApiConstants';
 import QuestionImageUpload from '../../../../component/contentManagerComponents/QuestionImageUpload';
+import FormulaRenderer from '../../../../component/contentManagerComponents/FormulaRenderer';
+import FormulaHelper from '../../../../component/contentManagerComponents/FormulaHelper';
+import ErrorBoundary from '../../../../component/contentManagerComponents/ErrorBoundary';
 
 export default function AddQuiz() {
   const [title, setTitle] = useState('');
@@ -16,6 +19,7 @@ export default function AddQuiz() {
   ]);
   const [loading, setLoading] = useState(false);
   const [imageUploadModal, setImageUploadModal] = useState({ open: false, questionIndex: null });
+  const [formulaHelper, setFormulaHelper] = useState({ open: false, targetField: null, questionIndex: null, optionIndex: null });
 
   const handleQuestionChange = (index, field, value) => {
     const updatedQuestions = [...questions];
@@ -54,14 +58,44 @@ export default function AddQuiz() {
   if (e) e.preventDefault();
   setLoading(true);
 
+  // Clean and validate data before sending
+  const cleanedQuestions = questions.map(q => ({
+    questionText: q.questionText.trim(),
+    options: q.options.map(opt => opt.trim()).filter(opt => opt !== ''),
+    answer: q.answer.trim(),
+    imageUrl: q.imageUrl && q.imageUrl.trim() !== '' ? q.imageUrl.trim() : '',
+    marks: q.marks || 1
+  })).filter(q => q.questionText !== '' && q.options.length >= 2 && q.answer !== '');
+
+  if (cleanedQuestions.length === 0) {
+    alert('Please add at least one valid question with text, options, and answer.');
+    setLoading(false);
+    return;
+  }
+
   const quizData = {
-    title,
-    duration,
-    questions
+    title: title.trim(),
+    duration: parseInt(duration) || 0,
+    questions: cleanedQuestions
   };
 
+  // Validate before sending
+  if (!quizData.title || quizData.title === '') {
+    alert('Please enter a quiz title.');
+    setLoading(false);
+    return;
+  }
+
+  if (!quizData.duration || quizData.duration <= 0) {
+    alert('Please enter a valid duration (in minutes).');
+    setLoading(false);
+    return;
+  }
+
+  console.log('Submitting quiz data:', quizData);
+
   try {
-    const response = await axios.post(CONTENTMANAGER.ADD_QUIZ, quizData); // Update endpoint if needed
+    const response = await axios.post(CONTENTMANAGER.ADD_QUIZ, quizData);
     console.log('Quiz data submitted:', response.data);
     alert('Quiz created successfully!');
 
@@ -78,7 +112,11 @@ export default function AddQuiz() {
     ]);
   } catch (error) {
     console.error('Error creating quiz:', error);
-    alert('Failed to create quiz. Please try again.');
+    const errorMessage = error.response?.data?.error || 
+                        error.response?.data?.details || 
+                        error.message || 
+                        'Failed to create quiz. Please check all fields and try again.';
+    alert(`Error: ${errorMessage}`);
   } finally {
     setLoading(false);
   }
@@ -171,14 +209,34 @@ export default function AddQuiz() {
                     </div>
                     
                   <div className="mb-3">
-                    <label className="block text-sm font-bold text-slate-300 mb-1">Question Text</label>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="block text-sm font-bold text-slate-300">Question Text</label>
+                      <button
+                        type="button"
+                        onClick={() => setFormulaHelper({ open: true, targetField: 'question', questionIndex: i })}
+                        className="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1"
+                        title="Insert formula"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
+                        </svg>
+                        Formula
+                      </button>
+                    </div>
                     <input
                       type="text"
                       className="w-full bg-slate-700/40 border border-slate-600/30 rounded-lg px-3 py-1.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all"
                       value={q.questionText}
                       onChange={(e) => handleQuestionChange(i, 'questionText', e.target.value)}
-                      placeholder="Enter your question..."
+                      placeholder="Enter your question... (Use $formula$ for math/chemistry)"
                     />
+                    {/* Formula Preview */}
+                    {q.questionText && (q.questionText.includes('$') || q.questionText.includes('\\(') || q.questionText.includes('\\[')) && (
+                      <div className="mt-2 p-2 bg-slate-800/50 rounded text-sm border border-slate-600/30">
+                        <div className="text-slate-400 mb-1 text-xs">Preview:</div>
+                        <FormulaRenderer text={q.questionText} className="text-slate-200" />
+                      </div>
+                    )}
                   </div>
 
                   {/* Image Upload Section */}
@@ -257,20 +315,52 @@ export default function AddQuiz() {
                   </div>
                   
                   <div className="mb-3">
-                    <label className="block text-sm font-bold text-slate-300 mb-1">Options</label>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="block text-sm font-bold text-slate-300">Options</label>
+                      <button
+                        type="button"
+                        onClick={() => setFormulaHelper({ open: true, targetField: 'option', questionIndex: i })}
+                        className="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1"
+                        title="Formula helper"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
+                        </svg>
+                        Formula Helper
+                      </button>
+                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                       {q.options.map((opt, j) => (
                         <div key={j} className="relative">
-                          <div className="absolute top-1.5 left-2 flex items-center justify-center w-5 h-5 bg-indigo-600 rounded-full">
+                          <div className="absolute top-1.5 left-2 flex items-center justify-center w-5 h-5 bg-indigo-600 rounded-full z-10">
                             <span className="text-white font-bold text-xs">{j + 1}</span>
                           </div>
-                          <input
-                            type="text"
-                            className="w-full bg-slate-700/40 border border-slate-600/30 rounded-lg pl-9 pr-3 py-1.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all"
-                            value={opt}
-                            onChange={(e) => handleOptionChange(i, j, e.target.value)}
-                            placeholder={`Option ${j + 1}...`}
-                          />
+                          <div className="relative">
+                            <input
+                              type="text"
+                              className="w-full bg-slate-700/40 border border-slate-600/30 rounded-lg pl-9 pr-20 py-1.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all"
+                              value={opt}
+                              onChange={(e) => handleOptionChange(i, j, e.target.value)}
+                              placeholder={`Option ${j + 1}... (Use $formula$ for formulas)`}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setFormulaHelper({ open: true, targetField: 'option', questionIndex: i, optionIndex: j })}
+                              className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-400 transition-colors"
+                              title="Insert formula"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
+                              </svg>
+                            </button>
+                          </div>
+                          {/* Formula Preview */}
+                          {opt && (opt.includes('$') || opt.includes('\\(') || opt.includes('\\[')) && (
+                            <div className="mt-1 p-2 bg-slate-800/50 rounded text-xs border border-slate-600/30">
+                              <div className="text-slate-400 mb-1">Preview:</div>
+                              <FormulaRenderer text={opt} className="text-slate-200" />
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>
@@ -351,6 +441,51 @@ export default function AddQuiz() {
           }}
           onClose={() => setImageUploadModal({ open: false, questionIndex: null })}
         />
+      )}
+
+      {/* Formula Helper Modal */}
+      {formulaHelper.open && (
+        <ErrorBoundary
+          fallback={
+            <div className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50">
+              <div className="bg-slate-800 rounded-xl shadow-2xl w-full max-w-md mx-4 border border-slate-600/30 p-6">
+                <h2 className="text-xl font-bold text-white mb-4">Formula Helper</h2>
+                <p className="text-slate-400 mb-4">
+                  You can type formulas manually using LaTeX syntax:
+                </p>
+                <div className="bg-slate-700/40 rounded p-3 text-xs text-slate-300 space-y-1 mb-4">
+                  <p>• Inline: $x^2$ or $H_2O$</p>
+                  <p>• Block: $$\\int_0^1 x dx$$</p>
+                  <p>• Fractions: $\\frac{a}{b}$</p>
+                  <p>• Subscripts: $H_2O$, Superscripts: $x^2$</p>
+                </div>
+                <button
+                  onClick={() => setFormulaHelper({ open: false, targetField: null, questionIndex: null, optionIndex: null })}
+                  className="w-full px-4 py-2 bg-slate-700/40 border border-slate-600/30 rounded-lg text-sm font-medium text-slate-200 hover:bg-slate-700/70 transition-colors"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          }
+        >
+          <FormulaHelper
+            onClose={() => setFormulaHelper({ open: false, targetField: null, questionIndex: null, optionIndex: null })}
+            onInsert={(formula) => {
+              if (formulaHelper.targetField === 'question' && formulaHelper.questionIndex !== null) {
+                const updatedQuestions = [...questions];
+                const currentText = updatedQuestions[formulaHelper.questionIndex].questionText || '';
+                updatedQuestions[formulaHelper.questionIndex].questionText = currentText + (currentText ? ' ' : '') + formula;
+                setQuestions(updatedQuestions);
+              } else if (formulaHelper.targetField === 'option' && formulaHelper.questionIndex !== null && formulaHelper.optionIndex !== null) {
+                const updatedQuestions = [...questions];
+                const currentText = updatedQuestions[formulaHelper.questionIndex].options[formulaHelper.optionIndex] || '';
+                updatedQuestions[formulaHelper.questionIndex].options[formulaHelper.optionIndex] = currentText + (currentText ? ' ' : '') + formula;
+                setQuestions(updatedQuestions);
+              }
+            }}
+          />
+        </ErrorBoundary>
       )}
     </div>
   );

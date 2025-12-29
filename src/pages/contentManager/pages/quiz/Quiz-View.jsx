@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ArrowLeftIcon } from "@heroicons/react/outline";
 import { CONTENTMANAGER } from "../../../../constants/ApiConstants";
+import FormulaRenderer from "../../../../component/contentManagerComponents/FormulaRenderer";
 
 const QuizView = () => {
   const { quizId } = useParams();
@@ -103,9 +104,29 @@ const QuizView = () => {
               >
                 <div className="flex items-start justify-between mb-3">
                   <h2 className="text-lg font-semibold text-white">
-                    Q{index + 1}. {q.questionText}
+                    <span className="mr-2">Q{index + 1}.</span>
+                    <span className="inline-block">
+                      <FormulaRenderer text={q.questionText || ''} className="text-white" />
+                    </span>
                   </h2>
                 </div>
+
+                {/* Display question image if available */}
+                {q.imageUrl && q.imageUrl.trim() !== '' && (
+                  <div className="mb-4 rounded-lg overflow-hidden bg-slate-900/50 border border-slate-600/30 p-3">
+                    <img
+                      src={q.imageUrl}
+                      alt={`Question ${index + 1} diagram`}
+                      className="max-w-full max-h-64 object-contain rounded mx-auto"
+                      crossOrigin="anonymous"
+                      loading="lazy"
+                      onError={(e) => {
+                        console.error('Image failed to load:', q.imageUrl);
+                        e.target.style.display = 'none';
+                      }}
+                    />
+                  </div>
+                )}
 
                 {q.options && q.options.length > 0 && (
                   <ul className="mt-3 space-y-2">
@@ -124,14 +145,16 @@ const QuizView = () => {
                               : "bg-slate-800/60 border border-slate-600/30 text-slate-200"
                           }`}
                         >
-                          <span>
-                            <span className="font-semibold mr-2">
+                          <span className="flex items-start gap-2 flex-1">
+                            <span className="font-semibold mr-1">
                               {String.fromCharCode(65 + optIndex)}.
                             </span>
-                            {opt}
+                            <span className="flex-1">
+                              <FormulaRenderer text={opt || ''} className={isCorrect ? "text-emerald-100" : "text-slate-200"} />
+                            </span>
                           </span>
                           {isCorrect && (
-                            <span className="text-xs font-semibold uppercase">
+                            <span className="text-xs font-semibold uppercase ml-2">
                               Correct
                             </span>
                           )}
@@ -144,7 +167,9 @@ const QuizView = () => {
                 {q.answer && (
                   <p className="mt-3 text-xs text-emerald-300">
                     Correct answer:{" "}
-                    <span className="font-semibold">{q.answer}</span>
+                    <span className="font-semibold">
+                      <FormulaRenderer text={q.answer} className="text-emerald-300" />
+                    </span>
                   </p>
                 )}
               </div>
