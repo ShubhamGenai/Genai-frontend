@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useState } from 'react';
 import { CONTENTMANAGER } from '../../../../constants/ApiConstants';
+import QuestionImageUpload from '../../../../component/contentManagerComponents/QuestionImageUpload';
 
 export default function AddQuiz() {
   const [title, setTitle] = useState('');
@@ -10,9 +11,11 @@ export default function AddQuiz() {
       questionText: '',
       options: ['', '', '', ''],
       answer: '',
+      imageUrl: '',
     },
   ]);
   const [loading, setLoading] = useState(false);
+  const [imageUploadModal, setImageUploadModal] = useState({ open: false, questionIndex: null });
 
   const handleQuestionChange = (index, field, value) => {
     const updatedQuestions = [...questions];
@@ -37,6 +40,7 @@ export default function AddQuiz() {
         questionText: '',
         options: ['', '', '', ''],
         answer: '',
+        imageUrl: '',
       },
     ]);
   };
@@ -69,6 +73,7 @@ export default function AddQuiz() {
         questionText: '',
         options: ['', '', '', ''],
         answer: '',
+        imageUrl: '',
       },
     ]);
   } catch (error) {
@@ -78,6 +83,31 @@ export default function AddQuiz() {
     setLoading(false);
   }
 };
+
+  const handleImageUploaded = (imageUrl) => {
+    if (imageUploadModal.questionIndex !== null && imageUrl) {
+      // Validate URL format
+      if (!imageUrl.startsWith('http://') && !imageUrl.startsWith('https://')) {
+        console.error('Invalid image URL format:', imageUrl);
+        alert('Invalid image URL received. Please try uploading again.');
+        return;
+      }
+      
+      console.log('Setting image URL for question', imageUploadModal.questionIndex, ':', imageUrl);
+      const updatedQuestions = [...questions];
+      updatedQuestions[imageUploadModal.questionIndex].imageUrl = imageUrl;
+      setQuestions(updatedQuestions);
+      console.log('Image URL set successfully');
+    } else {
+      console.error('Failed to set image: questionIndex or imageUrl is null');
+    }
+  };
+
+  const handleRemoveImage = (questionIndex) => {
+    const updatedQuestions = [...questions];
+    updatedQuestions[questionIndex].imageUrl = '';
+    setQuestions(updatedQuestions);
+  };
 
   return (
     <div className="w-full min-h-full pb-4">
@@ -149,6 +179,81 @@ export default function AddQuiz() {
                       onChange={(e) => handleQuestionChange(i, 'questionText', e.target.value)}
                       placeholder="Enter your question..."
                     />
+                  </div>
+
+                  {/* Image Upload Section */}
+                  <div className="mb-3">
+                    <label className="block text-sm font-bold text-slate-300 mb-1">Question Image/Diagram (Optional)</label>
+                    {q.imageUrl && q.imageUrl.trim() !== '' ? (
+                      <div className="space-y-2">
+                        <div className="relative border border-slate-600/30 rounded-lg overflow-hidden bg-slate-700/40 p-2">
+                          <div className="flex items-center justify-center bg-slate-800/50 rounded min-h-[200px] relative">
+                            <img
+                              src={q.imageUrl}
+                              alt="Question diagram"
+                              className="max-w-full max-h-64 object-contain rounded"
+                              crossOrigin="anonymous"
+                              loading="lazy"
+                              onLoad={() => {
+                                console.log('Image loaded successfully:', q.imageUrl);
+                              }}
+                              onError={(e) => {
+                                console.error('Image failed to load:', q.imageUrl);
+                                const errorDiv = e.target.parentElement.querySelector('.image-error');
+                                if (errorDiv) {
+                                  errorDiv.classList.remove('hidden');
+                                }
+                                e.target.style.display = 'none';
+                              }}
+                            />
+                            <div className="hidden image-error absolute inset-0 flex items-center justify-center text-slate-400 text-sm p-4">
+                              <div className="text-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 mx-auto mb-2 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                <p>Failed to load image</p>
+                                <p className="text-xs mt-1 text-slate-500 break-all">{q.imageUrl}</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setImageUploadModal({ open: true, questionIndex: i })}
+                            className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg text-xs font-medium transition-colors flex items-center justify-center gap-1"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                              <path d="M4 2a2 2 0 00-2 2v11a2 2 0 002 2h12a2 2 0 002-2V4a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0011.172 0H8.828a2 2 0 00-1.414.586L6.293 1.707A1 1 0 015.586 2H4z" />
+                              <path d="M8 11a3 3 0 100-6 3 3 0 000 6z" />
+                              <path d="M15.657 16.667l-4.42-4.422a2 2 0 010-2.828l.707-.707a2 2 0 012.828 0l4.42 4.422a.75.75 0 01-.535 1.248h-2.5a.25.25 0 01-.25-.25v-2.5z" />
+                            </svg>
+                            Change Image
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveImage(i)}
+                            className="flex-1 bg-red-600/80 hover:bg-red-600 text-white px-3 py-2 rounded-lg text-xs font-medium transition-colors flex items-center justify-center gap-1"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                            </svg>
+                            Remove Image
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => setImageUploadModal({ open: true, questionIndex: i })}
+                        className="w-full border-2 border-dashed border-slate-600/60 rounded-lg p-4 bg-slate-700/40 hover:border-indigo-500/70 hover:bg-slate-700/60 transition-colors flex items-center justify-center gap-2 text-sm text-slate-300"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+                        </svg>
+                        Add Image/Diagram
+                      </button>
+                    )}
                   </div>
                   
                   <div className="mb-3">
@@ -234,6 +339,19 @@ export default function AddQuiz() {
           <p>Enhance your teaching experience with interactive quizzes</p>
         </div>
       </div>
+
+      {/* Image Upload Modal */}
+      {imageUploadModal.open && imageUploadModal.questionIndex !== null && (
+        <QuestionImageUpload
+          questionId={imageUploadModal.questionIndex}
+          existingImageUrl={questions[imageUploadModal.questionIndex]?.imageUrl || ''}
+          onImageUploaded={(imageUrl) => {
+            handleImageUploaded(imageUrl);
+            setImageUploadModal({ open: false, questionIndex: null });
+          }}
+          onClose={() => setImageUploadModal({ open: false, questionIndex: null })}
+        />
+      )}
     </div>
   );
 }

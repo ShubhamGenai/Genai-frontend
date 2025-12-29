@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { CONTENTMANAGER } from "../../constants/ApiConstants";
 import { X, Upload, Image as ImageIcon, Loader } from 'lucide-react';
@@ -8,6 +8,13 @@ const QuestionImageUpload = ({ questionId, onImageUploaded, onClose, existingIma
   const [preview, setPreview] = useState(existingImageUrl || null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(null);
+
+  // Update preview when existingImageUrl changes
+  useEffect(() => {
+    if (existingImageUrl && !selectedFile) {
+      setPreview(existingImageUrl);
+    }
+  }, [existingImageUrl, selectedFile]);
 
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
@@ -85,10 +92,18 @@ const QuestionImageUpload = ({ questionId, onImageUploaded, onClose, existingIma
       });
 
       if (response.data.success && response.data.imageUrl) {
-        onImageUploaded(response.data.imageUrl);
-        onClose();
+        console.log('Image uploaded successfully, URL:', response.data.imageUrl);
+        // Verify the URL is valid
+        if (response.data.imageUrl && response.data.imageUrl.startsWith('http')) {
+          onImageUploaded(response.data.imageUrl);
+          onClose();
+        } else {
+          setError('Invalid image URL received from server');
+          console.error('Invalid image URL:', response.data.imageUrl);
+        }
       } else {
-        setError('Failed to upload image');
+        setError(response.data.error || 'Failed to upload image');
+        console.error('Upload failed:', response.data);
       }
     } catch (err) {
       console.error('Error uploading image:', err);
@@ -100,12 +115,12 @@ const QuestionImageUpload = ({ questionId, onImageUploaded, onClose, existingIma
 
   const handleRemove = () => {
     setSelectedFile(null);
-    setPreview(null);
+    setPreview(existingImageUrl || null);
     setError(null);
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50">
       <div className="bg-slate-800 rounded-xl shadow-2xl w-full max-w-2xl mx-4 border border-slate-600/30">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-slate-600/30">
@@ -127,7 +142,7 @@ const QuestionImageUpload = ({ questionId, onImageUploaded, onClose, existingIma
           )}
 
           {/* Upload Area */}
-          {!preview ? (
+          {!preview || (!selectedFile && existingImageUrl) ? (
             <div
               onDragOver={handleDragOver}
               onDrop={handleDrop}
@@ -157,26 +172,62 @@ const QuestionImageUpload = ({ questionId, onImageUploaded, onClose, existingIma
             <div className="space-y-4">
               {/* Preview */}
               <div className="relative border border-slate-600/30 rounded-lg overflow-hidden bg-slate-700/40">
-                <img
-                  src={preview}
-                  alt="Preview"
-                  className="w-full h-auto max-h-96 object-contain"
-                />
-                <button
-                  onClick={handleRemove}
-                  className="absolute top-2 right-2 bg-red-500/80 hover:bg-red-500 text-white p-2 rounded-full transition-colors"
-                >
-                  <X className="w-4 h-4" />
-                </button>
+                <div className="flex items-center justify-center bg-slate-800/50 min-h-[200px] p-4 relative">
+                  <img
+                    src={preview}
+                    alt={selectedFile ? "New image preview" : "Current image"}
+                    className="max-w-full max-h-96 object-contain rounded"
+                    crossOrigin="anonymous"
+                    loading="lazy"
+                    onLoad={() => {
+                      console.log('Preview image loaded successfully');
+                    }}
+                    onError={(e) => {
+                      console.error('Preview image failed to load:', preview);
+                      const errorDiv = e.target.parentElement.querySelector('.preview-error');
+                      if (errorDiv) {
+                        errorDiv.classList.remove('hidden');
+                      }
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                  <div className="hidden preview-error absolute inset-0 flex items-center justify-center text-slate-400 text-sm p-4">
+                    <div className="text-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 mx-auto mb-2 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      <p>Failed to load image</p>
+                      {preview && typeof preview === 'string' && preview.startsWith('http') && (
+                        <p className="text-xs mt-1 text-slate-500 break-all">{preview}</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                {selectedFile && (
+                  <button
+                    onClick={handleRemove}
+                    className="absolute top-2 right-2 bg-red-500/80 hover:bg-red-500 text-white p-2 rounded-full transition-colors"
+                    title="Remove new image"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
               </div>
 
-              {/* Change Image Button */}
+              {/* Info text if existing image */}
+              {existingImageUrl && !selectedFile && (
+                <p className="text-slate-400 text-xs text-center">
+                  Current image shown above. Select a new image to replace it.
+                </p>
+              )}
+
+              {/* Change/Select Image Button */}
               <button
                 onClick={() => document.getElementById('image-upload-input')?.click()}
                 className="w-full py-2 px-4 bg-slate-700/40 border border-slate-600/30 rounded-lg text-sm font-medium text-slate-200 hover:bg-slate-700/70 transition-colors flex items-center justify-center gap-2"
               >
                 <ImageIcon className="w-4 h-4" />
-                Change Image
+                {selectedFile ? 'Change Image' : existingImageUrl ? 'Replace Image' : 'Select Image'}
               </button>
               <input
                 id="image-upload-input"
