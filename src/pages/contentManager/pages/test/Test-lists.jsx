@@ -1,8 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import { EyeIcon } from "@heroicons/react/outline";
+import { EyeIcon, TrashIcon } from "@heroicons/react/outline";
 import { CONTENTMANAGER } from "../../../../constants/ApiConstants";
+import DeleteConfirmationModal from "../../../../component/contentManagerComponents/DeleteConfirmationModal";
 
 const levels = ["Beginner", "Intermediate", "Advanced", "Intermediate to Advanced"];
 
@@ -12,6 +13,9 @@ const TestList = () => {
   const [levelFilter, setLevelFilter] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [testToDelete, setTestToDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     const fetchTests = async () => {
@@ -43,6 +47,40 @@ const TestList = () => {
       return matchesSearch && matchesLevel;
     });
   }, [tests, searchTerm, levelFilter]);
+
+  // Handle delete click - open confirmation modal
+  const handleDeleteClick = (test) => {
+    setTestToDelete(test);
+    setDeleteModalOpen(true);
+  };
+
+  // Handle delete confirmation
+  const handleDeleteConfirm = async () => {
+    if (!testToDelete) return;
+
+    setIsDeleting(true);
+    try {
+      await axios.delete(`${CONTENTMANAGER.DELETE_TEST}/${testToDelete._id}`);
+      
+      // Remove test from state
+      setTests(tests.filter(test => test._id !== testToDelete._id));
+      
+      // Close modal and reset state
+      setDeleteModalOpen(false);
+      setTestToDelete(null);
+    } catch (err) {
+      console.error('Failed to delete test', err);
+      alert(`Failed to delete test: ${err.response?.data?.error || err.message}`);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  // Handle delete cancel
+  const handleDeleteCancel = () => {
+    setDeleteModalOpen(false);
+    setTestToDelete(null);
+  };
 
   return (
     <div className="w-full min-h-full pb-8">
@@ -117,7 +155,7 @@ const TestList = () => {
                   Price
                 </th>
                 <th className="px-4 py-3 text-right text-[11px] font-bold text-slate-300 uppercase tracking-wider">
-                  View
+                  Actions
                 </th>
               </tr>
             </thead>
@@ -143,13 +181,22 @@ const TestList = () => {
                     ₹{test.price?.discounted}
                   </td>
                   <td className="px-4 py-3 text-right text-xs">
-                    <Link
-                      to={`/content/tests/${test._id}`}
-                      className="inline-flex items-center justify-center px-2 py-1 rounded-lg bg-slate-800/70 border border-slate-600/40 text-slate-100 hover:bg-slate-700/80 transition-colors"
-                      title="View details"
-                    >
-                      <EyeIcon className="h-4 w-4" />
-                    </Link>
+                    <div className="flex justify-end space-x-2">
+                      <Link
+                        to={`/content/tests/${test._id}`}
+                        className="inline-flex items-center justify-center px-2 py-1 rounded-lg bg-slate-800/70 border border-slate-600/40 text-slate-100 hover:bg-slate-700/80 transition-colors"
+                        title="View details"
+                      >
+                        <EyeIcon className="h-4 w-4" />
+                      </Link>
+                      <button
+                        onClick={() => handleDeleteClick(test)}
+                        className="inline-flex items-center justify-center px-2 py-1 rounded-lg bg-red-600/20 border border-red-500/40 text-red-400 hover:bg-red-600/30 transition-colors"
+                        title="Delete test"
+                      >
+                        <TrashIcon className="h-4 w-4" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -157,6 +204,17 @@ const TestList = () => {
           </table>
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={deleteModalOpen}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Test"
+        message={`Are you sure you want to delete the test "${testToDelete?.title}"? This will permanently delete the test and all associated quizzes.`}
+        itemName={testToDelete?.title}
+        isDeleting={isDeleting}
+      />
     </div>
   );
 };

@@ -125,12 +125,14 @@ export const CONTENTMANAGER = {
   DELETE_COURSE:`${API_BASE_URL}/content/delete-course`,
   BULK_UPLOAD_TESTS:`${API_BASE_URL}/content/tests/bulk-upload`,
   ADD_TEST:`${API_BASE_URL}/content/add-test`,
+  DELETE_TEST:`${API_BASE_URL}/content/delete-test`,
   UPLOAD_LIBRARY_DOCUMENT:`${API_BASE_URL}/content/upload-library-document`,
   GET_LIBRARY_DOCUMENTS:`${API_BASE_URL}/content/get-library-documents`,
   DASHBOARD_STATS:`${API_BASE_URL}/content/dashboard-stats`,
   RECENT_ACTIVITIES:`${API_BASE_URL}/content/recent-activities`,
   PARSE_PDF_UPLOAD:`${API_BASE_URL}/content/parse-pdf`,
   UPLOAD_QUESTION_IMAGE:`${API_BASE_URL}/content/upload-question-image`,
+  UPLOAD_TEST_IMAGE:`${API_BASE_URL}/content/upload-test-image`,
  
 }
 

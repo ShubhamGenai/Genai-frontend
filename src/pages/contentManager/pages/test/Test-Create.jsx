@@ -4,6 +4,7 @@ import { ArrowLeftIcon } from "@heroicons/react/outline";
 import axios from "axios";
 import { CONTENTMANAGER } from "../../../../constants/ApiConstants";
 import QuizSelectorPopup from "../../../../component/contentManagerComponents/QuizSelectorPopup";
+import TestImageUpload from "../../../../component/contentManagerComponents/TestImageUpload";
 
 const levels = [
   "Beginner",
@@ -27,11 +28,11 @@ const TestCreate = () => {
   const [numberOfQuestions, setNumberOfQuestions] = useState("");
   const [priceActual, setPriceActual] = useState("");
   const [priceDiscounted, setPriceDiscounted] = useState("");
+  const [category, setCategory] = useState("");
   const [level, setLevel] = useState("");
   const [features, setFeatures] = useState("");
   const [skills, setSkills] = useState("");
   const [certificate, setCertificate] = useState(true);
-  const [instructorId, setInstructorId] = useState("");
   const [passingScore, setPassingScore] = useState("");
 
   const [quizTitle, setQuizTitle] = useState("");
@@ -39,6 +40,10 @@ const TestCreate = () => {
   const [questions, setQuestions] = useState([emptyQuestion]);
   const [selectedQuizzes, setSelectedQuizzes] = useState([]);
   const [isQuizSelectorOpen, setIsQuizSelectorOpen] = useState(false);
+
+  const [testImageUrl, setTestImageUrl] = useState("");
+  const [testImagePublicId, setTestImagePublicId] = useState("");
+  const [isImageUploadModalOpen, setIsImageUploadModalOpen] = useState(false);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
@@ -74,6 +79,19 @@ const TestCreate = () => {
 
   const handleRemoveSelectedQuiz = (quizId) => {
     setSelectedQuizzes(selectedQuizzes.filter(q => q._id !== quizId));
+  };
+
+  const handleTestImageUploaded = (imageData) => {
+    if (imageData && imageData.imageUrl) {
+      setTestImageUrl(imageData.imageUrl);
+      setTestImagePublicId(imageData.imagePublicId || "");
+      setIsImageUploadModalOpen(false);
+    }
+  };
+
+  const handleRemoveTestImage = () => {
+    setTestImageUrl("");
+    setTestImagePublicId("");
   };
 
   const handleSubmit = async (e) => {
@@ -155,12 +173,14 @@ const TestCreate = () => {
         discounted: Number(priceDiscounted),
       },
       level,
+      category: category || undefined,
       features: featuresArr,
       skills: skillsArr,
       certificate,
-      instructor: instructorId || undefined,
       quizzes: quizzesArray,
       passingScore: passingScore ? Number(passingScore) : undefined,
+      image: testImageUrl || undefined,
+      imagePublicId: testImagePublicId || undefined,
     };
 
     setIsSubmitting(true);
@@ -332,26 +352,91 @@ const TestCreate = () => {
             </div>
           </div>
 
-          {/* Level */}
+          {/* Test Image Upload */}
           <div>
             <label className="block text-sm font-bold text-slate-300 mb-1">
-              Level <span className="text-red-400">*</span>
+              Test Image
             </label>
-            <select
-              value={level}
-              onChange={(e) => setLevel(e.target.value)}
-              className={`block w-full bg-slate-800/40 border ${errors.level ? 'border-red-500' : 'border-slate-600/30'} rounded-lg shadow-sm py-1.5 px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all`}
-            >
-              <option value="">Select level</option>
-              {levels.map((lvl) => (
-                <option key={lvl} value={lvl}>
-                  {lvl}
-                </option>
-              ))}
-            </select>
-            {errors.level && (
-              <p className="mt-1 text-xs font-semibold text-red-400">{errors.level}</p>
-            )}
+            <div className="flex items-center gap-3">
+              {testImageUrl ? (
+                <div className="flex items-center gap-3">
+                  <img
+                    src={testImageUrl}
+                    alt="Test preview"
+                    className="h-20 w-20 object-cover rounded-lg border border-slate-600/30"
+                    crossOrigin="anonymous"
+                    loading="lazy"
+                    onError={(e) => {
+                      console.error("Failed to load test image:", testImageUrl);
+                      e.target.style.display = "none";
+                    }}
+                  />
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setIsImageUploadModalOpen(true)}
+                      className="bg-indigo-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-indigo-700 transition-all"
+                    >
+                      Change
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleRemoveTestImage}
+                      className="bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-red-700 transition-all"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setIsImageUploadModalOpen(true)}
+                  className="flex items-center gap-2 bg-slate-700/40 border border-slate-600/30 rounded-lg px-3 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-700/60 transition-all"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+                  </svg>
+                  Upload Test Image
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Category and Level Row */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-sm font-bold text-slate-300 mb-1">
+                Category
+              </label>
+              <input
+                type="text"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className="block w-full bg-slate-800/40 border border-slate-600/30 rounded-lg shadow-sm py-1.5 px-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all"
+                placeholder="e.g., JEE, NEET, SSC"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-slate-300 mb-1">
+                Level <span className="text-red-400">*</span>
+              </label>
+              <select
+                value={level}
+                onChange={(e) => setLevel(e.target.value)}
+                className={`block w-full bg-slate-800/40 border ${errors.level ? 'border-red-500' : 'border-slate-600/30'} rounded-lg shadow-sm py-1.5 px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all`}
+              >
+                <option value="">Select level</option>
+                {levels.map((lvl) => (
+                  <option key={lvl} value={lvl}>
+                    {lvl}
+                  </option>
+                ))}
+              </select>
+              {errors.level && (
+                <p className="mt-1 text-xs font-semibold text-red-400">{errors.level}</p>
+              )}
+            </div>
           </div>
 
           {/* Features and Skills Row */}
@@ -382,35 +467,21 @@ const TestCreate = () => {
             </div>
           </div>
 
-          {/* Instructor and Certificate Row */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div>
-              <label className="block text-sm font-bold text-slate-300 mb-1">
-                Instructor ID (ObjectId)
-              </label>
-              <input
-                type="text"
-                value={instructorId}
-                onChange={(e) => setInstructorId(e.target.value)}
-                className="block w-full bg-slate-800/40 border border-slate-600/30 rounded-lg shadow-sm py-1.5 px-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all"
-                placeholder="MongoDB ObjectId of instructor (optional)"
-              />
-            </div>
-            <div className="flex items-center">
-              <input
-                id="certificate"
-                type="checkbox"
-                checked={certificate}
-                onChange={(e) => setCertificate(e.target.checked)}
-                className="h-4 w-4 text-indigo-600 border-slate-600 rounded focus:ring-indigo-500"
-              />
-              <label
-                htmlFor="certificate"
-                className="ml-2 text-sm font-bold text-slate-300"
-              >
-                Certificate provided
-              </label>
-            </div>
+          {/* Certificate */}
+          <div className="flex items-center">
+            <input
+              id="certificate"
+              type="checkbox"
+              checked={certificate}
+              onChange={(e) => setCertificate(e.target.checked)}
+              className="h-4 w-4 text-indigo-600 border-slate-600 rounded focus:ring-indigo-500"
+            />
+            <label
+              htmlFor="certificate"
+              className="ml-2 text-sm font-bold text-slate-300"
+            >
+              Certificate provided
+            </label>
           </div>
 
           {/* Quiz Selection and Creation */}
@@ -626,6 +697,16 @@ const TestCreate = () => {
         selectedQuizzes={selectedQuizzes}
         onSelect={handleQuizSelect}
       />
+
+      {/* Test Image Upload Modal */}
+      {isImageUploadModalOpen && (
+        <TestImageUpload
+          testId={null}
+          onImageUploaded={handleTestImageUploaded}
+          onClose={() => setIsImageUploadModalOpen(false)}
+          existingImageUrl={testImageUrl}
+        />
+      )}
     </div>
   );
 };
