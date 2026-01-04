@@ -91,11 +91,18 @@ const AIChatPage = () => {
     setIsLoading(true);
 
     try {
+      // Check if endpoint is defined
+      if (!USERENDPOINTS.AI_CHAT) {
+        throw new Error('AI Chat endpoint is not configured');
+      }
+
       // Prepare conversation history (last 10 messages for context)
       const conversationHistory = messages.slice(-10).map(msg => ({
         role: msg.sender === 'user' ? 'user' : 'assistant',
         content: msg.text
       }));
+
+      console.log('Sending AI chat request to:', USERENDPOINTS.AI_CHAT);
 
       const response = await axios.post(
         USERENDPOINTS.AI_CHAT,
@@ -104,7 +111,8 @@ const AIChatPage = () => {
           conversationHistory: conversationHistory
         },
         {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
+          timeout: 60000 // 60 second timeout
         }
       );
 
@@ -126,15 +134,33 @@ const AIChatPage = () => {
       }
     } catch (error) {
       console.error('Error sending message:', error);
+      
+      // More detailed error handling
+      let errorText = 'Sorry, I encountered an error. Please try again in a moment.';
+      
+      if (error.response) {
+        // Server responded with error status
+        if (error.response.status === 401) {
+          errorText = 'Please log in to use the AI chat feature.';
+        } else if (error.response.status === 500) {
+          errorText = 'AI service is temporarily unavailable. Please try again later.';
+        } else if (error.response.data?.message) {
+          errorText = error.response.data.message;
+        }
+      } else if (error.request) {
+        // Request was made but no response received
+        errorText = 'Unable to connect to the server. Please check your internet connection.';
+      }
+      
       const errorMessage = {
         id: Date.now() + 1,
-        text: 'Sorry, I encountered an error. Please try again in a moment.',
+        text: errorText,
         sender: 'ai',
         timestamp: new Date().toISOString(),
         isError: true
       };
       setMessages(prev => [...prev, errorMessage]);
-      toast.error('Failed to get AI response. Please try again.');
+      toast.error(errorText);
     } finally {
       setIsLoading(false);
     }

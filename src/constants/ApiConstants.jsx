@@ -80,6 +80,7 @@ export const USERENDPOINTS = {
    GET_DASHBOARD_OVERVIEW: `${API_BASE_URL}/student/getDashboardOverview`, // Fetch dashboard overview data
    GET_TEST_SUBMISSION_HISTORY: `${API_BASE_URL}/student/getTestSubmissionHistory`, // Get test submission history
    GET_TEST_SUBMISSION_DETAILS: `${API_BASE_URL}/student/getTestSubmissionDetails`, // Get detailed submission results
+   AI_CHAT: `${API_BASE_URL}/student/ai-chat`, // AI Chat endpoint
    
    
 }
