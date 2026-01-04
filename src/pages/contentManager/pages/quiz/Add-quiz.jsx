@@ -22,6 +22,13 @@ export default function AddQuiz() {
   const [imageUploadModal, setImageUploadModal] = useState({ open: false, questionIndex: null });
   const [formulaHelper, setFormulaHelper] = useState({ open: false, targetField: null, questionIndex: null, optionIndex: null });
   const [questionBankOpen, setQuestionBankOpen] = useState(false);
+  const [aiGeneratorOpen, setAiGeneratorOpen] = useState(false);
+  const [aiGenerating, setAiGenerating] = useState(false);
+  const [aiFormData, setAiFormData] = useState({ testName: '', subject: '', numberOfQuestions: '5', mustContainFormulas: false });
+  const [reviewModalOpen, setReviewModalOpen] = useState(false);
+  const [generatedQuestions, setGeneratedQuestions] = useState([]);
+  const [selectedQuestions, setSelectedQuestions] = useState([]);
+  const [regeneratingIndex, setRegeneratingIndex] = useState(null);
 
   const handleQuestionChange = (index, field, value) => {
     const updatedQuestions = [...questions];
@@ -153,6 +160,126 @@ export default function AddQuiz() {
     const updatedQuestions = [...questions];
     updatedQuestions[questionIndex].imageUrl = '';
     setQuestions(updatedQuestions);
+  };
+
+  // Handle AI question generation
+  const handleGenerateQuestions = async () => {
+    if (!aiFormData.testName.trim() || !aiFormData.subject.trim() || !aiFormData.numberOfQuestions) {
+      alert('Please fill in all fields: Test Name, Subject, and Number of Questions');
+      return;
+    }
+
+    const numQuestions = parseInt(aiFormData.numberOfQuestions);
+    if (isNaN(numQuestions) || numQuestions <= 0 || numQuestions > 50) {
+      alert('Number of questions must be between 1 and 50');
+      return;
+    }
+
+    setAiGenerating(true);
+    try {
+      const response = await axios.post(CONTENTMANAGER.GENERATE_QUIZ_QUESTIONS, {
+        testName: aiFormData.testName.trim(),
+        subject: aiFormData.subject.trim(),
+        numberOfQuestions: numQuestions,
+        mustContainFormulas: aiFormData.mustContainFormulas
+      });
+
+      if (response.data.success && response.data.data && response.data.data.questions) {
+        const generated = response.data.data.questions.map((q, index) => ({
+          id: `gen-${Date.now()}-${index}`, // Unique ID for each question
+          questionText: q.questionText || '',
+          options: Array.isArray(q.options) && q.options.length >= 2 
+            ? q.options 
+            : ['', '', '', ''],
+          answer: q.answer || '',
+          imageUrl: q.imageUrl || '',
+          marks: q.marks || 1
+        }));
+
+        // Show review modal instead of directly adding
+        setGeneratedQuestions(generated);
+        setSelectedQuestions(generated.map((_, index) => index)); // Select all by default
+        setAiGeneratorOpen(false);
+        setReviewModalOpen(true);
+      } else {
+        throw new Error('Invalid response format from server');
+      }
+    } catch (error) {
+      console.error('Error generating questions:', error);
+      const errorMessage = error.response?.data?.error || 
+                          error.response?.data?.details || 
+                          error.message || 
+                          'Failed to generate questions. Please try again.';
+      alert(`Error: ${errorMessage}`);
+    } finally {
+      setAiGenerating(false);
+    }
+  };
+
+  // Regenerate a single question with AI
+  const handleRegenerateQuestion = async (questionIndex) => {
+    if (!aiFormData.testName.trim() || !aiFormData.subject.trim()) {
+      alert('Test Name and Subject are required for regeneration');
+      return;
+    }
+
+    setRegeneratingIndex(questionIndex);
+    try {
+      const response = await axios.post(CONTENTMANAGER.GENERATE_QUIZ_QUESTIONS, {
+        testName: aiFormData.testName.trim(),
+        subject: aiFormData.subject.trim(),
+        numberOfQuestions: 1, // Generate only 1 question
+        mustContainFormulas: aiFormData.mustContainFormulas
+      });
+
+      if (response.data.success && response.data.data && response.data.data.questions && response.data.data.questions.length > 0) {
+        const newQuestion = response.data.data.questions[0];
+        const updatedQuestions = [...generatedQuestions];
+        updatedQuestions[questionIndex] = {
+          id: generatedQuestions[questionIndex].id, // Keep the same ID
+          questionText: newQuestion.questionText || '',
+          options: Array.isArray(newQuestion.options) && newQuestion.options.length >= 2 
+            ? newQuestion.options 
+            : ['', '', '', ''],
+          answer: newQuestion.answer || '',
+          imageUrl: newQuestion.imageUrl || '',
+          marks: newQuestion.marks || 1
+        };
+        setGeneratedQuestions(updatedQuestions);
+        alert('Question regenerated successfully!');
+      } else {
+        throw new Error('Invalid response format from server');
+      }
+    } catch (error) {
+      console.error('Error regenerating question:', error);
+      const errorMessage = error.response?.data?.error || 
+                          error.response?.data?.details || 
+                          error.message || 
+                          'Failed to regenerate question. Please try again.';
+      alert(`Error: ${errorMessage}`);
+    } finally {
+      setRegeneratingIndex(null);
+    }
+  };
+
+  // Toggle question selection in review
+  const toggleQuestionSelection = (index) => {
+    setSelectedQuestions(prev => 
+      prev.includes(index) 
+        ? prev.filter(i => i !== index)
+        : [...prev, index]
+    );
+  };
+
+  // Add selected questions to quiz
+  const handleAddSelectedQuestions = () => {
+    const questionsToAdd = generatedQuestions.filter((_, index) => selectedQuestions.includes(index));
+    setQuestions([...questions, ...questionsToAdd]);
+    setReviewModalOpen(false);
+    setGeneratedQuestions([]);
+    setSelectedQuestions([]);
+    setAiFormData({ testName: '', subject: '', numberOfQuestions: '5', mustContainFormulas: false });
+    alert(`Successfully added ${questionsToAdd.length} question(s) to your quiz!`);
   };
 
   return (
@@ -402,6 +529,16 @@ export default function AddQuiz() {
                 </svg>
                 Add Question
               </button>
+              <button
+                type="button"
+                onClick={() => setAiGeneratorOpen(true)}
+                className="flex items-center bg-emerald-600 text-white px-3 py-1.5 rounded-lg font-semibold hover:bg-emerald-700 transition-all text-sm"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1.5" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+                Generate with AI
+              </button>
               {/* Question Bank button commented out */}
               {/* <button
                 type="button"
@@ -517,6 +654,264 @@ export default function AddQuiz() {
               onQuestionsSelected={handleQuestionsFromBank}
               onClose={() => setQuestionBankOpen(false)}
             />
+          </div>
+        </div>
+      )}
+
+      {/* Review Generated Questions Modal */}
+      {reviewModalOpen && (
+        <div className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-slate-800 rounded-xl shadow-2xl w-full max-w-4xl mx-4 max-h-[90vh] border border-slate-600/30 flex flex-col">
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 border-b border-slate-600/30">
+              <h2 className="text-xl font-bold text-white">Review Generated Questions</h2>
+              <button
+                onClick={() => {
+                  setReviewModalOpen(false);
+                  setGeneratedQuestions([]);
+                  setSelectedQuestions([]);
+                }}
+                className="text-slate-400 hover:text-white transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Content - Scrollable */}
+            <div className="flex-1 overflow-y-auto p-6 space-y-4">
+              <div className="flex items-center justify-between mb-4">
+                <p className="text-sm text-slate-300">
+                  Select questions to add to your quiz. You can regenerate individual questions if needed.
+                </p>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setSelectedQuestions(generatedQuestions.map((_, i) => i))}
+                    className="text-xs text-indigo-400 hover:text-indigo-300"
+                  >
+                    Select All
+                  </button>
+                  <span className="text-slate-500">|</span>
+                  <button
+                    onClick={() => setSelectedQuestions([])}
+                    className="text-xs text-indigo-400 hover:text-indigo-300"
+                  >
+                    Deselect All
+                  </button>
+                </div>
+              </div>
+
+              {generatedQuestions.map((q, index) => (
+                <div key={q.id} className="bg-slate-700/40 rounded-lg p-4 border border-slate-600/30">
+                  <div className="flex items-start gap-3">
+                    <input
+                      type="checkbox"
+                      checked={selectedQuestions.includes(index)}
+                      onChange={() => toggleQuestionSelection(index)}
+                      className="mt-1 h-4 w-4 text-indigo-600 border-slate-600 rounded focus:ring-indigo-500"
+                    />
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs font-semibold text-slate-400">Question {index + 1}</span>
+                        <button
+                          onClick={() => handleRegenerateQuestion(index)}
+                          disabled={regeneratingIndex === index}
+                          className="text-xs text-emerald-400 hover:text-emerald-300 flex items-center gap-1 px-2 py-1 rounded bg-emerald-600/20 hover:bg-emerald-600/30 transition-colors disabled:opacity-50"
+                        >
+                          {regeneratingIndex === index ? (
+                            <>
+                              <svg className="animate-spin h-3 w-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                              </svg>
+                              Regenerating...
+                            </>
+                          ) : (
+                            <>
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 5.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-5.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
+                              </svg>
+                              Regenerate
+                            </>
+                          )}
+                        </button>
+                      </div>
+                      <div className="mb-2">
+                        <p className="text-sm font-semibold text-white mb-1">Question:</p>
+                        <div className="text-sm text-slate-200 bg-slate-800/50 rounded p-2">
+                          <FormulaRenderer text={q.questionText} className="text-slate-200" />
+                        </div>
+                      </div>
+                      <div className="mb-2">
+                        <p className="text-sm font-semibold text-white mb-1">Options:</p>
+                        <div className="grid grid-cols-2 gap-2">
+                          {q.options.map((opt, optIdx) => (
+                            <div key={optIdx} className={`text-xs p-2 rounded ${opt === q.answer ? 'bg-emerald-600/20 border border-emerald-500/40' : 'bg-slate-800/50'}`}>
+                              <span className="font-semibold text-slate-400">{String.fromCharCode(65 + optIdx)}:</span>{' '}
+                              <FormulaRenderer text={opt} className="text-slate-200 inline" />
+                              {opt === q.answer && (
+                                <span className="ml-2 text-emerald-400 text-xs font-semibold">✓ Correct</span>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Footer */}
+            <div className="flex items-center justify-between p-6 border-t border-slate-600/30">
+              <p className="text-sm text-slate-300">
+                {selectedQuestions.length} of {generatedQuestions.length} question(s) selected
+              </p>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    setReviewModalOpen(false);
+                    setGeneratedQuestions([]);
+                    setSelectedQuestions([]);
+                  }}
+                  className="px-4 py-2 bg-slate-700/40 text-white rounded-lg font-semibold hover:bg-slate-700/60 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleAddSelectedQuestions}
+                  disabled={selectedQuestions.length === 0}
+                  className="px-4 py-2 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Add Selected ({selectedQuestions.length})
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* AI Question Generator Modal */}
+      {aiGeneratorOpen && (
+        <div className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-slate-800 rounded-xl shadow-2xl w-full max-w-md mx-4 border border-slate-600/30">
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 border-b border-slate-600/30">
+              <h2 className="text-xl font-bold text-white">Generate Questions with AI</h2>
+              <button
+                onClick={() => {
+                  setAiGeneratorOpen(false);
+                  setAiFormData({ testName: '', subject: '', numberOfQuestions: '5', mustContainFormulas: false });
+                }}
+                className="text-slate-400 hover:text-white transition-colors"
+                disabled={aiGenerating}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-bold text-slate-300 mb-1">
+                  Test Name <span className="text-red-400">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={aiFormData.testName}
+                  onChange={(e) => setAiFormData({ ...aiFormData, testName: e.target.value })}
+                  className="w-full bg-slate-700/40 border border-slate-600/30 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all"
+                  placeholder="e.g., JEE Main, NEET, SSC"
+                  disabled={aiGenerating}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-slate-300 mb-1">
+                  Subject <span className="text-red-400">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={aiFormData.subject}
+                  onChange={(e) => setAiFormData({ ...aiFormData, subject: e.target.value })}
+                  className="w-full bg-slate-700/40 border border-slate-600/30 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all"
+                  placeholder="e.g., Mathematics, Physics, Chemistry"
+                  disabled={aiGenerating}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-slate-300 mb-1">
+                  Number of Questions <span className="text-red-400">*</span>
+                </label>
+                <input
+                  type="number"
+                  value={aiFormData.numberOfQuestions}
+                  onChange={(e) => setAiFormData({ ...aiFormData, numberOfQuestions: e.target.value })}
+                  className="w-full bg-slate-700/40 border border-slate-600/30 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all"
+                  placeholder="1-50"
+                  min={1}
+                  max={50}
+                  disabled={aiGenerating}
+                />
+                <div className="mt-2 flex items-center">
+                  <input
+                    id="mustContainFormulas"
+                    type="checkbox"
+                    checked={aiFormData.mustContainFormulas}
+                    onChange={(e) => setAiFormData({ ...aiFormData, mustContainFormulas: e.target.checked })}
+                    className="h-4 w-4 text-emerald-600 border-slate-600 rounded focus:ring-emerald-500"
+                    disabled={aiGenerating}
+                  />
+                  <label
+                    htmlFor="mustContainFormulas"
+                    className="ml-2 text-sm font-bold text-slate-300"
+                  >
+                    Must contain formulas
+                  </label>
+                </div>
+                <p className="mt-1 text-xs text-slate-400">Enter a number between 1 and 50</p>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-2 pt-4 border-t border-slate-600/30">
+                <button
+                  onClick={() => {
+                    setAiGeneratorOpen(false);
+                    setAiFormData({ testName: '', subject: '', numberOfQuestions: '5', mustContainFormulas: false });
+                  }}
+                  disabled={aiGenerating}
+                  className="flex-1 bg-slate-700/40 text-white px-4 py-2 rounded-lg font-semibold hover:bg-slate-700/60 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleGenerateQuestions}
+                  disabled={aiGenerating}
+                  className="flex-1 bg-emerald-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-emerald-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {aiGenerating ? (
+                    <>
+                      <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Generating...
+                    </>
+                  ) : (
+                    <>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                      Generate Questions
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

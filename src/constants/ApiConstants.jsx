@@ -133,6 +133,7 @@ export const CONTENTMANAGER = {
   PARSE_PDF_UPLOAD:`${API_BASE_URL}/content/parse-pdf`,
   UPLOAD_QUESTION_IMAGE:`${API_BASE_URL}/content/upload-question-image`,
   UPLOAD_TEST_IMAGE:`${API_BASE_URL}/content/upload-test-image`,
+  GENERATE_QUIZ_QUESTIONS:`${API_BASE_URL}/content/generate-quiz-questions`,
  
 }
 

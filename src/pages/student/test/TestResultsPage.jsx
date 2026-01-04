@@ -5,6 +5,7 @@ import { mainContext } from '../../../context/MainContext';
 import axios from 'axios';
 import { USERENDPOINTS } from '../../../constants/ApiConstants';
 import { toast } from 'react-toastify';
+import FormulaRenderer from '../../../component/contentManagerComponents/FormulaRenderer';
 
 const TestResultsPage = () => {
   const location = useLocation();
@@ -361,19 +362,27 @@ const TestResultsPage = () => {
                   </button>
                 </div>
                 
-                <p className="text-sm font-medium text-gray-900 mb-2">{answer.questionText}</p>
+                <div className="text-sm font-medium text-gray-900 mb-2">
+                  <FormulaRenderer text={answer.questionText || ''} className="text-sm font-medium text-gray-900" />
+                </div>
                 
                 {expandedQuestions[answer.questionId] && (
                   <div className="mt-3 space-y-2">
                     <div className="text-xs">
                       <span className="font-medium text-gray-700">Your Answer: </span>
                       <span className={answer.isCorrect ? 'text-green-700' : 'text-red-700'}>
-                        {answer.selectedAnswer || 'Not Answered'}
+                        {answer.selectedAnswer ? (
+                          <FormulaRenderer text={String(answer.selectedAnswer)} className={answer.isCorrect ? 'text-green-700' : 'text-red-700'} />
+                        ) : (
+                          'Not Answered'
+                        )}
                       </span>
                     </div>
                     <div className="text-xs">
                       <span className="font-medium text-gray-700">Correct Answer: </span>
-                      <span className="text-green-700">{answer.correctAnswer}</span>
+                      <span className="text-green-700">
+                        <FormulaRenderer text={String(answer.correctAnswer || '')} className="text-green-700" />
+                      </span>
                     </div>
                     <div className="text-xs">
                       <span className="font-medium text-gray-700">Marks: </span>
@@ -397,7 +406,13 @@ const TestResultsPage = () => {
                                   : 'bg-gray-50 text-gray-700'
                               }`}
                             >
-                              {option}
+                              <FormulaRenderer text={String(option || '')} className={`text-xs ${
+                                option === answer.correctAnswer
+                                  ? 'text-green-800'
+                                  : option === answer.selectedAnswer && !answer.isCorrect
+                                  ? 'text-red-800'
+                                  : 'text-gray-700'
+                              }`} />
                               {option === answer.correctAnswer && ' ✓'}
                               {option === answer.selectedAnswer && !answer.isCorrect && ' ✗'}
                             </div>

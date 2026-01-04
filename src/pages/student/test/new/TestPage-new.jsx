@@ -22,8 +22,70 @@ const TestPlatform = () => {
   const isStudentRoute = location.pathname.startsWith('/student');
   const testDetailsPath = isStudentRoute ? '/student/test-details' : '/test-details';
 
+  // Category mapping: Maps category IDs to possible category values from backend
+  const categoryMapping = {
+    'neet-tests': ['neet', 'NEET', 'neet-tests', 'NEET Tests', 'Neet'],
+    'jee-main-tests': ['jee main', 'JEE Main', 'jee-main', 'jee-main-tests', 'JEE MAIN'],
+    'jee-advanced-tests': ['jee advanced', 'JEE Advanced', 'jee-advanced', 'jee-advanced-tests', 'JEE ADVANCED'],
+    'aiims-tests': ['aiims', 'AIIMS', 'aiims-tests', 'AIIMS Tests'],
+    'upsc-tests': ['upsc', 'UPSC', 'upsc-tests', 'UPSC Tests'],
+    'ssc-tests': ['ssc', 'SSC', 'ssc-tests', 'SSC Tests'],
+    'banking-tests': ['banking', 'Banking', 'banking-tests', 'Banking Tests'],
+    'class-6-tests': ['class 6', 'Class 6', 'class-6', 'class-6-tests'],
+    'class-7-tests': ['class 7', 'Class 7', 'class-7', 'class-7-tests'],
+    'class-8-tests': ['class 8', 'Class 8', 'class-8', 'class-8-tests'],
+    'class-9-tests': ['class 9', 'Class 9', 'class-9', 'class-9-tests'],
+    'class-10-tests': ['class 10', 'Class 10', 'class-10', 'class-10-tests'],
+    'class-11-science-tests': ['class 11 science', 'Class 11 Science', 'class-11-science', 'class-11-science-tests'],
+    'class-12-science-tests': ['class 12 science', 'Class 12 Science', 'class-12-science', 'class-12-science-tests'],
+    'class-12-commerce-tests': ['class 12 commerce', 'Class 12 Commerce', 'class-12-commerce', 'class-12-commerce-tests'],
+    'verbal-reasoning-tests': ['verbal reasoning', 'Verbal Reasoning', 'verbal-reasoning', 'verbal-reasoning-tests'],
+    'non-verbal-tests': ['non-verbal reasoning', 'Non-Verbal Reasoning', 'non-verbal', 'non-verbal-tests'],
+    'analytical-tests': ['analytical reasoning', 'Analytical Reasoning', 'analytical', 'analytical-tests'],
+    'arithmetic-tests': ['arithmetic', 'Arithmetic', 'arithmetic-tests'],
+    'algebra-tests': ['algebra', 'Algebra', 'algebra-tests'],
+    'geometry-tests': ['geometry', 'Geometry', 'geometry-tests'],
+    'python-tests': ['python', 'Python', 'python-tests'],
+    'java-tests': ['java', 'Java', 'java-tests'],
+    'javascript-tests': ['javascript', 'JavaScript', 'javascript-tests'],
+    'ml-tests': ['machine learning', 'Machine Learning', 'ml', 'ML', 'ml-tests'],
+    'statistics-tests': ['statistics', 'Statistics', 'statistics-tests'],
+  };
+
+  // Normalize category: Convert backend category to category ID
+  const normalizeCategory = (backendCategory) => {
+    if (!backendCategory) return 'all';
+    
+    const categoryLower = String(backendCategory).toLowerCase().trim();
+    
+    // First check exact match
+    for (const [categoryId, variations] of Object.entries(categoryMapping)) {
+      if (variations.some(v => v.toLowerCase() === categoryLower)) {
+        return categoryId;
+      }
+    }
+    
+    // Check if category ID matches directly
+    if (categoryMapping[categoryLower]) {
+      return categoryLower;
+    }
+    
+    // Check if it's a partial match (e.g., "neet" matches "neet-tests")
+    for (const [categoryId, variations] of Object.entries(categoryMapping)) {
+      if (variations.some(v => categoryLower.includes(v.toLowerCase()) || v.toLowerCase().includes(categoryLower))) {
+        return categoryId;
+      }
+    }
+    
+    // Return original if no match found
+    return categoryLower;
+  };
+
   // Map backend test data to frontend format
   const mapBackendTestToFrontend = (backendTest) => {
+    const backendCategory = backendTest.category || 'all';
+    const normalizedCategory = normalizeCategory(backendCategory);
+    
     return {
       id: backendTest._id || backendTest.id,
       title: backendTest.title || 'Untitled Test',
@@ -36,7 +98,8 @@ const TestPlatform = () => {
       rating: backendTest.averageRating || 0,
       attempts: backendTest.enrolledStudents?.length || 0,
       level: backendTest.level || 'Intermediate',
-      category: backendTest.category || 'all',
+      category: normalizedCategory,
+      originalCategory: backendCategory, // Keep original for reference
       subject: backendTest.company || 'General',
       price: backendTest.price || { actual: 999, discounted: 499 },
       features: backendTest.features || [],
@@ -187,7 +250,32 @@ const TestPlatform = () => {
 
   const filteredTests = selectedCategory === 'all'
     ? tests
-    : tests.filter(test => test.category === selectedCategory);
+    : tests.filter(test => {
+        // Exact match first
+        if (test.category === selectedCategory) {
+          return true;
+        }
+        
+        // Also check original category for variations
+        if (test.originalCategory) {
+          const originalLower = String(test.originalCategory).toLowerCase().trim();
+          const selectedLower = String(selectedCategory).toLowerCase().trim();
+          
+          // Check if selected category matches any variation
+          const categoryVariations = categoryMapping[selectedCategory] || [];
+          if (categoryVariations.some(v => v.toLowerCase() === originalLower)) {
+            return true;
+          }
+          
+          // Partial match check
+          if (originalLower.includes(selectedLower.replace('-tests', '').replace('-', ' ')) || 
+              selectedLower.replace('-tests', '').replace('-', ' ').includes(originalLower)) {
+            return true;
+          }
+        }
+        
+        return false;
+      });
 
    if (loading) {
     return (

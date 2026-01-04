@@ -1,27 +1,6 @@
-import React, { useState, useEffect } from 'react';
-
-// KaTeX will be imported dynamically to handle missing dependency gracefully
-let katex = null;
-let katexPromise = null;
-
-const loadKaTeX = () => {
-  if (katexPromise) return katexPromise;
-  
-  katexPromise = import('katex')
-    .then((module) => {
-      katex = module.default || module;
-      import('katex/dist/katex.min.css').catch(() => {
-        console.warn('KaTeX CSS could not be loaded');
-      });
-      return katex;
-    })
-    .catch((error) => {
-      console.warn('KaTeX is not installed. Please run: npm install katex', error);
-      return null;
-    });
-  
-  return katexPromise;
-};
+import React from 'react';
+import katex from 'katex';
+import 'katex/dist/katex.min.css';
 
 /**
  * FormulaRenderer Component
@@ -33,21 +12,6 @@ const loadKaTeX = () => {
  * <FormulaRenderer text="Block formula: $$\\int_0^1 x dx$$" />
  */
 const FormulaRenderer = ({ text, className = '' }) => {
-  const [katexReady, setKatexReady] = useState(!!katex);
-  const [loading, setLoading] = useState(!katex);
-
-  useEffect(() => {
-    if (!katex && !katexPromise) {
-      loadKaTeX().then((loaded) => {
-        setKatexReady(!!loaded);
-        setLoading(false);
-      });
-    } else if (katex) {
-      setKatexReady(true);
-      setLoading(false);
-    }
-  }, []);
-
   if (!text) return null;
 
   // Pattern to match LaTeX formulas
@@ -57,15 +21,6 @@ const FormulaRenderer = ({ text, className = '' }) => {
   const blockPattern = /\$\$([^$]+)\$\$|\\\[([^\]]+)\\\]/g;
 
   const renderFormula = (formula, isBlock = false) => {
-    if (loading) {
-      return <span className="text-slate-400 text-xs">Loading formula...</span>;
-    }
-    
-    if (!katex || !katexReady) {
-      // Show the LaTeX code as fallback instead of error message
-      return <code className="text-slate-300 text-sm font-mono">{formula}</code>;
-    }
-    
     if (!formula || typeof formula !== 'string') {
       return <span className="text-red-400 text-xs">[Invalid]</span>;
     }

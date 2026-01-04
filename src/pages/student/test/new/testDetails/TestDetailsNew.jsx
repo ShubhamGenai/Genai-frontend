@@ -7,6 +7,7 @@ import TopTabs from '../../../../../component/baseComponents/TopTabs';
 import { mainContext } from '../../../../../context/MainContext';
 import axios from 'axios';
 import { USERENDPOINTS } from '../../../../../constants/ApiConstants';
+import FormulaRenderer from '../../../../../component/contentManagerComponents/FormulaRenderer';
 
 const TestDetailsNew = () => {
   const navigate = useNavigate();
@@ -351,7 +352,26 @@ const TestDetailsNew = () => {
       },
       statistics: test.statistics || {},
       passingScore: test.passingScore || 0,
-      totalMarks: test.totalMarks || 0,
+      totalMarks: (() => {
+        // Calculate total marks from all quizzes and their questions
+        if (quizzes && quizzes.length > 0) {
+          const calculatedMarks = quizzes.reduce((total, quiz) => {
+            if (quiz.questions && Array.isArray(quiz.questions)) {
+              const quizMarks = quiz.questions.reduce((sum, question) => {
+                return sum + (Number(question.marks) || 1);
+              }, 0);
+              return total + quizMarks;
+            }
+            // If quiz has totalMarks, use that
+            if (quiz.totalMarks) {
+              return total + Number(quiz.totalMarks);
+            }
+            return total;
+          }, 0);
+          return calculatedMarks > 0 ? calculatedMarks : (test.totalMarks || 0);
+        }
+        return test.totalMarks || 0;
+      })(),
       quizzes: quizzes || [],
       quizIds: test.quizzes || []
     };
@@ -785,13 +805,15 @@ const TestDetailsNew = () => {
                                   return (
                                     <div key={questionId} className="bg-gray-50 rounded p-3">
                                       <p className="text-xs text-gray-700 mb-2">
-                                        <span className="font-medium">Q{qIdx + 1}:</span> {questionText}
+                                        <span className="font-medium">Q{qIdx + 1}:</span>{' '}
+                                        <FormulaRenderer text={questionText} className="text-xs text-gray-700" />
                                       </p>
                                       {questionOptions.length > 0 && (
                                         <div className="ml-4 space-y-1">
                                           {questionOptions.map((option, optIdx) => (
                                             <div key={optIdx} className="text-xs text-gray-600">
-                                              {String.fromCharCode(65 + optIdx)}. {option}
+                                              {String.fromCharCode(65 + optIdx)}.{' '}
+                                              <FormulaRenderer text={String(option)} className="text-xs text-gray-600" />
                                             </div>
                                           ))}
                                         </div>
