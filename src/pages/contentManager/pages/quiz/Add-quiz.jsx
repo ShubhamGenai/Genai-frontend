@@ -1,11 +1,13 @@
 import axios from 'axios';
 import React, { useState } from 'react';
+import { toast } from 'react-toastify';
 import { CONTENTMANAGER } from '../../../../constants/ApiConstants';
 import QuestionImageUpload from '../../../../component/contentManagerComponents/QuestionImageUpload';
 import FormulaRenderer from '../../../../component/contentManagerComponents/FormulaRenderer';
 import FormulaHelper from '../../../../component/contentManagerComponents/FormulaHelper';
 import ErrorBoundary from '../../../../component/contentManagerComponents/ErrorBoundary';
 import QuizQuestionBank from './Quiz-QuestionBank';
+import AlertPopup from '../../../../component/common/AlertPopup';
 
 export default function AddQuiz() {
   const [title, setTitle] = useState('');
@@ -29,6 +31,14 @@ export default function AddQuiz() {
   const [generatedQuestions, setGeneratedQuestions] = useState([]);
   const [selectedQuestions, setSelectedQuestions] = useState([]);
   const [regeneratingIndex, setRegeneratingIndex] = useState(null);
+  
+  // Alert popup state
+  const [alertPopup, setAlertPopup] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    type: 'error'
+  });
 
   const handleQuestionChange = (index, field, value) => {
     const updatedQuestions = [...questions];
@@ -83,7 +93,12 @@ export default function AddQuiz() {
   })).filter(q => q.questionText !== '' && q.options.length >= 2 && q.answer !== '');
 
   if (cleanedQuestions.length === 0) {
-    alert('Please add at least one valid question with text, options, and answer.');
+    setAlertPopup({
+      isOpen: true,
+      title: 'Validation Error',
+      message: 'Please add at least one valid question with text, options, and answer.',
+      type: 'warning'
+    });
     setLoading(false);
     return;
   }
@@ -96,13 +111,23 @@ export default function AddQuiz() {
 
   // Validate before sending
   if (!quizData.title || quizData.title === '') {
-    alert('Please enter a quiz title.');
+    setAlertPopup({
+      isOpen: true,
+      title: 'Validation Error',
+      message: 'Please enter a quiz title.',
+      type: 'warning'
+    });
     setLoading(false);
     return;
   }
 
   if (!quizData.duration || quizData.duration <= 0) {
-    alert('Please enter a valid duration (in minutes).');
+    setAlertPopup({
+      isOpen: true,
+      title: 'Validation Error',
+      message: 'Please enter a valid duration (in minutes).',
+      type: 'warning'
+    });
     setLoading(false);
     return;
   }
@@ -112,7 +137,7 @@ export default function AddQuiz() {
   try {
     const response = await axios.post(CONTENTMANAGER.ADD_QUIZ, quizData);
     console.log('Quiz data submitted:', response.data);
-    alert('Quiz created successfully!');
+    toast.success('Quiz created successfully!');
 
     // Reset form
     setTitle('');
@@ -131,7 +156,12 @@ export default function AddQuiz() {
                         error.response?.data?.details || 
                         error.message || 
                         'Failed to create quiz. Please check all fields and try again.';
-    alert(`Error: ${errorMessage}`);
+    setAlertPopup({
+      isOpen: true,
+      title: 'Error',
+      message: errorMessage,
+      type: 'error'
+    });
   } finally {
     setLoading(false);
   }
@@ -142,7 +172,12 @@ export default function AddQuiz() {
       // Validate URL format
       if (!imageUrl.startsWith('http://') && !imageUrl.startsWith('https://')) {
         console.error('Invalid image URL format:', imageUrl);
-        alert('Invalid image URL received. Please try uploading again.');
+        setAlertPopup({
+          isOpen: true,
+          title: 'Invalid Image URL',
+          message: 'Invalid image URL received. Please try uploading again.',
+          type: 'error'
+        });
         return;
       }
       
@@ -165,13 +200,23 @@ export default function AddQuiz() {
   // Handle AI question generation
   const handleGenerateQuestions = async () => {
     if (!aiFormData.testName.trim() || !aiFormData.subject.trim() || !aiFormData.numberOfQuestions) {
-      alert('Please fill in all fields: Test Name, Subject, and Number of Questions');
+      setAlertPopup({
+        isOpen: true,
+        title: 'Validation Error',
+        message: 'Please fill in all fields: Test Name, Subject, and Number of Questions',
+        type: 'warning'
+      });
       return;
     }
 
     const numQuestions = parseInt(aiFormData.numberOfQuestions);
     if (isNaN(numQuestions) || numQuestions <= 0 || numQuestions > 50) {
-      alert('Number of questions must be between 1 and 50');
+      setAlertPopup({
+        isOpen: true,
+        title: 'Validation Error',
+        message: 'Number of questions must be between 1 and 50',
+        type: 'warning'
+      });
       return;
     }
 
@@ -210,7 +255,12 @@ export default function AddQuiz() {
                           error.response?.data?.details || 
                           error.message || 
                           'Failed to generate questions. Please try again.';
-      alert(`Error: ${errorMessage}`);
+      setAlertPopup({
+        isOpen: true,
+        title: 'Error',
+        message: errorMessage,
+        type: 'error'
+      });
     } finally {
       setAiGenerating(false);
     }
@@ -219,7 +269,12 @@ export default function AddQuiz() {
   // Regenerate a single question with AI
   const handleRegenerateQuestion = async (questionIndex) => {
     if (!aiFormData.testName.trim() || !aiFormData.subject.trim()) {
-      alert('Test Name and Subject are required for regeneration');
+      setAlertPopup({
+        isOpen: true,
+        title: 'Validation Error',
+        message: 'Test Name and Subject are required for regeneration',
+        type: 'warning'
+      });
       return;
     }
 
@@ -246,7 +301,7 @@ export default function AddQuiz() {
           marks: newQuestion.marks || 1
         };
         setGeneratedQuestions(updatedQuestions);
-        alert('Question regenerated successfully!');
+        toast.success('Question regenerated successfully!');
       } else {
         throw new Error('Invalid response format from server');
       }
@@ -256,7 +311,12 @@ export default function AddQuiz() {
                           error.response?.data?.details || 
                           error.message || 
                           'Failed to regenerate question. Please try again.';
-      alert(`Error: ${errorMessage}`);
+      setAlertPopup({
+        isOpen: true,
+        title: 'Error',
+        message: errorMessage,
+        type: 'error'
+      });
     } finally {
       setRegeneratingIndex(null);
     }
@@ -279,7 +339,7 @@ export default function AddQuiz() {
     setGeneratedQuestions([]);
     setSelectedQuestions([]);
     setAiFormData({ testName: '', subject: '', numberOfQuestions: '5', mustContainFormulas: false });
-    alert(`Successfully added ${questionsToAdd.length} question(s) to your quiz!`);
+    toast.success(`Successfully added ${questionsToAdd.length} question(s) to your quiz!`);
 };
 
   return (
@@ -915,6 +975,15 @@ export default function AddQuiz() {
           </div>
         </div>
       )}
+      
+      {/* Alert Popup */}
+      <AlertPopup
+        isOpen={alertPopup.isOpen}
+        onClose={() => setAlertPopup(prev => ({ ...prev, isOpen: false }))}
+        title={alertPopup.title}
+        message={alertPopup.message}
+        type={alertPopup.type}
+      />
     </div>
   );
 }

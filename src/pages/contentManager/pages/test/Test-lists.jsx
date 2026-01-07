@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 import { EyeIcon, TrashIcon, PencilIcon } from "@heroicons/react/outline";
 import { CONTENTMANAGER } from "../../../../constants/ApiConstants";
 import DeleteConfirmationModal from "../../../../component/contentManagerComponents/DeleteConfirmationModal";
@@ -70,7 +71,7 @@ const TestList = () => {
       setTestToDelete(null);
     } catch (err) {
       console.error('Failed to delete test', err);
-      alert(`Failed to delete test: ${err.response?.data?.error || err.message}`);
+      toast.error(`Failed to delete test: ${err.response?.data?.error || err.message}`);
     } finally {
       setIsDeleting(false);
     }

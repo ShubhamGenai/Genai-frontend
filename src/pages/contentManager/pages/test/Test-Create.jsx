@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeftIcon } from "@heroicons/react/outline";
 import axios from "axios";
+import { toast } from "react-toastify";
 import { CONTENTMANAGER } from "../../../../constants/ApiConstants";
 import QuizSelectorPopup from "../../../../component/contentManagerComponents/QuizSelectorPopup";
 import TestImageUpload from "../../../../component/contentManagerComponents/TestImageUpload";
+import AlertPopup from "../../../../component/common/AlertPopup";
 
 const levels = [
   "Beginner",
@@ -52,6 +54,14 @@ const TestCreate = () => {
   const [errors, setErrors] = useState({});
   const [isFree, setIsFree] = useState(false);
   const [isLoading, setIsLoading] = useState(isEditMode);
+  
+  // Alert popup state
+  const [alertPopup, setAlertPopup] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    type: 'error'
+  });
 
   const handleQuestionChange = (index, field, value) => {
     const updated = [...questions];
@@ -149,8 +159,13 @@ const TestCreate = () => {
         }
       } catch (err) {
         console.error("Failed to fetch test data", err);
-        alert("Failed to load test data. Please try again.");
-        navigate("/content/test-list");
+        setAlertPopup({
+          isOpen: true,
+          title: 'Error',
+          message: "Failed to load test data. Please try again.",
+          type: 'error'
+        });
+        setTimeout(() => navigate("/content/test-list"), 2000);
       } finally {
         setIsLoading(false);
       }
@@ -269,12 +284,12 @@ const TestCreate = () => {
         // Update existing test
         const res = await axios.put(`${CONTENTMANAGER.UPDATE_TEST}/${id}`, payload);
         console.log("Test updated:", res.data);
-        alert("Test updated successfully");
+        toast.success("Test updated successfully");
       } else {
         // Create new test
         const res = await axios.post(CONTENTMANAGER.ADD_TEST, payload);
         console.log("Test created:", res.data);
-        alert("Test created successfully");
+        toast.success("Test created successfully");
       }
       navigate("/content/test-list");
     } catch (err) {
@@ -284,7 +299,12 @@ const TestCreate = () => {
         err.response?.data?.message ||
         err.message ||
         `Failed to ${isEditMode ? 'update' : 'create'} test`;
-      alert(msg);
+      setAlertPopup({
+        isOpen: true,
+        title: 'Error',
+        message: msg,
+        type: 'error'
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -876,6 +896,15 @@ const TestCreate = () => {
           existingImageUrl={testImageUrl}
         />
       )}
+      
+      {/* Alert Popup */}
+      <AlertPopup
+        isOpen={alertPopup.isOpen}
+        onClose={() => setAlertPopup(prev => ({ ...prev, isOpen: false }))}
+        title={alertPopup.title}
+        message={alertPopup.message}
+        type={alertPopup.type}
+      />
     </div>
   );
 };

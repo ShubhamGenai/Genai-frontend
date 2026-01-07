@@ -7,6 +7,7 @@ import { mainContext } from '../../../context/MainContext';
 import { USERENDPOINTS } from '../../../constants/ApiConstants';
 import { MOCK_TESTS } from './mockTestCatalog';
 import FormulaRenderer from '../../../component/contentManagerComponents/FormulaRenderer';
+import AlertPopup from '../../../component/common/AlertPopup';
 
 const TestTakingPage = () => {
   const location = useLocation();
@@ -24,6 +25,19 @@ const TestTakingPage = () => {
   const [timeLeft, setTimeLeft] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [answeredCount, setAnsweredCount] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Alert/Confirm popup state
+  const [alertPopup, setAlertPopup] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    type: 'info',
+    showCancel: false,
+    onConfirm: null,
+    confirmText: 'OK',
+    cancelText: 'Cancel'
+  });
 
   // Map backend quiz questions to frontend format
   const mapQuizQuestionsToFrontend = (quizzes) => {
@@ -329,12 +343,42 @@ const TestTakingPage = () => {
     };
   }, []);
 
-  // Handle submit function
-  const handleSubmitTest = React.useCallback(async () => {
-    if (!window.confirm('Are you sure you want to submit the test? You cannot change your answers after submission.')) {
-      return;
-    }
+  // Show alert popup helper
+  const showAlert = (message, type = 'info', title = '') => {
+    setAlertPopup({
+      isOpen: true,
+      title,
+      message,
+      type,
+      showCancel: false,
+      onConfirm: null,
+      confirmText: 'OK',
+      cancelText: 'Cancel'
+    });
+  };
 
+  // Show confirm popup helper
+  const showConfirm = (message, onConfirm, type = 'warning', title = 'Confirm', confirmText = 'Confirm', cancelText = 'Cancel') => {
+    setAlertPopup({
+      isOpen: true,
+      title,
+      message,
+      type,
+      showCancel: true,
+      onConfirm,
+      confirmText,
+      cancelText
+    });
+  };
+
+  // Close alert popup
+  const closeAlert = () => {
+    setAlertPopup(prev => ({ ...prev, isOpen: false }));
+  };
+
+  // Submit test function (actual submission logic)
+  const submitTestNow = React.useCallback(async () => {
+    setIsSubmitting(true);
     try {
       const testId = test?._id || test?.id || location.state?.testId;
       const startTime = new Date().getTime() - (timeLeft * 1000); // Approximate start time
@@ -393,8 +437,25 @@ const TestTakingPage = () => {
       navigate('/student/test-results', {
         state: { test, answers: selectedAnswers, questions }
       });
+    } finally {
+      setIsSubmitting(false);
     }
   }, [test, selectedAnswers, questions, markedQuestions, timeLeft, token, user, navigate, location.state]);
+
+  // Handle submit function (shows confirmation first)
+  const handleSubmitTest = React.useCallback(() => {
+    showConfirm(
+      'Are you sure you want to submit the test? You cannot change your answers after submission.',
+      () => {
+        // Continue with submission
+        submitTestNow();
+      },
+      'warning',
+      'Submit Test',
+      'Submit',
+      'Cancel'
+    );
+  }, [submitTestNow]);
 
   // Timer countdown
   useEffect(() => {
@@ -436,7 +497,7 @@ const TestTakingPage = () => {
   const handleOptionSelect = (questionId, optionIndex) => {
     // Don't allow selection when paused
     if (isPaused) {
-      alert('Test is paused. Please resume the test to continue.');
+      showAlert('Test is paused. Please resume the test to continue.', 'warning', 'Test Paused');
       return;
     }
     setSelectedAnswers(prev => ({
@@ -447,7 +508,7 @@ const TestTakingPage = () => {
 
   const handleMarkForReview = () => {
     if (isPaused) {
-      alert('Test is paused. Please resume the test to mark questions.');
+      showAlert('Test is paused. Please resume the test to mark questions.', 'warning', 'Test Paused');
       return;
     }
     const currentQuestion = questions[currentQuestionIndex];
@@ -464,7 +525,7 @@ const TestTakingPage = () => {
 
   const handleClearResponse = () => {
     if (isPaused) {
-      alert('Test is paused. Please resume the test to clear responses.');
+      showAlert('Test is paused. Please resume the test to clear responses.', 'warning', 'Test Paused');
       return;
     }
     const currentQuestion = questions[currentQuestionIndex];
@@ -477,7 +538,7 @@ const TestTakingPage = () => {
 
   const goToQuestion = (index) => {
     if (isPaused) {
-      alert('Test is paused. Please resume the test to navigate between questions.');
+      showAlert('Test is paused. Please resume the test to navigate between questions.', 'warning', 'Test Paused');
       return;
     }
     if (index >= 0 && index < totalQuestions) {
@@ -487,7 +548,7 @@ const TestTakingPage = () => {
 
   const goToNext = () => {
     if (isPaused) {
-      alert('Test is paused. Please resume the test to continue.');
+      showAlert('Test is paused. Please resume the test to continue.', 'warning', 'Test Paused');
       return;
     }
     if (currentQuestionIndex < totalQuestions - 1) {
@@ -497,7 +558,7 @@ const TestTakingPage = () => {
 
   const goToPrev = () => {
     if (isPaused) {
-      alert('Test is paused. Please resume the test to continue.');
+      showAlert('Test is paused. Please resume the test to continue.', 'warning', 'Test Paused');
       return;
     }
     if (currentQuestionIndex > 0) {
@@ -519,27 +580,38 @@ const TestTakingPage = () => {
   };
 
   const handlePause = () => {
-    setIsPaused(prev => {
-      if (!prev) {
-        // Pausing - show confirmation
-        if (window.confirm('Test will be paused. Timer will stop. Continue?')) {
-          return true;
-        }
-        return false;
-      } else {
-        // Resuming - enter fullscreen again
-        enterFullscreen().catch(() => {
-          // Silently fail if fullscreen is not allowed
-        });
-        return false;
-      }
-    });
+    if (!isPaused) {
+      // Pausing - show confirmation
+      showConfirm(
+        'Test will be paused. Timer will stop. Continue?',
+        () => {
+          setIsPaused(true);
+        },
+        'warning',
+        'Pause Test',
+        'Pause',
+        'Cancel'
+      );
+    } else {
+      // Resuming - enter fullscreen again
+      enterFullscreen().catch(() => {
+        // Silently fail if fullscreen is not allowed
+      });
+      setIsPaused(false);
+    }
   };
 
   const handleExit = () => {
-    if (window.confirm('Are you sure you want to exit? Your progress will be saved.')) {
-      navigate(-1);
-    }
+    showConfirm(
+      'Are you sure you want to exit? Your progress will be saved.',
+      () => {
+        navigate(-1);
+      },
+      'warning',
+      'Exit Test',
+      'Exit',
+      'Cancel'
+    );
   };
 
   // Show loading state
@@ -665,9 +737,17 @@ const TestTakingPage = () => {
                 </button>
                 <button
                   onClick={handleSubmitTest}
-                  className="bg-blue-600 text-white px-4 py-1.5 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors"
+                  disabled={isSubmitting}
+                  className="bg-blue-600 text-white px-4 py-1.5 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2"
                 >
-                  Submit Test
+                  {isSubmitting ? (
+                    <>
+                      <Loader className="w-4 h-4 animate-spin" />
+                      <span>Submitting...</span>
+                    </>
+                  ) : (
+                    <span>Submit Test</span>
+                  )}
                 </button>
               </div>
             </div>
@@ -701,46 +781,48 @@ const TestTakingPage = () => {
       </div>
 
       <div className="flex-1 overflow-hidden px-4 py-4">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 h-full">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 h-full max-h-full">
           {/* Left Sidebar - Question Palette */}
-          <div className="lg:col-span-1 flex flex-col">
-            <div className="bg-white rounded-lg shadow-sm p-4 flex flex-col h-full overflow-hidden">
-              <h3 className="text-base font-semibold text-gray-900 mb-4">Question Palette</h3>
+          <div className="lg:col-span-1 flex flex-col min-h-0">
+            <div className="bg-white rounded-lg shadow-sm p-4 flex flex-col h-full max-h-full overflow-hidden">
+              <h3 className="text-base font-semibold text-gray-900 mb-4 flex-shrink-0">Question Palette</h3>
               
-              {/* Question Grid */}
-              <div className="grid grid-cols-5 gap-2 mb-6 flex-1 overflow-y-auto">
-                {questions.map((question, index) => {
-                  const status = getQuestionStatus(index);
-                  let buttonClasses = "w-full py-2 text-xs rounded border transition-colors";
+              {/* Question Grid - Scrollable */}
+              <div className="flex-1 min-h-0 mb-6 overflow-y-auto overflow-x-hidden pr-1">
+                <div className="grid grid-cols-5 gap-2 pb-2">
+                  {questions.map((question, index) => {
+                    const status = getQuestionStatus(index);
+                    let buttonClasses = "w-full h-10 min-h-[2.5rem] text-xs rounded border transition-colors flex items-center justify-center font-medium";
 
-                  if (currentQuestionIndex === index) {
-                    buttonClasses += " bg-blue-600 text-white border-blue-600 font-semibold";
-                  } else if (status === 'answered') {
-                    buttonClasses += " bg-green-100 text-green-800 border-green-300";
-                  } else if (status === 'marked') {
-                    buttonClasses += " bg-yellow-100 text-yellow-800 border-yellow-300";
-                  } else if (status === 'marked-answered') {
-                    buttonClasses += " bg-green-200 text-green-900 border-green-400";
-                  } else {
-                    buttonClasses += " bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200";
-                  }
+                    if (currentQuestionIndex === index) {
+                      buttonClasses += " bg-blue-600 text-white border-blue-600 font-semibold";
+                    } else if (status === 'answered') {
+                      buttonClasses += " bg-green-100 text-green-800 border-green-300";
+                    } else if (status === 'marked') {
+                      buttonClasses += " bg-yellow-100 text-yellow-800 border-yellow-300";
+                    } else if (status === 'marked-answered') {
+                      buttonClasses += " bg-green-200 text-green-900 border-green-400";
+                    } else {
+                      buttonClasses += " bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200";
+                    }
 
-                  return (
-                    <button
-                      key={question.id}
-                      onClick={() => goToQuestion(index)}
-                      disabled={isPaused}
-                      className={`${buttonClasses} ${isPaused ? 'opacity-50 cursor-not-allowed' : ''}`}
-                      title={isPaused ? 'Test is paused. Resume to navigate.' : ''}
-                    >
-                      {index + 1}
-                    </button>
-                  );
-                })}
+                    return (
+                      <button
+                        key={question.id}
+                        onClick={() => goToQuestion(index)}
+                        disabled={isPaused}
+                        className={`${buttonClasses} ${isPaused ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        title={isPaused ? 'Test is paused. Resume to navigate.' : `Question ${index + 1}`}
+                      >
+                        {index + 1}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
 
               {/* Legend */}
-              <div className="space-y-2 pt-4 border-t border-gray-200">
+              <div className="space-y-2 pt-4 border-t border-gray-200 flex-shrink-0">
                 <div className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">
                     <div className="w-4 h-4 bg-green-100 border border-green-300 rounded"></div>
@@ -909,6 +991,20 @@ const TestTakingPage = () => {
           </div>
         </div>
       </div>
+      
+      {/* Alert/Confirm Popup */}
+      <AlertPopup
+        isOpen={alertPopup.isOpen}
+        onClose={closeAlert}
+        onConfirm={alertPopup.onConfirm}
+        title={alertPopup.title}
+        message={alertPopup.message}
+        type={alertPopup.type}
+        showCancel={alertPopup.showCancel}
+        confirmText={alertPopup.confirmText}
+        cancelText={alertPopup.cancelText}
+        theme="light"
+      />
     </div>
   );
 };
