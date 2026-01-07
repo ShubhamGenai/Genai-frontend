@@ -16,6 +16,8 @@ const TestResultsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [expandedQuestions, setExpandedQuestions] = useState({});
+  const [questionExplanations, setQuestionExplanations] = useState({});
+  const [loadingExplanations, setLoadingExplanations] = useState({});
 
   const testData = location.state?.test;
   const answers = location.state?.answers;
@@ -191,11 +193,79 @@ const TestResultsPage = () => {
     setLoading(false);
   };
 
-  const toggleQuestion = (questionId) => {
+  const toggleQuestion = async (questionId) => {
+    const isExpanding = !expandedQuestions[questionId];
     setExpandedQuestions(prev => ({
       ...prev,
       [questionId]: !prev[questionId]
     }));
+
+    // If expanding and explanation not yet loaded, generate it
+    if (isExpanding && !questionExplanations[questionId] && !loadingExplanations[questionId]) {
+      await generateExplanation(questionId);
+    }
+  };
+
+  const generateExplanation = async (questionId) => {
+    // Try to find by questionId first, then by index
+    let answer = results.detailedAnswers.find(a => 
+      a.questionId === questionId || 
+      String(a.questionId) === String(questionId)
+    );
+    
+    // If not found, try by index
+    if (!answer) {
+      const index = results.detailedAnswers.findIndex(a => 
+        a.questionId === questionId || 
+        String(a.questionId) === String(questionId)
+      );
+      if (index >= 0) {
+        answer = results.detailedAnswers[index];
+      } else {
+        // Last resort: use the questionId as index
+        const idx = parseInt(questionId);
+        if (!isNaN(idx) && idx >= 0 && idx < results.detailedAnswers.length) {
+          answer = results.detailedAnswers[idx];
+        }
+      }
+    }
+    
+    if (!answer) {
+      console.error('Could not find answer for questionId:', questionId);
+      return;
+    }
+
+    setLoadingExplanations(prev => ({ ...prev, [questionId]: true }));
+
+    try {
+      const response = await axios.post(
+        USERENDPOINTS.GENERATE_QUESTION_EXPLANATION,
+        {
+          questionText: answer.questionText,
+          options: answer.options || [],
+          correctAnswer: answer.correctAnswer,
+          selectedAnswer: answer.selectedAnswer,
+          subject: testData?.category || testData?.subject || ''
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+
+      if (response.data.success && response.data.explanation) {
+        setQuestionExplanations(prev => ({
+          ...prev,
+          [questionId]: response.data.explanation
+        }));
+      } else {
+        toast.error('Failed to generate explanation');
+      }
+    } catch (err) {
+      console.error('Error generating explanation:', err);
+      toast.error('Failed to generate explanation. Please try again.');
+    } finally {
+      setLoadingExplanations(prev => ({ ...prev, [questionId]: false }));
+    }
   };
 
   // Security check: Ensure only students can access this page
@@ -341,7 +411,7 @@ const TestResultsPage = () => {
             {results.detailedAnswers.map((answer, index) => (
               <div
                 key={answer.questionId || index}
-                className={`border rounded-lg p-4 ${
+                className={`border rounded-lg p-4 overflow-hidden ${
                   answer.isCorrect ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'
                 }`}
               >
@@ -391,6 +461,32 @@ const TestResultsPage = () => {
                       </span>
                       <span className="text-gray-600"> / {answer.marks}</span>
                     </div>
+                    
+                    {/* AI Explanation Section */}
+                    <div className="mt-4 pt-4 border-t border-gray-200">
+                      <h4 className="text-sm font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                        <span>💡 AI Explanation</span>
+                        {loadingExplanations[answer.questionId] && (
+                          <span className="text-xs text-gray-500">Generating...</span>
+                        )}
+                      </h4>
+                      {loadingExplanations[answer.questionId] ? (
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                          <span>Generating explanation...</span>
+                        </div>
+                      ) : questionExplanations[answer.questionId] ? (
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-gray-700 w-full box-border overflow-hidden">
+                          <div className="break-words overflow-wrap-anywhere max-w-full">
+                            <FormulaRenderer 
+                              text={questionExplanations[answer.questionId]} 
+                              className="text-sm text-gray-700 leading-relaxed"
+                            />
+                          </div>
+                        </div>
+                      ) : null}
+                    </div>
+
                     {answer.options && answer.options.length > 0 && (
                       <div className="mt-2">
                         <p className="text-xs font-medium text-gray-700 mb-1">Options:</p>

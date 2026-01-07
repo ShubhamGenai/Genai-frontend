@@ -74,12 +74,11 @@ const FormulaRenderer = ({ text, className = '' }) => {
   // Build parts array
   let currentIndex = 0;
   allMatches.forEach((match) => {
-    // Add text before formula
+    // Add text before formula (preserve all whitespace including spaces)
     if (match.index > currentIndex) {
       const textPart = text.substring(currentIndex, match.index);
-      if (textPart) {
-        parts.push({ type: 'text', content: textPart });
-      }
+      // Always add text part, even if it's just whitespace, to preserve spacing
+      parts.push({ type: 'text', content: textPart });
     }
 
     // Add formula
@@ -88,12 +87,11 @@ const FormulaRenderer = ({ text, className = '' }) => {
     currentIndex = match.index + match.length;
   });
 
-  // Add remaining text
+  // Add remaining text (preserve all whitespace)
   if (currentIndex < text.length) {
     const textPart = text.substring(currentIndex);
-    if (textPart) {
-      parts.push({ type: 'text', content: textPart });
-    }
+    // Always add remaining text to preserve spacing
+    parts.push({ type: 'text', content: textPart });
   }
 
   // If no formulas found, return plain text
@@ -102,16 +100,46 @@ const FormulaRenderer = ({ text, className = '' }) => {
   }
 
   return (
-    <span className={className}>
+    <span className={className} style={{ 
+      whiteSpace: 'pre-wrap', 
+      wordSpacing: 'normal', 
+      letterSpacing: 'normal',
+      wordBreak: 'break-word',
+      overflowWrap: 'break-word',
+      maxWidth: '100%',
+      display: 'inline-block'
+    }}>
       {parts.map((part, index) => {
         if (part.type === 'formula') {
           return (
-            <span key={index} className={part.isBlock ? 'block my-2' : 'inline'}>
+            <span 
+              key={index} 
+              className={part.isBlock ? 'block my-2' : 'inline'} 
+              style={{ 
+                whiteSpace: 'normal',
+                maxWidth: '100%',
+                overflow: 'hidden',
+                display: part.isBlock ? 'block' : 'inline-block'
+              }}
+            >
               {renderFormula(part.content, part.isBlock)}
             </span>
           );
         }
-        return <span key={index}>{part.content}</span>;
+        return (
+          <span 
+            key={index} 
+            style={{ 
+              whiteSpace: 'pre-wrap', 
+              wordSpacing: 'normal',
+              wordBreak: 'break-word',
+              overflowWrap: 'break-word',
+              maxWidth: '100%'
+            }}
+          >
+            {part.content}
+          </span>
+        );
       })}
     </span>
   );

@@ -1,7 +1,7 @@
 // API base URL
 
-export const API_BASE_URL = 'https://genai-backend-three.vercel.app/api'
-// export const API_BASE_URL = 'http://localhost:8080/api' 
+// export const API_BASE_URL = 'https://genai-backend-three.vercel.app/api'
+export const API_BASE_URL = 'http://localhost:8080/api' 
 
 
 export const EMPLOYERENDPOINTS = {
@@ -81,6 +81,7 @@ export const USERENDPOINTS = {
    GET_TEST_SUBMISSION_HISTORY: `${API_BASE_URL}/student/getTestSubmissionHistory`, // Get test submission history
    GET_TEST_SUBMISSION_DETAILS: `${API_BASE_URL}/student/getTestSubmissionDetails`, // Get detailed submission results
    AI_CHAT: `${API_BASE_URL}/student/ai-chat`, // AI Chat endpoint
+   GENERATE_QUESTION_EXPLANATION: `${API_BASE_URL}/student/generate-question-explanation`, // Generate AI explanation for question
    ENROLL_FREE_TEST: `${API_BASE_URL}/student/enroll-free-test`, // Enroll in free test
    
    
