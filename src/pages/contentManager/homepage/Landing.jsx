@@ -18,7 +18,7 @@ const ContentManagerDashboard = () => {
     { name: 'Modules', count: 0, icon: CollectionIcon, color: 'bg-green-500', link: '/content/modules' }, 
     { name: 'Lessons', count: 0, icon: VideoIcon, color: 'bg-yellow-500', link: '/content/lessons' },
     { name: 'Quizzes', count: 0, icon: QuestionMarkCircleIcon, color: 'bg-red-500', link: '/content/quizzes' },
-    { name: 'Tests', count: 0, icon: ClipboardCheckIcon, color: 'bg-purple-500', link: '/content/tests-list' },
+    { name: 'Tests', count: 0, icon: ClipboardCheckIcon, color: 'bg-purple-500', link: '/content/test-list' },
     { name: 'Students', count: 0, icon: UsersIcon, color: 'bg-blue-500', link: '#' },
   ]);
 

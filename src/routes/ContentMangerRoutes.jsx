@@ -228,6 +228,14 @@ const ContentManagerRoutes = () => {
               }
             />
             <Route
+              path="tests/edit/:id"
+              element={
+                <ProtectedRoute allowedRoles={["content"]}>
+                  <TestCreate />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="tests/pdf-upload"
               element={
                 <ProtectedRoute allowedRoles={["content"]}>

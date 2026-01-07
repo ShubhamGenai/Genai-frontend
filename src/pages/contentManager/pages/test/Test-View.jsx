@@ -85,10 +85,29 @@ const TestView = () => {
     );
   }
 
-  const priceDisplay =
-    test.price && typeof test.price === "object"
-      ? test.price.discounted
-      : test.price;
+  // Format price display with both actual and discounted
+  const getPriceDisplay = () => {
+    if (test.isFree) {
+      return <span className="text-emerald-400 font-semibold">FREE</span>;
+    }
+    
+    if (test.price && typeof test.price === "object") {
+      const actual = test.price.actual || 0;
+      const discounted = test.price.discounted || 0;
+      
+      if (actual > discounted && actual > 0) {
+        return (
+          <div className="flex flex-col">
+            <span className="font-semibold text-white">₹{discounted}</span>
+            <span className="text-slate-400 line-through text-[10px]">₹{actual}</span>
+          </div>
+        );
+      }
+      return <span>₹{discounted || actual}</span>;
+    }
+    
+    return <span>₹{test.price || 0}</span>;
+  };
 
   // Handle quizzes - could be array of IDs or populated objects
   const quizzes = Array.isArray(test.quizzes) 
@@ -140,7 +159,7 @@ const TestView = () => {
               </div>
               <div className="bg-slate-800/60 rounded-lg px-3 py-2 border border-slate-700/60">
                 <p className="text-slate-400 text-[11px]">Price</p>
-                <p className="font-semibold">₹{priceDisplay}</p>
+                <div className="font-semibold">{getPriceDisplay()}</div>
               </div>
               {test.passingScore && (
                 <div className="bg-slate-800/60 rounded-lg px-3 py-2 border border-slate-700/60">

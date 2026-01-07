@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeftIcon } from "@heroicons/react/outline";
 import axios from "axios";
 import { CONTENTMANAGER } from "../../../../constants/ApiConstants";
@@ -21,6 +21,9 @@ const emptyQuestion = {
 
 const TestCreate = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
+  const isEditMode = !!id;
+  
   const [title, setTitle] = useState("");
   const [company, setCompany] = useState("");
   const [description, setDescription] = useState("");
@@ -47,6 +50,8 @@ const TestCreate = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
+  const [isFree, setIsFree] = useState(false);
+  const [isLoading, setIsLoading] = useState(isEditMode);
 
   const handleQuestionChange = (index, field, value) => {
     const updated = [...questions];
@@ -94,6 +99,66 @@ const TestCreate = () => {
     setTestImagePublicId("");
   };
 
+  // Fetch test data when in edit mode
+  useEffect(() => {
+    const fetchTestData = async () => {
+      if (!isEditMode || !id) return;
+
+      setIsLoading(true);
+      try {
+        const res = await axios.get(`${CONTENTMANAGER.GET_TEST_BY_ID}/${id}`);
+        const testData = res.data.test || res.data;
+
+        // Populate form fields
+        setTitle(testData.title || "");
+        setCompany(testData.company || "");
+        setDescription(testData.description || "");
+        setDuration(testData.duration?.toString() || "");
+        setNumberOfQuestions(testData.numberOfQuestions?.toString() || "");
+        setPriceActual(testData.price?.actual?.toString() || "");
+        setPriceDiscounted(testData.price?.discounted?.toString() || "");
+        setCategory(testData.category || "");
+        setLevel(testData.level || "");
+        setFeatures(testData.features?.join(", ") || "");
+        setSkills(testData.skills?.join(", ") || "");
+        setCertificate(testData.certificate !== undefined ? testData.certificate : true);
+        setPassingScore(testData.passingScore?.toString() || "");
+        setIsFree(testData.isFree || false);
+        setTestImageUrl(testData.image || "");
+        setTestImagePublicId(testData.imagePublicId || "");
+
+        // Handle quizzes - populate selected quizzes if they exist
+        if (testData.quizzes && Array.isArray(testData.quizzes) && testData.quizzes.length > 0) {
+          // Check if quizzes are populated (have title) or just IDs
+          const populatedQuizzes = testData.quizzes.map(quiz => {
+            if (quiz.title) {
+              // Already populated
+              return {
+                _id: quiz._id,
+                title: quiz.title,
+                duration: quiz.duration,
+                questions: quiz.questions || []
+              };
+            }
+            return null;
+          }).filter(Boolean);
+          
+          if (populatedQuizzes.length > 0) {
+            setSelectedQuizzes(populatedQuizzes);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch test data", err);
+        alert("Failed to load test data. Please try again.");
+        navigate("/content/test-list");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchTestData();
+  }, [isEditMode, id, navigate]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrors({});
@@ -105,8 +170,18 @@ const TestCreate = () => {
     if (!description) newErrors.description = "Description is required";
     if (!duration) newErrors.duration = "Duration is required";
     if (!numberOfQuestions) newErrors.numberOfQuestions = "Number of questions is required";
-    if (!priceActual) newErrors.priceActual = "Actual price is required";
-    if (!priceDiscounted) newErrors.priceDiscounted = "Discounted price is required";
+    // Price validation: only required when test is not free
+    if (!isFree) {
+      const actualPriceNum = Number(priceActual);
+      const discountedPriceNum = Number(priceDiscounted);
+      
+      if (!priceActual || priceActual.toString().trim() === '' || isNaN(actualPriceNum) || actualPriceNum < 0) {
+        newErrors.priceActual = "Actual price is required and must be a valid number";
+      }
+      if (!priceDiscounted || priceDiscounted.toString().trim() === '' || isNaN(discountedPriceNum) || discountedPriceNum < 0) {
+        newErrors.priceDiscounted = "Discounted price is required and must be a valid number";
+      }
+    }
     if (!level) newErrors.level = "Level is required";
 
     // Check if user has either selected quizzes OR created a new quiz
@@ -146,6 +221,7 @@ const TestCreate = () => {
     // Add selected quizzes (they already exist, backend will use their IDs)
     selectedQuizzes.forEach(quiz => {
       quizzesArray.push({
+        _id: quiz._id, // Include _id for existing quizzes in edit mode
         title: quiz.title,
         duration: quiz.duration,
         questions: quiz.questions || []
@@ -162,6 +238,9 @@ const TestCreate = () => {
       quizzesArray.push(newQuiz);
     }
 
+    const actualPriceValue = isFree ? 0 : Number(priceActual || 0);
+    const discountedPriceValue = isFree ? 0 : Number(priceDiscounted || 0);
+
     const payload = {
       title,
       company,
@@ -169,9 +248,10 @@ const TestCreate = () => {
       duration: Number(duration),
       numberOfQuestions: Number(numberOfQuestions),
       price: {
-        actual: Number(priceActual),
-        discounted: Number(priceDiscounted),
+        actual: actualPriceValue,
+        discounted: discountedPriceValue,
       },
+      isFree,
       level,
       category: category || undefined,
       features: featuresArr,
@@ -185,22 +265,38 @@ const TestCreate = () => {
 
     setIsSubmitting(true);
     try {
-      const res = await axios.post(CONTENTMANAGER.ADD_TEST, payload);
-      console.log("Test created:", res.data);
-      alert("Test created successfully");
-      navigate("/content/tests-list");
+      if (isEditMode) {
+        // Update existing test
+        const res = await axios.put(`${CONTENTMANAGER.UPDATE_TEST}/${id}`, payload);
+        console.log("Test updated:", res.data);
+        alert("Test updated successfully");
+      } else {
+        // Create new test
+        const res = await axios.post(CONTENTMANAGER.ADD_TEST, payload);
+        console.log("Test created:", res.data);
+        alert("Test created successfully");
+      }
+      navigate("/content/test-list");
     } catch (err) {
-      console.error("Failed to create test", err);
+      console.error(`Failed to ${isEditMode ? 'update' : 'create'} test`, err);
       const msg =
         err.response?.data?.error ||
         err.response?.data?.message ||
         err.message ||
-        "Failed to create test";
+        `Failed to ${isEditMode ? 'update' : 'create'} test`;
       alert(msg);
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="w-full min-h-full pb-4 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full min-h-full pb-4">
@@ -208,13 +304,13 @@ const TestCreate = () => {
         {/* Header */}
         <div className="flex items-center mb-3">
           <button
-            onClick={() => navigate("/content/tests-list")}
+            onClick={() => navigate("/content/test-list")}
             className="mr-2 text-slate-400 hover:text-white transition-colors"
           >
             <ArrowLeftIcon className="h-4 w-4" />
           </button>
           <h1 className="text-xl font-bold text-white tracking-tight">
-            Create New Test
+            {isEditMode ? "Edit Test" : "Create New Test"}
           </h1>
         </div>
 
@@ -317,16 +413,51 @@ const TestCreate = () => {
           </div>
 
           {/* Price Row */}
+          <div className="flex items-center mb-1">
+            <input
+              id="isFree"
+              type="checkbox"
+              checked={isFree}
+              onChange={(e) => {
+                const checked = e.target.checked;
+                setIsFree(checked);
+                if (checked) {
+                  // Clear any previous price validation errors when switching to free
+                  setErrors((prev) => {
+                    const newErrors = { ...prev };
+                    delete newErrors.priceActual;
+                    delete newErrors.priceDiscounted;
+                    return newErrors;
+                  });
+                  // Optionally reset price fields visually
+                  setPriceActual("0");
+                  setPriceDiscounted("0");
+                } else {
+                  // When unchecking, allow user to set prices again
+                  if (priceActual === "0") setPriceActual("");
+                  if (priceDiscounted === "0") setPriceDiscounted("");
+                }
+              }}
+              className="h-4 w-4 text-indigo-600 border-slate-600 rounded focus:ring-indigo-500"
+            />
+            <label
+              htmlFor="isFree"
+              className="ml-2 text-sm font-bold text-slate-300"
+            >
+              Make this a free test (price will be ₹0)
+            </label>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
               <label className="block text-sm font-bold text-slate-300 mb-1">
-                Actual Price (₹) <span className="text-red-400">*</span>
+                Actual Price (₹) {!isFree && <span className="text-red-400">*</span>}
               </label>
               <input
                 type="number"
                 value={priceActual}
                 onChange={(e) => setPriceActual(e.target.value)}
                 className={`block w-full bg-slate-800/40 border ${errors.priceActual ? 'border-red-500' : 'border-slate-600/30'} rounded-lg shadow-sm py-1.5 px-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all`}
+                disabled={isFree}
                 min={0}
                 step="0.01"
               />
@@ -336,13 +467,14 @@ const TestCreate = () => {
             </div>
             <div>
               <label className="block text-sm font-bold text-slate-300 mb-1">
-                Discounted Price (₹) <span className="text-red-400">*</span>
+                Discounted Price (₹) {!isFree && <span className="text-red-400">*</span>}
               </label>
               <input
                 type="number"
                 value={priceDiscounted}
                 onChange={(e) => setPriceDiscounted(e.target.value)}
                 className={`block w-full bg-slate-800/40 border ${errors.priceDiscounted ? 'border-red-500' : 'border-slate-600/30'} rounded-lg shadow-sm py-1.5 px-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all`}
+                disabled={isFree}
                 min={0}
                 step="0.01"
               />
@@ -351,6 +483,43 @@ const TestCreate = () => {
               )}
             </div>
           </div>
+
+          {/* Discount Calculation Display */}
+          {!isFree && priceActual && priceDiscounted && 
+           !isNaN(Number(priceActual)) && !isNaN(Number(priceDiscounted)) &&
+           Number(priceActual) > 0 && Number(priceDiscounted) >= 0 && (
+            <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-3">
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <p className="text-sm font-semibold text-emerald-300">Discount Calculation</p>
+                  <div className="flex items-center gap-4 text-xs text-slate-300">
+                    <span>
+                      <span className="text-slate-400">Actual:</span> ₹{Number(priceActual).toFixed(2)}
+                    </span>
+                    <span>
+                      <span className="text-slate-400">Discounted:</span> ₹{Number(priceDiscounted).toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+                <div className="text-right">
+                  {Number(priceActual) > Number(priceDiscounted) ? (
+                    <>
+                      <p className="text-lg font-bold text-emerald-400">
+                        -₹{(Number(priceActual) - Number(priceDiscounted)).toFixed(2)}
+                      </p>
+                      <p className="text-xs text-emerald-300">
+                        {(((Number(priceActual) - Number(priceDiscounted)) / Number(priceActual)) * 100).toFixed(1)}% OFF
+                      </p>
+                    </>
+                  ) : Number(priceActual) === Number(priceDiscounted) ? (
+                    <p className="text-sm text-slate-400">No discount</p>
+                  ) : (
+                    <p className="text-sm text-yellow-400">⚠ Discounted price is higher</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Test Image Upload */}
           <div>
@@ -664,7 +833,7 @@ const TestCreate = () => {
           <div className="flex justify-end space-x-2 pt-3 border-t border-slate-600/30">
             <button
               type="button"
-              onClick={() => navigate("/content/tests-list")}
+              onClick={() => navigate("/content/test-list")}
               className="bg-slate-700/40 py-2 px-4 border border-slate-600/30 rounded-lg shadow-sm text-sm font-semibold text-white hover:bg-slate-700/60 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500/50 transition-all"
             >
               Cancel
@@ -680,10 +849,10 @@ const TestCreate = () => {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  Creating...
+                  {isEditMode ? "Updating..." : "Creating..."}
                 </>
               ) : (
-                "Create Test"
+                isEditMode ? "Update Test" : "Create Test"
               )}
             </button>
           </div>

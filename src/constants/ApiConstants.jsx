@@ -81,6 +81,7 @@ export const USERENDPOINTS = {
    GET_TEST_SUBMISSION_HISTORY: `${API_BASE_URL}/student/getTestSubmissionHistory`, // Get test submission history
    GET_TEST_SUBMISSION_DETAILS: `${API_BASE_URL}/student/getTestSubmissionDetails`, // Get detailed submission results
    AI_CHAT: `${API_BASE_URL}/student/ai-chat`, // AI Chat endpoint
+   ENROLL_FREE_TEST: `${API_BASE_URL}/student/enroll-free-test`, // Enroll in free test
    
    
 }
@@ -126,6 +127,7 @@ export const CONTENTMANAGER = {
   DELETE_COURSE:`${API_BASE_URL}/content/delete-course`,
   BULK_UPLOAD_TESTS:`${API_BASE_URL}/content/tests/bulk-upload`,
   ADD_TEST:`${API_BASE_URL}/content/add-test`,
+  UPDATE_TEST:`${API_BASE_URL}/content/update-test`,
   DELETE_TEST:`${API_BASE_URL}/content/delete-test`,
   UPLOAD_LIBRARY_DOCUMENT:`${API_BASE_URL}/content/upload-library-document`,
   GET_LIBRARY_DOCUMENTS:`${API_BASE_URL}/content/get-library-documents`,
@@ -134,6 +136,7 @@ export const CONTENTMANAGER = {
   PARSE_PDF_UPLOAD:`${API_BASE_URL}/content/parse-pdf`,
   UPLOAD_QUESTION_IMAGE:`${API_BASE_URL}/content/upload-question-image`,
   UPLOAD_TEST_IMAGE:`${API_BASE_URL}/content/upload-test-image`,
+  GET_TEST_IMAGES:`${API_BASE_URL}/content/get-test-images`,
   GENERATE_QUIZ_QUESTIONS:`${API_BASE_URL}/content/generate-quiz-questions`,
  
 }

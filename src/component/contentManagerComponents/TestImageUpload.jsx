@@ -8,6 +8,9 @@ const TestImageUpload = ({ testId, onImageUploaded, onClose, existingImageUrl })
   const [preview, setPreview] = useState(existingImageUrl || null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(null);
+  const [existingImages, setExistingImages] = useState([]);
+  const [loadingExisting, setLoadingExisting] = useState(false);
+  const [existingError, setExistingError] = useState(null);
 
   // Update preview when existingImageUrl changes
   useEffect(() => {
@@ -15,6 +18,37 @@ const TestImageUpload = ({ testId, onImageUploaded, onClose, existingImageUrl })
       setPreview(existingImageUrl);
     }
   }, [existingImageUrl, selectedFile]);
+
+  // Fetch existing test images from backend for easy re-use
+  useEffect(() => {
+    let isMounted = true;
+    const fetchExistingImages = async () => {
+      setLoadingExisting(true);
+      setExistingError(null);
+      try {
+        const res = await axios.get(CONTENTMANAGER.GET_TEST_IMAGES);
+        if (!isMounted) return;
+        if (res.data?.success && Array.isArray(res.data.images)) {
+          setExistingImages(res.data.images);
+        } else {
+          setExistingError('Failed to load existing images');
+        }
+      } catch (err) {
+        if (!isMounted) return;
+        console.error('Error fetching existing test images:', err);
+        setExistingError('Could not load existing images');
+      } finally {
+        if (isMounted) {
+          setLoadingExisting(false);
+        }
+      }
+    };
+
+    fetchExistingImages();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
@@ -208,6 +242,60 @@ const TestImageUpload = ({ testId, onImageUploaded, onClose, existingImageUrl })
               </div>
             </div>
           )}
+
+          {/* Existing images gallery */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-semibold text-slate-200">
+                Or choose from existing test images
+              </p>
+              {loadingExisting && (
+                <span className="text-xs text-slate-400 flex items-center gap-1">
+                  <Loader className="w-3 h-3 animate-spin" /> Loading...
+                </span>
+              )}
+            </div>
+            {existingError && (
+              <p className="text-xs text-red-300">{existingError}</p>
+            )}
+            {existingImages.length > 0 ? (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 max-h-64 overflow-y-auto">
+                {existingImages.map((img, idx) => (
+                  <button
+                    key={`${img.imageUrl}-${idx}`}
+                    type="button"
+                    onClick={() => {
+                      onImageUploaded({
+                        imageUrl: img.imageUrl,
+                        imagePublicId: img.imagePublicId || null,
+                      });
+                      onClose();
+                    }}
+                    className="group bg-slate-700/40 border border-slate-600/40 rounded-lg overflow-hidden hover:border-indigo-500/70 hover:bg-slate-700/70 transition-colors flex flex-col"
+                  >
+                    <div className="relative w-full pt-[75%] bg-slate-800/60 overflow-hidden">
+                      <img
+                        src={img.imageUrl}
+                        alt={img.title || 'Test image'}
+                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform"
+                        loading="lazy"
+                        crossOrigin="anonymous"
+                      />
+                    </div>
+                    <div className="px-2 py-1.5">
+                      <p className="text-xs text-slate-200 truncate">
+                        {img.title || 'Test image'}
+                      </p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            ) : !loadingExisting && !existingError ? (
+              <p className="text-xs text-slate-500">
+                No existing test images found yet. Upload a new image to use it again later.
+              </p>
+            ) : null}
+          </div>
 
           {/* Action Buttons */}
           {selectedFile && (

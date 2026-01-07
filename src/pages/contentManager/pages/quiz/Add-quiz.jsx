@@ -280,7 +280,7 @@ export default function AddQuiz() {
     setSelectedQuestions([]);
     setAiFormData({ testName: '', subject: '', numberOfQuestions: '5', mustContainFormulas: false });
     alert(`Successfully added ${questionsToAdd.length} question(s) to your quiz!`);
-  };
+};
 
   return (
     <div className="w-full min-h-full pb-4">
@@ -471,13 +471,13 @@ export default function AddQuiz() {
                             <span className="text-white font-bold text-xs">{j + 1}</span>
                           </div>
                           <div className="relative">
-                            <input
-                              type="text"
+                          <input
+                            type="text"
                               className="w-full bg-slate-700/40 border border-slate-600/30 rounded-lg pl-9 pr-20 py-1.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all"
-                              value={opt}
-                              onChange={(e) => handleOptionChange(i, j, e.target.value)}
+                            value={opt}
+                            onChange={(e) => handleOptionChange(i, j, e.target.value)}
                               placeholder={`Option ${j + 1}... (Use $formula$ for formulas)`}
-                            />
+                          />
                             <button
                               type="button"
                               onClick={() => setFormulaHelper({ open: true, targetField: 'option', questionIndex: i, optionIndex: j })}
@@ -519,16 +519,16 @@ export default function AddQuiz() {
             </div>
             
             <div className="mt-3 flex gap-2">
-              <button
-                type="button"
-                onClick={addQuestion}
+            <button
+              type="button"
+              onClick={addQuestion}
                 className="flex items-center bg-indigo-600 text-white px-3 py-1.5 rounded-lg font-semibold hover:bg-indigo-700 transition-all text-sm"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1.5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
-                </svg>
-                Add Question
-              </button>
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1.5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+              </svg>
+              Add Question
+            </button>
               <button
                 type="button"
                 onClick={() => setAiGeneratorOpen(true)}

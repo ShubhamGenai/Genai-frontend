@@ -48,6 +48,7 @@ const TestDetailsNew = () => {
       level: backendTest.level || 'Beginner',
       type: backendTest.type || 'Mock Test',
       price: backendTest.price || { actual: 0, discounted: 0 },
+      isFree: backendTest.isFree || false,
       image: backendTest.image || 'https://res.cloudinary.com/djkbpwqpm/image/upload/v1746691763/jee_kai0bt.png',
       features: backendTest.features || [],
       skills: backendTest.skills || [],
@@ -378,12 +379,15 @@ const TestDetailsNew = () => {
   }, [test, quizzes]);
 
   const isFree = useMemo(() => {
+    // Check if test is marked as free from backend
+    if (test?.isFree === true) return true;
+    // Fallback: check if price is 0
     if (!formatted || !formatted.price) return false;
     if (typeof formatted.price === 'string') {
       return formatted.price.toString().toLowerCase() === 'free';
     }
-    return Number(formatted.price) === 0;
-  }, [formatted]);
+    return Number(formatted.price) === 0 && Number(formatted.originalPrice) === 0;
+  }, [formatted, test]);
 
   // Check if test is enrolled/purchased
   useEffect(() => {
@@ -424,6 +428,66 @@ const TestDetailsNew = () => {
       ...prev,
       [index]: !prev[index]
     }));
+  };
+
+  // Handle taking free test (auto-enroll in background if needed)
+  const handleTakeFreeTest = async () => {
+    try {
+      if (!token || !user) {
+        setShowPurchaseModal(true);
+        return;
+      }
+
+      if (!test || !formatted.id) {
+        toast.error('Test information not available');
+        return;
+      }
+
+      // If not enrolled, auto-enroll in background
+      if (!isEnrolled) {
+        try {
+          const { data } = await axios.post(
+            USERENDPOINTS.ENROLL_FREE_TEST,
+            { testId: formatted.id },
+            {
+              headers: { Authorization: `Bearer ${token}` }
+            }
+          );
+
+          if (data.success) {
+            // Silently enroll, don't show toast
+            setIsEnrolled(true);
+            // Refresh test data
+            const testId = formatted.id;
+            try {
+              const response = await axios.get(`${USERENDPOINTS.GETTESTSBYID}/${testId}`, {
+                headers: { Authorization: `Bearer ${token}` }
+              });
+              const testData = response.data.test || response.data;
+              const mappedTest = mapBackendTestToFrontend(testData);
+              setTest(mappedTest);
+            } catch (err) {
+              console.error('Error refreshing test data:', err);
+            }
+          }
+        } catch (error) {
+          console.error('Auto-enrollment error:', error);
+          // Continue to test anyway for free tests
+        }
+      }
+
+      // Navigate to test taking
+      navigate(testTakingPath, { 
+        state: { 
+          test: test,
+          quizzes: formatted.quizzes,
+          testId: formatted.id
+        } 
+      });
+    } catch (error) {
+      console.error('Error taking free test:', error);
+      toast.error('Failed to start test. Please try again.');
+    }
   };
 
   // Handle Buy Now with Razorpay
@@ -654,20 +718,32 @@ const TestDetailsNew = () => {
                 </div>
 
                 <div className="p-4">
-                  {(isFree || isEnrolled) ? (
-                    // Free Test or Enrolled Test - Show only "Take Test" button
-                    <button 
-                      className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-light text-sm hover:bg-blue-700 transition-colors"
-                      onClick={() => navigate(testTakingPath, { 
-                        state: { 
-                          test: test,
-                          quizzes: formatted.quizzes,
-                          testId: formatted.id
-                        } 
-                      })}
-                    >
-                      Take Test
-                    </button>
+                  {(isEnrolled || isFree) ? (
+                    // Enrolled Test or Free Test - Show "Take Test" button directly
+                    <>
+                      {isFree && !isEnrolled && (
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="text-lg font-light text-gray-900">
+                            ₹0
+                          </div>
+                          <span className="bg-emerald-600 text-white px-3 py-1 rounded-lg text-xs font-light">
+                            FREE TEST
+                          </span>
+                        </div>
+                      )}
+                      <button 
+                        className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-light text-sm hover:bg-blue-700 transition-colors"
+                        onClick={isFree && !isEnrolled ? handleTakeFreeTest : () => navigate(testTakingPath, { 
+                          state: { 
+                            test: test,
+                            quizzes: formatted.quizzes,
+                            testId: formatted.id
+                          } 
+                        })}
+                      >
+                        Take Test
+                      </button>
+                    </>
                   ) : (
                     // Paid Test - Show price, Add to Cart, and Buy Now buttons
                     <>
@@ -1033,9 +1109,9 @@ const TestDetailsNew = () => {
                     </div>
                   )}
                 </div>
-                {(isFree || isEnrolled) ? (
+                {(isEnrolled || isFree) ? (
                   <button 
-                    onClick={() => navigate(testTakingPath, { 
+                    onClick={isFree && !isEnrolled ? handleTakeFreeTest : () => navigate(testTakingPath, { 
                       state: { 
                         test: test,
                         quizzes: formatted.quizzes,

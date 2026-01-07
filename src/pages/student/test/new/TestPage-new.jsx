@@ -93,6 +93,9 @@ const TestPlatform = () => {
       image: backendTest.image || 'https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?w=400&h=300&fit=crop',
       type: backendTest.type || 'Mock Test',
       isPremium: backendTest.price?.discounted < backendTest.price?.actual || false,
+      isFree: backendTest.isFree === true || 
+              (backendTest.price?.actual === 0 && backendTest.price?.discounted === 0) ||
+              (!backendTest.price?.actual && !backendTest.price?.discounted),
       questions: backendTest.numberOfQuestions || 0,
       duration: backendTest.duration || 60,
       rating: backendTest.averageRating || 0,
@@ -409,7 +412,14 @@ const TestPlatform = () => {
                           loading="lazy"
                         />
                         {/* Badges */}
-                        {test.isPremium && (
+                        {test.isFree ? (
+                          <div className="absolute top-2 left-2">
+                            <span className="bg-emerald-500 text-white px-2 py-0.5 rounded-full text-xs font-light shadow-md flex items-center gap-1">
+                              <Award className="w-3 h-3" />
+                              FREE
+                            </span>
+                          </div>
+                        ) : test.isPremium && (
                           <div className="absolute top-2 left-2">
                             <span className="bg-yellow-400 text-yellow-900 px-2 py-0.5 rounded-full text-xs font-light shadow-md flex items-center gap-1">
                               <Award className="w-3 h-3" />

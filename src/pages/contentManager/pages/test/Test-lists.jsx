@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import { EyeIcon, TrashIcon } from "@heroicons/react/outline";
+import { EyeIcon, TrashIcon, PencilIcon } from "@heroicons/react/outline";
 import { CONTENTMANAGER } from "../../../../constants/ApiConstants";
 import DeleteConfirmationModal from "../../../../component/contentManagerComponents/DeleteConfirmationModal";
 
@@ -178,17 +178,33 @@ const TestList = () => {
                     {test.numberOfQuestions}
                   </td>
                   <td className="px-4 py-3 text-[11px] text-slate-200">
-                    ₹{test.price?.discounted}
+                    {test.isFree ? (
+                      <span className="text-emerald-400 font-semibold">FREE</span>
+                    ) : test.price?.actual && test.price?.actual > test.price?.discounted ? (
+                      <div className="flex flex-col">
+                        <span className="font-semibold text-white">₹{test.price?.discounted}</span>
+                        <span className="text-slate-400 line-through text-[10px]">₹{test.price?.actual}</span>
+                      </div>
+                    ) : (
+                      <span>₹{test.price?.discounted || test.price?.actual || 0}</span>
+                    )}
                   </td>
                   <td className="px-4 py-3 text-right text-xs">
                     <div className="flex justify-end space-x-2">
-                      <Link
-                        to={`/content/tests/${test._id}`}
-                        className="inline-flex items-center justify-center px-2 py-1 rounded-lg bg-slate-800/70 border border-slate-600/40 text-slate-100 hover:bg-slate-700/80 transition-colors"
-                        title="View details"
-                      >
-                        <EyeIcon className="h-4 w-4" />
-                      </Link>
+                    <Link
+                      to={`/content/tests/${test._id}`}
+                      className="inline-flex items-center justify-center px-2 py-1 rounded-lg bg-slate-800/70 border border-slate-600/40 text-slate-100 hover:bg-slate-700/80 transition-colors"
+                      title="View details"
+                    >
+                      <EyeIcon className="h-4 w-4" />
+                    </Link>
+                    <Link
+                      to={`/content/tests/edit/${test._id}`}
+                      className="inline-flex items-center justify-center px-2 py-1 rounded-lg bg-indigo-600/20 border border-indigo-500/40 text-indigo-400 hover:bg-indigo-600/30 transition-colors"
+                      title="Edit test"
+                    >
+                      <PencilIcon className="h-4 w-4" />
+                    </Link>
                       <button
                         onClick={() => handleDeleteClick(test)}
                         className="inline-flex items-center justify-center px-2 py-1 rounded-lg bg-red-600/20 border border-red-500/40 text-red-400 hover:bg-red-600/30 transition-colors"
