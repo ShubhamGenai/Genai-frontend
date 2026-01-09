@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Flag, ChevronLeft, ChevronRight, Maximize, Minimize, Trophy, Flame, Clock, Pause, ArrowRight, Loader } from 'lucide-react';
+import { Flag, ChevronLeft, ChevronRight, Maximize, Minimize, Trophy, Flame, Clock, Pause, ArrowRight, Loader, Eye, X } from 'lucide-react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { mainContext } from '../../../context/MainContext';
@@ -26,6 +26,7 @@ const TestTakingPage = () => {
   const [isPaused, setIsPaused] = useState(false);
   const [answeredCount, setAnsweredCount] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [viewingImage, setViewingImage] = useState(null);
   
   // Alert/Confirm popup state
   const [alertPopup, setAlertPopup] = useState({
@@ -780,8 +781,8 @@ const TestTakingPage = () => {
         </div>
       </div>
 
-      <div className="flex-1 overflow-hidden px-4 py-4">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 h-full max-h-full">
+      <div className="flex-1 overflow-hidden px-4 py-4 min-h-0">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 h-full">
           {/* Left Sidebar - Question Palette */}
           <div className="lg:col-span-1 flex flex-col min-h-0">
             <div className="bg-white rounded-lg shadow-sm p-4 flex flex-col h-full max-h-full overflow-hidden">
@@ -849,47 +850,58 @@ const TestTakingPage = () => {
           </div>
 
           {/* Main Content Area */}
-          <div className="lg:col-span-3 flex flex-col">
-            <div className="bg-white rounded-lg shadow-sm p-6 flex flex-col h-full overflow-y-auto">
-              {/* Question Header */}
-              <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-200">
-                <div className="flex items-center gap-3">
-                  <span className="text-base font-medium text-gray-700">Question {currentQuestionIndex + 1} of {totalQuestions}</span>
-                  <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs font-medium">
-                    {currentQuestion.difficulty}
+          <div className="lg:col-span-3 flex flex-col min-h-0">
+            <div className="bg-white rounded-lg shadow-sm p-4 flex flex-col h-full overflow-hidden">
+              {/* Scrollable Content Area */}
+              <div className="flex-1 overflow-y-auto pr-2">
+                {/* Question Header */}
+                <div className="flex items-center justify-between mb-3 pb-2 border-b border-gray-200 flex-shrink-0">
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm font-medium text-gray-700">Question {currentQuestionIndex + 1} of {totalQuestions}</span>
+                    <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs font-medium">
+                      {currentQuestion.difficulty}
+                    </span>
+                  </div>
+                  <span className="bg-gray-900 text-white px-2 py-0.5 rounded text-xs font-medium">
+                    {currentQuestion.subject || currentQuestion.quizTitle || testSubject}
                   </span>
                 </div>
-                <span className="bg-gray-900 text-white px-3 py-1 rounded text-xs font-medium">
-                  {currentQuestion.subject || currentQuestion.quizTitle || testSubject}
-                </span>
-              </div>
 
-              {/* Question Text */}
-              <div className="mb-6">
-                <div className="text-base text-gray-900 leading-relaxed">
-                  <FormulaRenderer text={currentQuestion.questionText || currentQuestion.question || 'Question text not available'} className="text-gray-900" />
+                {/* Question Text */}
+                <div className="mb-3 flex-shrink-0">
+                  <div className="text-sm text-gray-900 leading-relaxed">
+                    <FormulaRenderer text={currentQuestion.questionText || currentQuestion.question || 'Question text not available'} className="text-gray-900" />
+                  </div>
                 </div>
-              </div>
 
-              {/* Question Image if available */}
-              {currentQuestion.imageUrl && currentQuestion.imageUrl.trim() !== '' && (
-                <div className="mb-6 rounded-lg overflow-hidden bg-gray-100 border border-gray-200 p-4">
-                  <img
-                    src={currentQuestion.imageUrl}
-                    alt={`Question ${currentQuestionIndex + 1} diagram`}
-                    className="max-w-full max-h-64 object-contain rounded mx-auto"
-                    crossOrigin="anonymous"
-                    loading="lazy"
-                    onError={(e) => {
-                      console.error('Image failed to load:', currentQuestion.imageUrl);
-                      e.target.style.display = 'none';
-                    }}
-                  />
-                </div>
-              )}
+                {/* Question Image if available */}
+                {currentQuestion.imageUrl && currentQuestion.imageUrl.trim() !== '' && (
+                  <div className="mb-3 rounded-lg overflow-hidden bg-gray-100 border border-gray-200 p-2 relative group flex-shrink-0" style={{ height: '150px' }}>
+                    <div className="h-full w-full flex items-center justify-center">
+                      <img
+                        src={currentQuestion.imageUrl}
+                        alt={`Question ${currentQuestionIndex + 1} diagram`}
+                        className="max-w-full max-h-full w-auto object-contain rounded"
+                        crossOrigin="anonymous"
+                        loading="lazy"
+                        onError={(e) => {
+                          console.error('Image failed to load:', currentQuestion.imageUrl);
+                          e.target.style.display = 'none';
+                        }}
+                      />
+                    </div>
+                    <button
+                      onClick={() => setViewingImage(currentQuestion.imageUrl)}
+                      className="absolute top-1.5 right-1.5 bg-black/60 hover:bg-black/80 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                      title="View full size"
+                    >
+                      <Eye className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                )}
 
-              {/* Answer Options */}
-              <div className="space-y-3 mb-8">
+                {/* Answer Options */}
+                <div className="space-y-2 mb-4 flex-shrink-0">
                 {currentQuestion.options.map((option, idx) => {
                   const optionLetters = ['A', 'B', 'C', 'D'];
                   const isSelected = selectedAnswers[currentQuestion.id] === idx;
@@ -898,7 +910,7 @@ const TestTakingPage = () => {
                     <div
                       key={idx}
                       onClick={() => !isPaused && handleOptionSelect(currentQuestion.id, idx)}
-                      className={`p-4 border-2 rounded-lg transition-all ${
+                      className={`p-3 border-2 rounded-lg transition-all ${
                         isPaused 
                           ? 'border-gray-200 bg-gray-50 opacity-50 cursor-not-allowed'
                           : isSelected
@@ -907,17 +919,17 @@ const TestTakingPage = () => {
                       }`}
                       title={isPaused ? 'Test is paused. Resume to select options.' : ''}
                     >
-                      <label className="flex items-start gap-3 cursor-pointer">
+                      <label className="flex items-start gap-2 cursor-pointer">
                         <input
                           type="radio"
                           name={`question-${currentQuestion.id}`}
                           checked={isSelected}
                           onChange={() => !isPaused && handleOptionSelect(currentQuestion.id, idx)}
                           disabled={isPaused}
-                          className="mt-1 w-4 h-4 text-blue-600"
+                          className="mt-0.5 w-4 h-4 text-blue-600 flex-shrink-0"
                         />
                         <span className="flex-1 text-sm text-gray-700">
-                          <span className="font-medium mr-2">Option {optionLetters[idx]}:</span>
+                          <span className="font-medium mr-1.5">Option {optionLetters[idx]}:</span>
                           <FormulaRenderer text={option || ''} className="text-gray-700" />
                         </span>
                       </label>
@@ -925,9 +937,10 @@ const TestTakingPage = () => {
                   );
                 })}
               </div>
+              </div>
 
-              {/* Bottom Controls */}
-              <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+              {/* Bottom Controls - Fixed at bottom */}
+              <div className="flex items-center justify-between pt-3 border-t border-gray-200 flex-shrink-0 mt-auto">
                 <div className="flex items-center gap-3">
                   <button
                     onClick={handleMarkForReview}
@@ -1005,6 +1018,34 @@ const TestTakingPage = () => {
         cancelText={alertPopup.cancelText}
         theme="light"
       />
+
+      {/* Image Viewer Modal */}
+      {viewingImage && (
+        <div 
+          className="fixed inset-0 bg-black/90 backdrop-blur-sm flex justify-center items-center z-[100] p-4"
+          onClick={() => setViewingImage(null)}
+        >
+          <div className="relative max-w-7xl max-h-[90vh] w-full h-full flex items-center justify-center">
+            <button
+              onClick={() => setViewingImage(null)}
+              className="absolute top-4 right-4 bg-black/60 hover:bg-black/80 text-white p-2 rounded-full transition-colors z-10"
+              title="Close"
+            >
+              <X className="h-6 w-6" />
+            </button>
+            <img
+              src={viewingImage}
+              alt="Full size view"
+              className="max-w-full max-h-full object-contain rounded-lg"
+              onClick={(e) => e.stopPropagation()}
+              onError={(e) => {
+                console.error('Image failed to load:', viewingImage);
+                e.target.style.display = 'none';
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
