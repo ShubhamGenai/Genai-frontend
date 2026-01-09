@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Flag, ChevronLeft, ChevronRight, Maximize, Minimize, Trophy, Flame, Clock, Pause, ArrowRight, Loader, Eye, X } from 'lucide-react';
+import { Flag, ChevronLeft, ChevronRight, Maximize, Minimize, Trophy, Flame, Clock, Pause, ArrowRight, Loader, Eye, X, Menu } from 'lucide-react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { mainContext } from '../../../context/MainContext';
@@ -27,6 +27,7 @@ const TestTakingPage = () => {
   const [answeredCount, setAnsweredCount] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [viewingImage, setViewingImage] = useState(null);
+  const [showQuestionPalette, setShowQuestionPalette] = useState(false);
   
   // Alert/Confirm popup state
   const [alertPopup, setAlertPopup] = useState({
@@ -680,38 +681,38 @@ const TestTakingPage = () => {
     <div className="h-screen bg-gray-50 flex flex-col overflow-hidden">
       {/* Top Header Bar */}
       <div className="bg-white border-b flex-shrink-0">
-        <div className="w-full px-4 py-3">
-          <div className="flex items-center justify-between">
+        <div className="w-full px-2 sm:px-4 py-2 sm:py-3">
+          <div className="flex items-center justify-between gap-2">
             {/* Left Side - Logo and Test Title */}
-            <div className="flex items-center gap-3">
-              <img src="/logo.webp" alt="GenAI Logo" className="h-8 w-auto" />
-              <div className="h-6 w-px bg-gray-300"></div>
-              <span className="text-sm font-medium text-gray-700">{testTitle}</span>
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+              <img src="/logo.webp" alt="GenAI Logo" className="h-6 sm:h-8 w-auto flex-shrink-0" />
+              <div className="h-4 sm:h-6 w-px bg-gray-300 flex-shrink-0"></div>
+              <span className="text-xs sm:text-sm font-medium text-gray-700 truncate">{testTitle}</span>
             </div>
 
             {/* Right Side - Controls and Info */}
-            <div className="flex items-center gap-3">
-              {/* Badges */}
-              <div className="flex items-center gap-2">
-                <div className="flex items-center gap-1.5 bg-yellow-50 text-yellow-700 px-2.5 py-1 rounded-md text-xs font-medium">
-                  <Trophy className="w-3.5 h-3.5" />
+            <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 flex-shrink-0">
+              {/* Badges - Hidden on very small screens, shown on sm+ */}
+              <div className="hidden sm:flex items-center gap-1.5 sm:gap-2">
+                <div className="hidden md:flex items-center gap-1.5 bg-yellow-50 text-yellow-700 px-2 sm:px-2.5 py-1 rounded-md text-[10px] sm:text-xs font-medium">
+                  <Trophy className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                   <span>0</span>
                 </div>
-                <div className="flex items-center gap-1.5 bg-red-50 text-red-700 px-2.5 py-1 rounded-md text-xs font-medium">
-                  <Flame className="w-3.5 h-3.5" />
+                <div className="hidden md:flex items-center gap-1.5 bg-red-50 text-red-700 px-2 sm:px-2.5 py-1 rounded-md text-[10px] sm:text-xs font-medium">
+                  <Flame className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                   <span>0</span>
                 </div>
-                <div className="flex items-center gap-1.5 bg-blue-50 text-blue-700 px-2.5 py-1 rounded-md text-xs font-medium">
-                  <Clock className="w-3.5 h-3.5" />
-                  <span>{formatTime(timeLeft)}</span>
+                <div className="flex items-center gap-1 sm:gap-1.5 bg-blue-50 text-blue-700 px-2 sm:px-2.5 py-1 rounded-md text-[10px] sm:text-xs font-medium">
+                  <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                  <span className="whitespace-nowrap">{formatTime(timeLeft)}</span>
                 </div>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 sm:gap-2">
                 <button
                   onClick={handlePause}
-                  className={`flex items-center gap-2 px-3 py-1.5 text-sm rounded-md transition-colors border ${
+                  className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm rounded-md transition-colors border ${
                     isPaused 
                       ? 'bg-yellow-50 text-yellow-700 border-yellow-300 hover:bg-yellow-100' 
                       : 'text-gray-700 hover:bg-gray-100 border-gray-200'
@@ -719,35 +720,35 @@ const TestTakingPage = () => {
                 >
                   {isPaused ? (
                     <>
-                      <Clock className="w-4 h-4" />
-                      <span>Resume</span>
+                      <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                      <span className="hidden sm:inline">Resume</span>
                     </>
                   ) : (
                     <>
-                      <Pause className="w-4 h-4" />
-                      <span>Pause</span>
+                      <Pause className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                      <span className="hidden sm:inline">Pause</span>
                     </>
                   )}
                 </button>
                 <button
                   onClick={handleExit}
-                  className="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors border border-gray-200"
+                  className="hidden sm:flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors border border-gray-200"
                 >
-                  <ArrowRight className="w-4 h-4" />
-                  <span>Exit</span>
+                  <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  <span className="hidden md:inline">Exit</span>
                 </button>
                 <button
                   onClick={handleSubmitTest}
                   disabled={isSubmitting}
-                  className="bg-blue-600 text-white px-4 py-1.5 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2"
+                  className="bg-blue-600 text-white px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 rounded-md text-xs sm:text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-1 sm:gap-2"
                 >
                   {isSubmitting ? (
                     <>
-                      <Loader className="w-4 h-4 animate-spin" />
-                      <span>Submitting...</span>
+                      <Loader className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin" />
+                      <span className="hidden sm:inline">Submitting...</span>
                     </>
                   ) : (
-                    <span>Submit Test</span>
+                    <span className="whitespace-nowrap">Submit</span>
                   )}
                 </button>
               </div>
@@ -758,42 +759,42 @@ const TestTakingPage = () => {
 
       {/* Progress Bar */}
       <div className="bg-white border-b flex-shrink-0">
-        <div className="w-full px-4 py-3">
-          <div className="flex items-center justify-between gap-4">
-            <span className="text-sm text-gray-700">Progress: {answeredCount}/{totalQuestions} questions</span>
-            <div className="flex-1 bg-gray-200 rounded-full h-2">
+        <div className="w-full px-2 sm:px-4 py-2 sm:py-3">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-4">
+            <span className="text-xs sm:text-sm text-gray-700 whitespace-nowrap">Progress: {answeredCount}/{totalQuestions}</span>
+            <div className="flex-1 bg-gray-200 rounded-full h-2 min-w-0">
               <div
                 className="bg-blue-600 h-2 rounded-full transition-all duration-300"
                 style={{ width: `${progress}%` }}
               ></div>
             </div>
-            <div className="flex items-center gap-3">
-              <span className="text-sm text-gray-700 font-medium">{progress}%</span>
+            <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3">
+              <span className="text-xs sm:text-sm text-gray-700 font-medium whitespace-nowrap">{progress}%</span>
               <button
                 onClick={() => isFullscreen ? exitFullscreen() : enterFullscreen()}
-                className="p-1.5 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded transition-colors"
+                className="p-1 sm:p-1.5 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded transition-colors flex-shrink-0"
                 title={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
               >
-                {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
+                {isFullscreen ? <Minimize className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : <Maximize className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
               </button>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="flex-1 overflow-hidden px-4 py-4 min-h-0">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 h-full">
-          {/* Left Sidebar - Question Palette */}
-          <div className="lg:col-span-1 flex flex-col min-h-0">
-            <div className="bg-white rounded-lg shadow-sm p-4 flex flex-col h-full max-h-full overflow-hidden">
-              <h3 className="text-base font-semibold text-gray-900 mb-4 flex-shrink-0">Question Palette</h3>
+      <div className="flex-1 overflow-hidden px-2 sm:px-4 py-2 sm:py-4 min-h-0">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-2 sm:gap-4 h-full">
+          {/* Left Sidebar - Question Palette - Hidden on mobile, shown as modal */}
+          <div className="hidden lg:flex lg:col-span-1 flex-col min-h-0">
+            <div className="bg-white rounded-lg shadow-sm p-3 sm:p-4 flex flex-col h-full max-h-full overflow-hidden">
+              <h3 className="text-sm sm:text-base font-semibold text-gray-900 mb-3 sm:mb-4 flex-shrink-0">Question Palette</h3>
               
               {/* Question Grid - Scrollable */}
-              <div className="flex-1 min-h-0 mb-6 overflow-y-auto overflow-x-hidden pr-1">
-                <div className="grid grid-cols-5 gap-2 pb-2">
+              <div className="flex-1 min-h-0 mb-4 sm:mb-6 overflow-y-auto overflow-x-hidden pr-1">
+                <div className="grid grid-cols-5 sm:grid-cols-5 gap-1.5 sm:gap-2 pb-2">
                   {questions.map((question, index) => {
                     const status = getQuestionStatus(index);
-                    let buttonClasses = "w-full h-10 min-h-[2.5rem] text-xs rounded border transition-colors flex items-center justify-center font-medium";
+                    let buttonClasses = "w-full h-8 sm:h-9 md:h-10 min-h-[2rem] sm:min-h-[2.25rem] md:min-h-[2.5rem] text-[10px] sm:text-xs rounded border transition-colors flex items-center justify-center font-medium";
 
                     if (currentQuestionIndex === index) {
                       buttonClasses += " bg-blue-600 text-white border-blue-600 font-semibold";
@@ -823,24 +824,24 @@ const TestTakingPage = () => {
               </div>
 
               {/* Legend */}
-              <div className="space-y-2 pt-4 border-t border-gray-200 flex-shrink-0">
-                <div className="flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 bg-green-100 border border-green-300 rounded"></div>
+              <div className="space-y-1.5 sm:space-y-2 pt-3 sm:pt-4 border-t border-gray-200 flex-shrink-0">
+                <div className="flex items-center justify-between text-[10px] sm:text-xs">
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <div className="w-3 h-3 sm:w-4 sm:h-4 bg-green-100 border border-green-300 rounded"></div>
                     <span className="text-gray-700">Answered</span>
                   </div>
                   <span className="font-medium text-gray-900">{answeredCount}</span>
                 </div>
-                <div className="flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 bg-yellow-100 border border-yellow-300 rounded"></div>
+                <div className="flex items-center justify-between text-[10px] sm:text-xs">
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <div className="w-3 h-3 sm:w-4 sm:h-4 bg-yellow-100 border border-yellow-300 rounded"></div>
                     <span className="text-gray-700">Marked</span>
                   </div>
                   <span className="font-medium text-gray-900">{markedQuestions.size}</span>
                 </div>
-                <div className="flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 bg-gray-100 border border-gray-300 rounded"></div>
+                <div className="flex items-center justify-between text-[10px] sm:text-xs">
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <div className="w-3 h-3 sm:w-4 sm:h-4 bg-gray-100 border border-gray-300 rounded"></div>
                     <span className="text-gray-700">Not Visited</span>
                   </div>
                   <span className="font-medium text-gray-900">{notVisitedCount}</span>
@@ -851,32 +852,46 @@ const TestTakingPage = () => {
 
           {/* Main Content Area */}
           <div className="lg:col-span-3 flex flex-col min-h-0">
-            <div className="bg-white rounded-lg shadow-sm p-4 flex flex-col h-full overflow-hidden">
+            <div className="bg-white rounded-lg shadow-sm p-3 sm:p-4 flex flex-col h-full overflow-hidden">
+              {/* Mobile Question Palette Button */}
+              <div className="lg:hidden flex items-center justify-between mb-3 pb-2 border-b border-gray-200 flex-shrink-0">
+                <button
+                  onClick={() => setShowQuestionPalette(true)}
+                  className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors border border-gray-300"
+                >
+                  <Menu className="w-4 h-4" />
+                  <span>Question Palette</span>
+                  <span className="bg-blue-600 text-white px-2 py-0.5 rounded text-xs font-medium">
+                    {answeredCount}/{totalQuestions}
+                  </span>
+                </button>
+              </div>
+
               {/* Scrollable Content Area */}
-              <div className="flex-1 overflow-y-auto pr-2">
+              <div className="flex-1 overflow-y-auto pr-1 sm:pr-2">
                 {/* Question Header */}
-                <div className="flex items-center justify-between mb-3 pb-2 border-b border-gray-200 flex-shrink-0">
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm font-medium text-gray-700">Question {currentQuestionIndex + 1} of {totalQuestions}</span>
-                    <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs font-medium">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 mb-3 pb-2 border-b border-gray-200 flex-shrink-0">
+                  <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                    <span className="text-xs sm:text-sm font-medium text-gray-700">Question {currentQuestionIndex + 1} of {totalQuestions}</span>
+                    <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded text-[10px] sm:text-xs font-medium">
                       {currentQuestion.difficulty}
                     </span>
                   </div>
-                  <span className="bg-gray-900 text-white px-2 py-0.5 rounded text-xs font-medium">
+                  <span className="bg-gray-900 text-white px-2 py-0.5 rounded text-[10px] sm:text-xs font-medium self-start sm:self-auto">
                     {currentQuestion.subject || currentQuestion.quizTitle || testSubject}
                   </span>
                 </div>
 
                 {/* Question Text */}
                 <div className="mb-3 flex-shrink-0">
-                  <div className="text-sm text-gray-900 leading-relaxed">
+                  <div className="text-xs sm:text-sm text-gray-900 leading-relaxed">
                     <FormulaRenderer text={currentQuestion.questionText || currentQuestion.question || 'Question text not available'} className="text-gray-900" />
                   </div>
                 </div>
 
                 {/* Question Image if available */}
                 {currentQuestion.imageUrl && currentQuestion.imageUrl.trim() !== '' && (
-                  <div className="mb-3 rounded-lg overflow-hidden bg-gray-100 border border-gray-200 p-2 relative group flex-shrink-0" style={{ height: '150px' }}>
+                  <div className="mb-3 rounded-lg overflow-hidden bg-gray-100 border border-gray-200 p-1.5 sm:p-2 relative group flex-shrink-0" style={{ height: '120px', minHeight: '120px' }}>
                     <div className="h-full w-full flex items-center justify-center">
                       <img
                         src={currentQuestion.imageUrl}
@@ -892,16 +907,16 @@ const TestTakingPage = () => {
                     </div>
                     <button
                       onClick={() => setViewingImage(currentQuestion.imageUrl)}
-                      className="absolute top-1.5 right-1.5 bg-black/60 hover:bg-black/80 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                      className="absolute top-1 right-1 sm:top-1.5 sm:right-1.5 bg-black/60 hover:bg-black/80 text-white p-1 sm:p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
                       title="View full size"
                     >
-                      <Eye className="h-3.5 w-3.5" />
+                      <Eye className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                     </button>
                   </div>
                 )}
 
                 {/* Answer Options */}
-                <div className="space-y-2 mb-4 flex-shrink-0">
+                <div className="space-y-2 sm:space-y-2 mb-4 flex-shrink-0">
                 {currentQuestion.options.map((option, idx) => {
                   const optionLetters = ['A', 'B', 'C', 'D'];
                   const isSelected = selectedAnswers[currentQuestion.id] === idx;
@@ -910,7 +925,7 @@ const TestTakingPage = () => {
                     <div
                       key={idx}
                       onClick={() => !isPaused && handleOptionSelect(currentQuestion.id, idx)}
-                      className={`p-3 border-2 rounded-lg transition-all ${
+                      className={`p-2.5 sm:p-3 border-2 rounded-lg transition-all ${
                         isPaused 
                           ? 'border-gray-200 bg-gray-50 opacity-50 cursor-not-allowed'
                           : isSelected
@@ -928,8 +943,8 @@ const TestTakingPage = () => {
                           disabled={isPaused}
                           className="mt-0.5 w-4 h-4 text-blue-600 flex-shrink-0"
                         />
-                        <span className="flex-1 text-sm text-gray-700">
-                          <span className="font-medium mr-1.5">Option {optionLetters[idx]}:</span>
+                        <span className="flex-1 text-xs sm:text-sm text-gray-700">
+                          <span className="font-medium mr-1 sm:mr-1.5">Option {optionLetters[idx]}:</span>
                           <FormulaRenderer text={option || ''} className="text-gray-700" />
                         </span>
                       </label>
@@ -940,12 +955,12 @@ const TestTakingPage = () => {
               </div>
 
               {/* Bottom Controls - Fixed at bottom */}
-              <div className="flex items-center justify-between pt-3 border-t border-gray-200 flex-shrink-0 mt-auto">
-                <div className="flex items-center gap-3">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-3 pt-3 border-t border-gray-200 flex-shrink-0 mt-auto">
+                <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
                   <button
                     onClick={handleMarkForReview}
                     disabled={isPaused}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-colors flex-1 sm:flex-initial ${
                       isPaused
                         ? 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200'
                         : markedQuestions.has(currentQuestion.id)
@@ -954,20 +969,20 @@ const TestTakingPage = () => {
                     }`}
                     title={isPaused ? 'Test is paused. Resume to mark questions.' : ''}
                   >
-                    <Flag className="w-4 h-4" />
-                    <span>Mark for Review</span>
+                    <Flag className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                    <span className="whitespace-nowrap">Mark</span>
                   </button>
                   <button
                     onClick={handleClearResponse}
                     disabled={isPaused}
-                    className={`px-4 py-2 border rounded-md text-sm font-medium transition-colors ${
+                    className={`px-3 sm:px-4 py-1.5 sm:py-2 border rounded-md text-xs sm:text-sm font-medium transition-colors flex-1 sm:flex-initial ${
                       isPaused
                         ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200'
                         : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
                     }`}
                     title={isPaused ? 'Test is paused. Resume to clear responses.' : ''}
                   >
-                    Clear Response
+                    Clear
                   </button>
                 </div>
 
@@ -975,28 +990,28 @@ const TestTakingPage = () => {
                   <button
                     onClick={goToPrev}
                     disabled={currentQuestionIndex === 0 || isPaused}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-colors ${
                       currentQuestionIndex === 0 || isPaused
                         ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                         : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
                     }`}
                     title={isPaused ? 'Test is paused. Resume to navigate.' : ''}
                   >
-                    <ChevronLeft className="w-4 h-4" />
-                    <span>Previous</span>
+                    <ChevronLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                    <span className="hidden sm:inline">Previous</span>
                   </button>
                   <button
                     onClick={goToNext}
                     disabled={currentQuestionIndex === totalQuestions - 1 || isPaused}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-colors ${
                       currentQuestionIndex === totalQuestions - 1 || isPaused
                         ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                         : 'bg-blue-600 text-white hover:bg-blue-700'
                     }`}
                     title={isPaused ? 'Test is paused. Resume to continue.' : ''}
                   >
-                    <span>Next</span>
-                    <ChevronRight className="w-4 h-4" />
+                    <span className="hidden sm:inline">Next</span>
+                    <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   </button>
                 </div>
               </div>
@@ -1019,19 +1034,100 @@ const TestTakingPage = () => {
         theme="light"
       />
 
+      {/* Mobile Question Palette Modal */}
+      {showQuestionPalette && (
+        <div 
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-[100] p-2 sm:p-4 lg:hidden"
+          onClick={() => setShowQuestionPalette(false)}
+        >
+          <div 
+            className="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between p-4 border-b border-gray-200">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900">Question Palette</h3>
+              <button
+                onClick={() => setShowQuestionPalette(false)}
+                className="p-1 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-4">
+              <div className="grid grid-cols-5 gap-2 pb-2">
+                {questions.map((question, index) => {
+                  const status = getQuestionStatus(index);
+                  let buttonClasses = "w-full h-10 min-h-[2.5rem] text-xs rounded border transition-colors flex items-center justify-center font-medium";
+
+                  if (currentQuestionIndex === index) {
+                    buttonClasses += " bg-blue-600 text-white border-blue-600 font-semibold";
+                  } else if (status === 'answered') {
+                    buttonClasses += " bg-green-100 text-green-800 border-green-300";
+                  } else if (status === 'marked') {
+                    buttonClasses += " bg-yellow-100 text-yellow-800 border-yellow-300";
+                  } else if (status === 'marked-answered') {
+                    buttonClasses += " bg-green-200 text-green-900 border-green-400";
+                  } else {
+                    buttonClasses += " bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200";
+                  }
+
+                  return (
+                    <button
+                      key={question.id}
+                      onClick={() => {
+                        goToQuestion(index);
+                        setShowQuestionPalette(false);
+                      }}
+                      disabled={isPaused}
+                      className={`${buttonClasses} ${isPaused ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      title={isPaused ? 'Test is paused. Resume to navigate.' : `Question ${index + 1}`}
+                    >
+                      {index + 1}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+            <div className="space-y-2 p-4 border-t border-gray-200">
+              <div className="flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 bg-green-100 border border-green-300 rounded"></div>
+                  <span className="text-gray-700">Answered</span>
+                </div>
+                <span className="font-medium text-gray-900">{answeredCount}</span>
+              </div>
+              <div className="flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 bg-yellow-100 border border-yellow-300 rounded"></div>
+                  <span className="text-gray-700">Marked</span>
+                </div>
+                <span className="font-medium text-gray-900">{markedQuestions.size}</span>
+              </div>
+              <div className="flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 bg-gray-100 border border-gray-300 rounded"></div>
+                  <span className="text-gray-700">Not Visited</span>
+                </div>
+                <span className="font-medium text-gray-900">{notVisitedCount}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Image Viewer Modal */}
       {viewingImage && (
         <div 
-          className="fixed inset-0 bg-black/90 backdrop-blur-sm flex justify-center items-center z-[100] p-4"
+          className="fixed inset-0 bg-black/90 backdrop-blur-sm flex justify-center items-center z-[100] p-2 sm:p-4"
           onClick={() => setViewingImage(null)}
         >
           <div className="relative max-w-7xl max-h-[90vh] w-full h-full flex items-center justify-center">
             <button
               onClick={() => setViewingImage(null)}
-              className="absolute top-4 right-4 bg-black/60 hover:bg-black/80 text-white p-2 rounded-full transition-colors z-10"
+              className="absolute top-2 right-2 sm:top-4 sm:right-4 bg-black/60 hover:bg-black/80 text-white p-1.5 sm:p-2 rounded-full transition-colors z-10"
               title="Close"
             >
-              <X className="h-6 w-6" />
+              <X className="h-4 w-4 sm:h-6 sm:w-6" />
             </button>
             <img
               src={viewingImage}
