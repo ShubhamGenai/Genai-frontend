@@ -10,6 +10,7 @@ import AddQuiz from "../pages/contentManager/pages/quiz/Add-quiz";
 import Quizzes from "../pages/contentManager/pages/quiz/Quiz-list";
 import QuizBulkUpload from "../pages/contentManager/pages/quiz/Quiz-BulkUpload";
 import QuizView from "../pages/contentManager/pages/quiz/Quiz-View";
+import EditQuiz from "../pages/contentManager/pages/quiz/Edit-quiz";
 import ModuleList from "../pages/contentManager/pages/module/Module-list";
 // import AddModule from "../pages/contentManager/pages/module/Add-Module";
 import LessonList from "../pages/contentManager/pages/lesson/Lesson-list";
@@ -128,6 +129,15 @@ const ContentManagerRoutes = () => {
               element={
                 <ProtectedRoute allowedRoles={["content"]}>
                   <QuizBulkUpload />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="quizzes/edit/:id"
+              element={
+                <ProtectedRoute allowedRoles={["content"]}>
+                  <EditQuiz />
                 </ProtectedRoute>
               }
             />
