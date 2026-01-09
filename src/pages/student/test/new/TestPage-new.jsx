@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Star, Users, Clock, ChevronRight, ChevronDown, Award, FileText, Timer, Folder, FolderOpen, BookOpen, Loader } from 'lucide-react';
+import { Star, Users, Clock, ChevronRight, ChevronDown, Award, FileText, Timer, Folder, FolderOpen, BookOpen, Loader, ArrowRight } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { mainContext } from '../../../../context/MainContext';
@@ -460,15 +460,10 @@ const TestPlatform = () => {
                           </div>
                         </div>
 
-                        {/* Attempts & Level */}
-                        <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-                          <div className="flex items-center gap-1 text-black text-xs">
-                            <Users className="w-3 h-3" />
-                            <span>{formatAttempts(test.attempts)} attempts</span>
-                          </div>
-                          <span className="bg-gray-50 text-black px-2 py-0.5 rounded-md text-xs font-light border border-gray-200">
-                            {test.level}
-                          </span>
+                        {/* View Details Button */}
+                        <div className="w-full mt-2 bg-gradient-to-r from-blue-600 to-blue-500 group-hover:from-blue-700 group-hover:to-blue-600 text-white px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 flex items-center justify-center gap-1.5 shadow-sm group-hover:shadow-md cursor-pointer transform group-hover:scale-[1.02]">
+                          <span className="tracking-wide">View Details</span>
+                          <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform duration-200" strokeWidth={2.5} />
                         </div>
                       </div>
                     </Link>
