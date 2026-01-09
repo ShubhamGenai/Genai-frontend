@@ -385,7 +385,7 @@ const TestPlatform = () => {
                 <p className="text-gray-500 text-lg">No tests found in this category.</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 gap-6">
                 {filteredTests.map(test => {
                   // Ensure test data has all required fields for details page
                   const testWithDefaults = {
