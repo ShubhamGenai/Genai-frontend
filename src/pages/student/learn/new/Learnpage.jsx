@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Star, Users, Clock, ChevronRight, ChevronDown, Check, Loader, Folder, FolderOpen, Book } from 'lucide-react';
+import { Star, Users, Clock, ChevronRight, ChevronDown, Check, Loader, Folder, FolderOpen, Book, Award, ArrowRight, FileText } from 'lucide-react';
 
 const LearningPlatform = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -453,12 +453,12 @@ const LearningPlatform = () => {
                 <p className="text-gray-500 text-lg">No courses found in this category.</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 gap-6">
                 {filteredCourses.map(course => (
                   <div
                     key={course.id}
                     onClick={() => navigate(`/learn/details/${course.id}`)}
-                    className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-xl transition-all duration-300 group cursor-pointer flex flex-col"
+                    className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-xl transition-all duration-300 group cursor-pointer flex flex-col block"
                   >
                     {/* Course Image */}
                     <div className="relative overflow-hidden ">
@@ -469,16 +469,24 @@ const LearningPlatform = () => {
                         loading="lazy"
                       />
                       {/* Badges */}
-                      {course.bestseller && (
+                      {course.price === 0 ? (
                         <div className="absolute top-2 left-2">
-                          <span className="bg-yellow-400 text-yellow-900 px-2 py-0.5 rounded-full text-xs font-light shadow-md">
+                          <span className="bg-emerald-500 text-white px-2 py-0.5 rounded-full text-xs font-light shadow-md flex items-center gap-1">
+                            <Award className="w-3 h-3" />
+                            FREE
+                          </span>
+                        </div>
+                      ) : course.bestseller && (
+                        <div className="absolute top-2 left-2">
+                          <span className="bg-yellow-400 text-yellow-900 px-2 py-0.5 rounded-full text-xs font-light shadow-md flex items-center gap-1">
+                            <Award className="w-3 h-3" />
                             Bestseller
                           </span>
                         </div>
                       )}
                       {course.enrolled && (
                         <div className="absolute top-2 right-2">
-                          <span className="bg-green-500 text-white px-2 py-0.5 rounded-full text-xs font-light flex items-center gap-1 shadow-md">
+                          <span className="bg-blue-500 text-white px-2 py-0.5 rounded-full text-xs font-light shadow-md flex items-center gap-1">
                             <Check className="w-3 h-3" />
                             Enrolled
                           </span>
@@ -490,37 +498,32 @@ const LearningPlatform = () => {
                     <div className="p-3 flex flex-col flex-grow">
                       {/* Title & Instructor */}
                       <div className="flex-grow">
-                        <h3 className="text-sm font-light text-black mb-1 line-clamp-2 group-hover:text-blue-600 transition-colors leading-snug">
+                        <h3 className="text-base font-light text-black mb-1.5 line-clamp-2 group-hover:text-blue-600 transition-colors leading-snug">
                           {course.title}
                         </h3>
-                        <p className="text-xs text-gray-600 mb-2">{course.instructor}</p>
+                        <p className="text-xs text-gray-600 mb-3 line-clamp-2">{course.instructor}</p>
                       </div>
 
                       {/* Course Stats */}
-                      <div className="flex items-center flex-wrap gap-x-2.5 gap-y-1.5 mb-2.5 text-[0.65rem] text-gray-600">
-                        <div className="flex items-center gap-1">
-                          <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                          <span className="font-light">{course.rating}</span>
-                        </div>
+                      <div className="flex items-center flex-wrap gap-x-3 gap-y-1.5 mb-3 text-xs text-black">
                         <div className="flex items-center gap-1">
                           <Users className="w-3 h-3" />
-                          <span>{formatStudents(course.students)}</span>
+                          <span className="font-light">{formatStudents(course.students)}</span>
                         </div>
                         <div className="flex items-center gap-1">
                           <Clock className="w-3 h-3" />
                           <span>{formatDuration(course.duration)}</span>
                         </div>
+                        <div className="flex items-center gap-1">
+                          <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                          <span className="font-light">{course.rating}</span>
+                        </div>
                       </div>
 
-                      {/* Price & Level */}
-                      <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-                        <div className="flex items-baseline">
-                          <span className="text-sm font-light text-black">₹{course.price}</span>
-                          <span className="text-[0.65rem] text-gray-500 line-through">₹{course.originalPrice}</span>
-                        </div>
-                        <span className="bg-gray-50 text-black px-2 py-0.5 rounded-md text-[0.65rem] font-light border border-gray-200">
-                          {course.level}
-                        </span>
+                      {/* View Details Button */}
+                      <div className="w-full mt-2 bg-gradient-to-r from-blue-600 to-blue-500 group-hover:from-blue-700 group-hover:to-blue-600 text-white px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 flex items-center justify-center gap-1.5 shadow-sm group-hover:shadow-md cursor-pointer transform group-hover:scale-[1.02]">
+                        <span className="tracking-wide">View Details</span>
+                        <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform duration-200" strokeWidth={2.5} />
                       </div>
                     </div>
                   </div>
