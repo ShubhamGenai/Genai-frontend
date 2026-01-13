@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { CONTENTMANAGER } from "../../../../constants/ApiConstants";
 import QuestionImageUpload from "../../../../component/contentManagerComponents/QuestionImageUpload";
 import AlertPopup from "../../../../component/common/AlertPopup";
-import { Edit2, Image as ImageIcon, X, Check, Save } from "lucide-react";
+import { Edit2, Image as ImageIcon, X, Check, Save, Plus, Trash2 } from "lucide-react";
 
 const QuizBulkUpload = () => {
   const navigate = useNavigate();
@@ -703,6 +703,36 @@ const QuizBulkUpload = () => {
     const [editedQuestion, setEditedQuestion] = useState({ ...question });
     const [editError, setEditError] = useState(null);
 
+    const handleAddOption = () => {
+      const newOptions = [...editedQuestion.options, ''];
+      setEditedQuestion({ ...editedQuestion, options: newOptions });
+      setEditError(null);
+    };
+
+    const handleRemoveOption = (indexToRemove) => {
+      const validOptions = editedQuestion.options.filter(o => o && o.trim());
+      if (validOptions.length <= 2) {
+        setEditError("At least 2 options are required");
+        return;
+      }
+      
+      const removedOption = editedQuestion.options[indexToRemove];
+      const newOptions = editedQuestion.options.filter((_, idx) => idx !== indexToRemove);
+      
+      // If the removed option was the answer, clear the answer
+      let newAnswer = editedQuestion.answer;
+      if (removedOption === editedQuestion.answer) {
+        newAnswer = '';
+      }
+      
+      setEditedQuestion({ 
+        ...editedQuestion, 
+        options: newOptions,
+        answer: newAnswer
+      });
+      setEditError(null);
+    };
+
     const handleSave = () => {
       setEditError(null);
       if (!editedQuestion.questionText.trim()) {
@@ -768,23 +798,49 @@ const QuizBulkUpload = () => {
         )}
 
         <div>
-          <label className="block text-xs font-medium text-slate-300 mb-2">Options</label>
-          {editedQuestion.options.map((option, idx) => (
-            <div key={idx} className="mb-2 flex items-center gap-2">
-              <span className="text-xs text-slate-400 w-6">{String.fromCharCode(65 + idx)}.</span>
-              <input
-                type="text"
-                value={option}
-                onChange={(e) => {
-                  const newOptions = [...editedQuestion.options];
-                  newOptions[idx] = e.target.value;
-                  setEditedQuestion({ ...editedQuestion, options: newOptions });
-                }}
-                className="flex-1 px-3 py-1.5 bg-slate-800/50 border border-slate-600/30 rounded-lg text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                placeholder={`Option ${String.fromCharCode(65 + idx)}`}
-              />
-            </div>
-          ))}
+          <div className="flex items-center justify-between mb-2">
+            <label className="block text-xs font-medium text-slate-300">Options</label>
+            <button
+              type="button"
+              onClick={handleAddOption}
+              className="px-2 py-1 bg-indigo-600/80 hover:bg-indigo-600 rounded-lg text-xs font-medium text-white transition-colors flex items-center gap-1"
+              title="Add new option"
+            >
+              <Plus className="w-3 h-3" />
+              Add Option
+            </button>
+          </div>
+          {editedQuestion.options.map((option, idx) => {
+            const validOptionsCount = editedQuestion.options.filter(o => o && o.trim()).length;
+            const canRemove = validOptionsCount > 2;
+            
+            return (
+              <div key={idx} className="mb-2 flex items-center gap-2">
+                <span className="text-xs text-slate-400 w-6">{String.fromCharCode(65 + idx)}.</span>
+                <input
+                  type="text"
+                  value={option}
+                  onChange={(e) => {
+                    const newOptions = [...editedQuestion.options];
+                    newOptions[idx] = e.target.value;
+                    setEditedQuestion({ ...editedQuestion, options: newOptions });
+                    setEditError(null);
+                  }}
+                  className="flex-1 px-3 py-1.5 bg-slate-800/50 border border-slate-600/30 rounded-lg text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  placeholder={`Option ${String.fromCharCode(65 + idx)}`}
+                />
+                <button
+                  type="button"
+                  onClick={() => handleRemoveOption(idx)}
+                  disabled={!canRemove}
+                  className="p-1.5 text-slate-400 hover:text-red-400 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  title={canRemove ? "Remove option" : "At least 2 options required"}
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            );
+          })}
         </div>
 
         <div>
