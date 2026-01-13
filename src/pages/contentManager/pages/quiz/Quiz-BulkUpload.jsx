@@ -509,6 +509,24 @@ const QuizBulkUpload = () => {
     setEditingQuestion({ quizIndex, questionIndex });
   };
 
+  const handleDeleteQuestion = (quizIndex, questionIndex) => {
+    const updatedQuizzes = quizzes.map((quiz, idx) => ({
+      ...quiz,
+      questions: idx === quizIndex ? quiz.questions.filter((_, qIdx) => qIdx !== questionIndex) : quiz.questions,
+    }));
+
+    setQuizzes(updatedQuizzes);
+
+    // Clear editing state if the deleted question was being edited
+    if (
+      editingQuestion &&
+      editingQuestion.quizIndex === quizIndex &&
+      editingQuestion.questionIndex === questionIndex
+    ) {
+      setEditingQuestion(null);
+    }
+  };
+
   const handleSaveQuestion = (quizIndex, questionIndex, updatedQuestion) => {
     const updatedQuizzes = [...quizzes];
     updatedQuizzes[quizIndex].questions[questionIndex] = updatedQuestion;
@@ -594,13 +612,22 @@ const QuizBulkUpload = () => {
                           Question {questionIndex + 1}
                         </span>
                         {!isEditing && (
-                          <button
-                            onClick={() => handleEditQuestion(quizIndex, questionIndex)}
-                            className="p-1.5 text-slate-400 hover:text-indigo-400 transition-colors"
-                            title="Edit question"
-                          >
-                            <Edit2 className="w-4 h-4" />
-                          </button>
+                          <div className="flex items-center gap-1">
+                            <button
+                              onClick={() => handleEditQuestion(quizIndex, questionIndex)}
+                              className="p-1.5 text-slate-400 hover:text-indigo-400 transition-colors"
+                              title="Edit question"
+                            >
+                              <Edit2 className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteQuestion(quizIndex, questionIndex)}
+                              className="p-1.5 text-slate-400 hover:text-red-400 transition-colors"
+                              title="Delete question"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
                         )}
                       </div>
 
