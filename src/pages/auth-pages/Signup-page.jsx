@@ -52,29 +52,44 @@ const SignupPage = () => {
   const registerUser = async (e) => {
     e.preventDefault(); // Prevent default form submission behavior
     setLoading(true);
+    setError(''); // Clear previous errors
 
     // Check for required fields
     if (!formData.fullName || !formData.email || !formData.password || !formData.agreed) {
-        setError("All fields are required and must accept terms!");
-        toast.error("All fields are required and must accept terms!");
-        setLoading(false); // Ensure loading is stopped before returning
+        const errorMsg = "All fields are required and must accept terms!";
+        setError(errorMsg);
+        toast.error(errorMsg);
+        setLoading(false);
         return;
     }
 
     try {
         const response = await axios.post(`${API_BASE_URL}/auth/register`, formData);
+        console.log(response.data.success);
 
-        if (response.data.success) {
-            toast.success("Registration successful! Verifying OTP...");
-            setStep(2); // Move to OTP step if required
+        if (response.data.success===true) {
+            toast.success(response.data.message || "Registration successful! Please verify your email using the OTP sent.");
+            setStep(2); // Move to OTP step
+            setError(''); // Clear any previous errors
         } else {
-            setError(response.data.message);
-            toast.error(response.data.message);
+            // Handle backend error response
+            const errorMsg = response.data.message || "Registration failed. Please try again.";
+            setError(errorMsg);
+            toast.error(errorMsg);
         }
     } catch (error) {
-        const errorMessage = error.response?.data?.message || "Registration failed. Please try again.";
+        // Handle axios errors - check for backend error message
+        const errorMessage = error.response?.data?.message || 
+                           error.response?.data?.error || 
+                           error.message || 
+                           "Registration failed. Please try again.";
         setError(errorMessage);
         toast.error(errorMessage);
+        
+        // If email already exists and user is verified, don't proceed to OTP step
+        if (error.response?.status === 400 && errorMessage.toLowerCase().includes('email already exists')) {
+            setStep(1); // Stay on registration form
+        }
     } finally {
         setLoading(false);
     }
@@ -123,6 +138,7 @@ const handleGoogleSignup = async () => {
 const verifyOtp = async (e) => {
   setLoading(true);
   e.preventDefault();
+  setError(''); // Clear previous errors
   toast.info('Verifying OTP...', { autoClose: 3000 });
 
   try {
@@ -133,17 +149,19 @@ const verifyOtp = async (e) => {
 
       if (response.data.success) {
           setOtpVerified(true);
-          toast.success('OTP verified successfully!');
-         
-              navigate("/login"); // Redirect to home after a short delay
-         
+          toast.success(response.data.message || 'OTP verified successfully!');
+          navigate("/login"); // Redirect to login after successful verification
       } else {
-          setError(response.data.message);
-          toast.error(response.data.message);
+          const errorMsg = response.data.message || 'OTP verification failed. Please try again.';
+          setError(errorMsg);
+          toast.error(errorMsg);
       }
   } catch (error) {
-      setError('OTP verification failed. Please try again.');
-      toast.error('OTP verification failed. Please try again.');
+      const errorMessage = error.response?.data?.message || 
+                          error.response?.data?.error || 
+                          'OTP verification failed. Please try again.';
+      setError(errorMessage);
+      toast.error(errorMessage);
   } finally {
       setLoading(false);
   }
@@ -151,16 +169,23 @@ const verifyOtp = async (e) => {
 
 const resendOtp = async () => {
   setLoading(true);
+  setError(''); // Clear previous errors
   try {
     const response = await axios.post(`${API_BASE_URL}/auth/resend-otp`, { email: formData.email });
     if (response.data.success) {
-      toast.success('New OTP sent successfully!');
+      toast.success(response.data.message || 'New OTP sent successfully!');
       setResendTimer(60); // Reset timer
+      setError(''); // Clear any errors
     } else {
-      toast.error(response.data.message || 'Failed to resend OTP.');
+      const errorMsg = response.data.message || 'Failed to resend OTP.';
+      setError(errorMsg);
+      toast.error(errorMsg);
     }
   } catch (error) {
-    const errorMessage = error.response?.data?.message || 'Failed to resend OTP.';
+    const errorMessage = error.response?.data?.message || 
+                        error.response?.data?.error || 
+                        'Failed to resend OTP.';
+    setError(errorMessage);
     toast.error(errorMessage);
   } finally {
     setLoading(false);
@@ -225,14 +250,19 @@ const handleSendMobileOtp = async (e) => {
     });
 
     if (response.data?.success) {
-      toast.success('OTP sent successfully!');
+      toast.success(response.data.message || 'OTP sent successfully!');
       setShowOtpSection(true);
+      setError(''); // Clear any errors
     } else {
-      toast.error(response.data?.message || 'Failed to send OTP.');
+      const errorMsg = response.data?.message || 'Failed to send OTP.';
+      setError(errorMsg);
+      toast.error(errorMsg);
     }
   } catch (error) {
     console.error("Send OTP error:", error.response?.data || error);
-    const errorMessage = error.response?.data?.message || "Failed to send OTP. Please try again.";
+    const errorMessage = error.response?.data?.message || 
+                        error.response?.data?.error || 
+                        "Failed to send OTP. Please try again.";
     setError(errorMessage);
     toast.error(errorMessage);
   } finally {
@@ -266,14 +296,18 @@ const handleVerifyMobileOtp = async (e) => {
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user || {}));
 
-      toast.success('Signup successful!');
+      toast.success(response.data.message || 'Signup successful!');
       navigate('/');
     } else {
-      toast.error(response.data?.message || 'Invalid OTP.');
+      const errorMsg = response.data?.message || 'Invalid OTP.';
+      setError(errorMsg);
+      toast.error(errorMsg);
     }
   } catch (error) {
     console.error("Verify OTP error:", error.response?.data || error);
-    const errorMessage = error.response?.data?.message || "Invalid OTP. Please try again.";
+    const errorMessage = error.response?.data?.message || 
+                        error.response?.data?.error || 
+                        "Invalid OTP. Please try again.";
     setError(errorMessage);
     toast.error(errorMessage);
   } finally {
@@ -303,6 +337,12 @@ const handleVerifyMobileOtp = async (e) => {
             <p className="text-gray-700 text-base mb-3">
               Enter your details to create your account
             </p>
+
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                {error}
+              </div>
+            )}
 
             <input
               type="text"
@@ -525,6 +565,12 @@ const handleVerifyMobileOtp = async (e) => {
           <form className="space-y-4" onSubmit={verifyOtp}>
             <h2 className="text-2xl font-semibold mb-2">Verify OTP</h2>
             <p className="text-gray-700 text-base mb-3">Enter the OTP sent to {formData.email}</p>
+
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                {error}
+              </div>
+            )}
 
             <input
               type="text"
