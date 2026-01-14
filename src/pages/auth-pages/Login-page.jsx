@@ -116,15 +116,23 @@ const LoginPage = () => {
     }
 
     try {
-      
       const response = await axios.post(`${API_BASE_URL}/auth/login`, { email, password });
 
       if (response.data?.token) {
+        const backendUser = response.data.user || {};
+
         setToken(response.data.token);
-        setUser(response.data.user);
+        setUser(backendUser);
         
         localStorage.setItem('token', response.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.user || {}));
+        localStorage.setItem('user', JSON.stringify(backendUser));
+
+        // Persist onboarding completion flag from backend so dashboard modal logic works
+        if (backendUser.onboardingCompleted) {
+          localStorage.setItem("learningGoalOnboardingCompleted", "true");
+        } else {
+          localStorage.removeItem("learningGoalOnboardingCompleted");
+        }
 
         toast.success('Login successful!');
         // The useEffect above will now handle the navigation after login state updates
@@ -164,6 +172,13 @@ const LoginPage = () => {
     
     localStorage.setItem("token", token);
     localStorage.setItem("user", JSON.stringify(backendUser));
+
+    // Persist onboarding completion flag from backend
+    if (backendUser?.onboardingCompleted) {
+      localStorage.setItem("learningGoalOnboardingCompleted", "true");
+    } else {
+      localStorage.removeItem("learningGoalOnboardingCompleted");
+    }
 
     setUser(backendUser);
     setToken(token);
@@ -257,11 +272,20 @@ const LoginPage = () => {
       });
 
       if (response.data?.token) {
+        const backendUser = response.data.user || {};
+
         setToken(response.data.token);
-        setUser(response.data.user);
+        setUser(backendUser);
         
         localStorage.setItem('token', response.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.user || {}));
+        localStorage.setItem('user', JSON.stringify(backendUser));
+
+        // Persist onboarding completion flag from backend
+        if (backendUser.onboardingCompleted) {
+          localStorage.setItem("learningGoalOnboardingCompleted", "true");
+        } else {
+          localStorage.removeItem("learningGoalOnboardingCompleted");
+        }
 
         toast.success('Login successful!');
         setShowMobileLogin(false);
