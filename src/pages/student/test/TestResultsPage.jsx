@@ -6,6 +6,8 @@ import axios from 'axios';
 import { USERENDPOINTS } from '../../../constants/ApiConstants';
 import { toast } from 'react-toastify';
 import FormulaRenderer from '../../../component/contentManagerComponents/FormulaRenderer';
+import katex from 'katex';
+import 'katex/dist/katex.min.css';
 
 const TestResultsPage = () => {
   const location = useLocation();
@@ -206,6 +208,42 @@ const TestResultsPage = () => {
     }
   };
 
+  // Process LaTeX formulas in HTML string and convert to KaTeX-rendered HTML
+  const processLaTeXInHtml = (htmlString) => {
+    if (!htmlString) return '';
+    
+    try {
+      let processedHtml = htmlString;
+      
+      // Process block formulas: $$...$$
+      processedHtml = processedHtml.replace(/\$\$([^$]+)\$\$/g, (match, formula) => {
+        try {
+          return katex.renderToString(formula.trim(), { displayMode: true, throwOnError: false });
+        } catch (error) {
+          console.error('KaTeX block rendering error:', error, 'Formula:', formula);
+          return match; // Return original if rendering fails
+        }
+      });
+      
+      // Process inline formulas: $...$
+      processedHtml = processedHtml.replace(/\$([^$\n]+)\$/g, (match, formula) => {
+        // Skip if already processed (contains katex class)
+        if (match.includes('katex')) return match;
+        try {
+          return katex.renderToString(formula.trim(), { displayMode: false, throwOnError: false });
+        } catch (error) {
+          console.error('KaTeX inline rendering error:', error, 'Formula:', formula);
+          return match; // Return original if rendering fails
+        }
+      });
+      
+      return processedHtml;
+    } catch (error) {
+      console.error('Error processing LaTeX in HTML:', error);
+      return htmlString; // Return original if processing fails
+    }
+  };
+
   const generateExplanation = async (questionId) => {
     // Try to find by questionId first, then by index
     let answer = results.detailedAnswers.find(a => 
@@ -252,10 +290,12 @@ const TestResultsPage = () => {
         }
       );
 
-      if (response.data.success && response.data.explanation) {
+      if (response.data.success && response.data.explanationHtml) {
+        // Process LaTeX formulas in the HTML before storing
+        const processedHtml = processLaTeXInHtml(response.data.explanationHtml);
         setQuestionExplanations(prev => ({
           ...prev,
-          [questionId]: response.data.explanation
+          [questionId]: processedHtml
         }));
       } else {
         toast.error('Failed to generate explanation');
@@ -477,12 +517,10 @@ const TestResultsPage = () => {
                         </div>
                       ) : questionExplanations[answer.questionId] ? (
                         <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 sm:p-3 text-xs sm:text-sm text-gray-700 w-full box-border overflow-hidden">
-                          <div className="break-words overflow-wrap-anywhere max-w-full">
-                            <FormulaRenderer 
-                              text={questionExplanations[answer.questionId]} 
-                              className="text-xs sm:text-sm text-gray-700 leading-relaxed"
-                            />
-                          </div>
+                          <div 
+                            className="max-w-full break-words leading-relaxed prose prose-sm max-w-none"
+                            dangerouslySetInnerHTML={{ __html: questionExplanations[answer.questionId] }}
+                          />
                         </div>
                       ) : null}
                     </div>

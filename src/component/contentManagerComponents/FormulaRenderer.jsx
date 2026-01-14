@@ -14,6 +14,34 @@ import 'katex/dist/katex.min.css';
 const FormulaRenderer = ({ text, className = '' }) => {
   if (!text) return null;
 
+  // Normalize text spacing around LaTeX formulas so that
+  // plain text and math blocks don't stick together like "weget" / "formula:λ"
+  // We insert a space:
+  // - between non‑whitespace and a formula
+  // - between a formula and a non‑whitespace character
+  let normalizedText = text;
+  try {
+    // Inline/block formula patterns
+    const rawInline = /\$[^$]+\$|\\\([^)]*\\\)/g;
+    const rawBlock = /\$\$[^$]+\$\$|\\\[[^\]]+\\\]/g;
+    const rawAny = new RegExp(`${rawBlock.source}|${rawInline.source}`, 'g');
+
+    // Add space BEFORE a formula if missing
+    normalizedText = normalizedText.replace(
+      /(\S)($[^$]+\$|\\\([^)]*\\\)|\$\$[^$]+\$\$|\\\[[^\]]+\\\])/g,
+      '$1 $2'
+    );
+
+    // Add space AFTER a formula if missing
+    normalizedText = normalizedText.replace(
+      /($[^$]+\$|\\\([^)]*\\\)|\$\$[^$]+\$\$|\\\[[^\]]+\\\])(\S)/g,
+      '$1 $2'
+    );
+  } catch (e) {
+    // If anything goes wrong, fall back to original text
+    normalizedText = text;
+  }
+
   // Pattern to match LaTeX formulas
   // Inline: $formula$ or \(formula\)
   // Block: $$formula$$ or \[formula\]
@@ -47,7 +75,7 @@ const FormulaRenderer = ({ text, className = '' }) => {
   // Process block formulas
   const blockMatches = [];
   const blockRegex = new RegExp(blockPattern.source, 'g');
-  while ((match = blockRegex.exec(text)) !== null) {
+  while ((match = blockRegex.exec(normalizedText)) !== null) {
     blockMatches.push({
       index: match.index,
       length: match[0].length,
@@ -59,7 +87,7 @@ const FormulaRenderer = ({ text, className = '' }) => {
   // Process inline formulas
   const inlineMatches = [];
   const inlineRegex = new RegExp(inlinePattern.source, 'g');
-  while ((match = inlineRegex.exec(text)) !== null) {
+  while ((match = inlineRegex.exec(normalizedText)) !== null) {
     inlineMatches.push({
       index: match.index,
       length: match[0].length,
@@ -76,7 +104,7 @@ const FormulaRenderer = ({ text, className = '' }) => {
   allMatches.forEach((match) => {
     // Add text before formula (preserve all whitespace including spaces)
     if (match.index > currentIndex) {
-      const textPart = text.substring(currentIndex, match.index);
+      const textPart = normalizedText.substring(currentIndex, match.index);
       // Always add text part, even if it's just whitespace, to preserve spacing
       parts.push({ type: 'text', content: textPart });
     }
@@ -88,15 +116,15 @@ const FormulaRenderer = ({ text, className = '' }) => {
   });
 
   // Add remaining text (preserve all whitespace)
-  if (currentIndex < text.length) {
-    const textPart = text.substring(currentIndex);
+  if (currentIndex < normalizedText.length) {
+    const textPart = normalizedText.substring(currentIndex);
     // Always add remaining text to preserve spacing
     parts.push({ type: 'text', content: textPart });
   }
 
   // If no formulas found, return plain text
   if (parts.length === 0) {
-    return <span className={className}>{text}</span>;
+    return <span className={className}>{normalizedText}</span>;
   }
 
   return (
