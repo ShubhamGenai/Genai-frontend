@@ -161,59 +161,55 @@ const MyTests = () => {
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 md:gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
           {enrolledTests.map((test) => (
-            <div key={test.id || test._id} className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+            <div key={test.id || test._id} className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow flex flex-col">
               {/* Test Image */}
-              <div className="relative overflow-hidden">
+              <div className="relative w-full aspect-video overflow-hidden bg-gray-100">
                 <img
                   src={test.image || 'https://res.cloudinary.com/djkbpwqpm/image/upload/v1746691763/jee_kai0bt.png'}
                   alt={test.title}
-                  className="w-full h-16 sm:h-20 object-cover"
+                  className="w-full h-full object-cover object-center"
+                  onError={(e) => {
+                    e.target.src = 'https://res.cloudinary.com/djkbpwqpm/image/upload/v1746691763/jee_kai0bt.png';
+                  }}
                 />
                 {test.isPassed && (
-                  <div className="absolute top-1 right-1 sm:top-1.5 sm:right-1.5">
-                    <span className="bg-green-500 text-white px-1 sm:px-1.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-medium flex items-center gap-0.5">
-                      <CheckCircle className="w-2 h-2 sm:w-2.5 sm:h-2.5" />
+                  <div className="absolute top-1.5 right-1.5">
+                    <span className="bg-green-500 text-white px-1.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-medium flex items-center gap-0.5">
+                      <CheckCircle className="w-2.5 h-2.5" />
                       Passed
-                    </span>
-                  </div>
-                )}
-                {test.paymentStatus === 'completed' && (
-                  <div className="absolute top-1 left-1 sm:top-1.5 sm:left-1.5">
-                    <span className="bg-blue-500 text-white px-1 sm:px-1.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-medium">
-                      Purchased
                     </span>
                   </div>
                 )}
               </div>
 
               {/* Test Content */}
-              <div className="p-2 sm:p-3">
-                <h3 className="text-xs sm:text-sm font-semibold text-gray-900 mb-1 line-clamp-2">{test.title}</h3>
-                <p className="text-[10px] sm:text-xs text-gray-600 mb-1.5 sm:mb-2 line-clamp-2">{test.description}</p>
+              <div className="p-3 flex flex-col flex-1">
+                <h3 className="text-xs sm:text-sm font-semibold text-gray-900 mb-1.5 line-clamp-2 min-h-[2.5rem]">{test.title}</h3>
+                <p className="text-[10px] sm:text-xs text-gray-600 mb-2 line-clamp-2 min-h-[2rem]">{test.description}</p>
 
                 {/* Test Stats */}
-                <div className="flex items-center flex-wrap gap-1.5 sm:gap-2 mb-1.5 sm:mb-2 text-[9px] sm:text-[10px] text-gray-600">
+                <div className="flex items-center flex-wrap gap-1.5 sm:gap-2 mb-2 text-[9px] sm:text-[10px] text-gray-600">
                   <div className="flex items-center gap-0.5">
-                    <FileText className="w-2 h-2 sm:w-2.5 sm:h-2.5" />
+                    <FileText className="w-2.5 h-2.5 flex-shrink-0" />
                     <span>{test.numberOfQuestions || 0} Q</span>
                   </div>
                   <div className="flex items-center gap-0.5">
-                    <Clock className="w-2 h-2 sm:w-2.5 sm:h-2.5" />
+                    <Clock className="w-2.5 h-2.5 flex-shrink-0" />
                     <span>{formatDuration(test.duration)}</span>
                   </div>
                   {test.totalAttempts > 0 && (
                     <div className="flex items-center gap-0.5">
-                      <PlayCircle className="w-2 h-2 sm:w-2.5 sm:h-2.5" />
+                      <PlayCircle className="w-2.5 h-2.5 flex-shrink-0" />
                       <span>{test.totalAttempts}</span>
                     </div>
                   )}
                 </div>
 
                 {/* Latest Score */}
-                {test.latestScore !== null && (
-                  <div className="mb-1.5 sm:mb-2 p-1.5 sm:p-2 bg-gray-50 rounded">
+                {test.latestScore !== null ? (
+                  <div className="mb-2 p-2 bg-gray-50 rounded">
                     <div className="flex items-center justify-between text-[9px] sm:text-[10px] mb-1">
                       <span className="text-gray-600">Latest:</span>
                       <span className={`font-medium ${test.latestStatus === 'passed' ? 'text-green-600' : 'text-red-600'}`}>
@@ -221,45 +217,45 @@ const MyTests = () => {
                       </span>
                     </div>
                     {test.latestAttemptDate && (
-                      <div className="text-[9px] sm:text-[10px] text-gray-500 mb-1">
+                      <div className="text-[9px] sm:text-[10px] text-gray-500 mb-1.5">
                         {formatDate(test.latestAttemptDate)}
                       </div>
                     )}
                     {test.latestSubmissionId && (
                       <button
                         onClick={() => viewSubmissionDetails(test.latestSubmissionId, test)}
-                        className="w-full text-[9px] sm:text-[10px] bg-blue-600 text-white py-0.5 sm:py-1 px-1.5 sm:px-2 rounded hover:bg-blue-700 transition-colors flex items-center justify-center gap-0.5"
+                        className="w-full text-[9px] sm:text-[10px] bg-blue-600 text-white py-1 px-2 rounded hover:bg-blue-700 transition-colors flex items-center justify-center gap-1"
                       >
-                        <BarChart3 className="w-2 h-2 sm:w-2.5 sm:h-2.5" />
+                        <BarChart3 className="w-2.5 h-2.5" />
                         View Results
                       </button>
                     )}
                   </div>
+                ) : (
+                  <div className="mb-2 min-h-[3rem]"></div>
                 )}
 
                 {/* Enrolled Date */}
-                <div className="text-[9px] sm:text-[10px] text-gray-500 mb-1.5 sm:mb-2">
-                  Purchased: {formatDate(test.enrolledDate)}
+                <div className="text-[9px] sm:text-[10px] text-gray-500 mb-2">
+                  {test.enrolledDate ? `Enrolled: ${formatDate(test.enrolledDate)}` : 'Enrolled: N/A'}
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex gap-1 sm:gap-1.5">
+                <div className="flex gap-1.5 mt-auto">
                   <Link
                     to={`/student/test-details?id=${test.id || test._id}`}
-                    className="flex-1 bg-blue-600 text-white text-[9px] sm:text-[10px] py-1 sm:py-1.5 px-1.5 sm:px-2 rounded-md hover:bg-blue-700 transition-colors text-center"
+                    className="flex-1 bg-blue-600 text-white text-[9px] sm:text-[10px] py-1.5 px-2 rounded-md hover:bg-blue-700 transition-colors text-center"
                   >
                     Details
                   </Link>
-                  {test.paymentStatus === 'completed' && (
-                    <Link
-                      to={`/student/test-taking?id=${test.id || test._id}`}
-                      state={{ testId: test.id || test._id, test }}
-                      className="flex-1 bg-green-600 text-white text-[9px] sm:text-[10px] py-1 sm:py-1.5 px-1.5 sm:px-2 rounded-md hover:bg-green-700 transition-colors text-center flex items-center justify-center gap-0.5"
-                    >
-                      <PlayCircle className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
-                      <span className="hidden sm:inline">Start</span>
-                    </Link>
-                  )}
+                  <Link
+                    to={`/student/test-taking?id=${test.id || test._id}`}
+                    state={{ testId: test.id || test._id, test }}
+                    className="flex-1 bg-green-600 text-white text-[9px] sm:text-[10px] py-1.5 px-2 rounded-md hover:bg-green-700 transition-colors text-center flex items-center justify-center gap-1"
+                  >
+                    <PlayCircle className="w-3 h-3" />
+                    <span className="hidden sm:inline">Start</span>
+                  </Link>
                 </div>
               </div>
             </div>
