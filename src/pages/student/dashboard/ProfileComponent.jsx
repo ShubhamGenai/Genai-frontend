@@ -1,8 +1,13 @@
-import React from "react";
-import { UsersIcon, TargetIcon, AwardIcon, BarChart3Icon } from "lucide-react";
+import React, { useState, useContext } from "react";
+import { UsersIcon, TargetIcon, AwardIcon, BarChart3Icon, PencilIcon } from "lucide-react";
+import { mainContext } from "../../../context/MainContext";
+import GoalSelectionModal from "./GoalSelectionModal";
 
 // Profile component with user information
 const ProfileComponent = ({ user, profileData, loading, error }) => {
+  const { token, setUser: setContextUser } = useContext(mainContext);
+  const [showEditModal, setShowEditModal] = useState(false);
+  
   // Use profileData if available, otherwise fall back to user from context
   const displayUser = profileData || user;
 
@@ -51,6 +56,15 @@ const ProfileComponent = ({ user, profileData, loading, error }) => {
 
   return (
     <div className="space-y-4 sm:space-y-6">
+      {/* Goal Selection Modal for editing preferences */}
+      <GoalSelectionModal
+        open={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        token={token}
+        user={user}
+        setUser={setContextUser}
+      />
+
       {/* Basic Information */}
       <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-5 md:p-6 shadow-sm">
         <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-4 sm:mb-6 flex items-center gap-2">
@@ -77,16 +91,27 @@ const ProfileComponent = ({ user, profileData, loading, error }) => {
         </div>
       </div>
 
-      {/* Learning Preferences */}
-      {(displayUser?.learningGoal ||
-        displayUser?.examPreference ||
-        displayUser?.preferredSections?.length > 0 ||
-        displayUser?.studyPreference) && (
-        <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-5 md:p-6 shadow-sm">
-          <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-4 sm:mb-6 flex items-center gap-2">
+      {/* Learning Preferences - Always visible */}
+      <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-5 md:p-6 shadow-sm">
+        <div className="flex items-center justify-between mb-4 sm:mb-6">
+          <h3 className="text-base sm:text-lg font-semibold text-gray-900 flex items-center gap-2">
             <TargetIcon className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
             Learning Preferences
           </h3>
+          <button
+            onClick={() => setShowEditModal(true)}
+            className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg text-xs sm:text-sm font-medium transition-colors"
+            title="Edit preferences"
+          >
+            <PencilIcon className="w-3 h-3 sm:w-4 sm:h-4" />
+            <span className="hidden sm:inline">Edit</span>
+          </button>
+        </div>
+        
+        {(displayUser?.learningGoal ||
+          displayUser?.examPreference ||
+          displayUser?.preferredSections?.length > 0 ||
+          displayUser?.studyPreference) ? (
           <div className="space-y-4 sm:space-y-5">
             {displayUser?.learningGoal && (
               <div>
@@ -124,8 +149,23 @@ const ProfileComponent = ({ user, profileData, loading, error }) => {
               </div>
             )}
           </div>
-        </div>
-      )}
+        ) : (
+          <div className="text-center py-6 sm:py-8">
+            <TargetIcon className="w-8 h-8 sm:w-10 sm:h-10 text-blue-600 mx-auto mb-3" />
+            <h4 className="text-sm sm:text-base font-semibold text-gray-900 mb-2">No Preferences Set</h4>
+            <p className="text-xs sm:text-sm text-gray-600 mb-4">
+              Set your learning goals and preferences to get personalized recommendations.
+            </p>
+            <button
+              onClick={() => setShowEditModal(true)}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs sm:text-sm font-medium transition-colors"
+            >
+              <TargetIcon className="w-4 h-4" />
+              Set Preferences
+            </button>
+          </div>
+        )}
+      </div>
 
       {/* Account Status */}
       <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-5 md:p-6 shadow-sm">
@@ -176,33 +216,6 @@ const ProfileComponent = ({ user, profileData, loading, error }) => {
           </div>
         </div>
       </div>
-
-      {/* Student Details Section (if available)
-      {displayUser?.details && (
-        <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-5 md:p-6 shadow-sm">
-          <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-4 sm:mb-6 flex items-center gap-2">
-            <BarChart3Icon className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
-            Additional Details
-          </h3>
-          <div className="text-xs sm:text-sm text-gray-600">
-            <pre className="whitespace-pre-wrap font-sans">{JSON.stringify(displayUser.details, null, 2)}</pre>
-          </div>
-        </div>
-      )} */}
-
-      {/* Empty State if no preferences */}
-      {!displayUser?.learningGoal &&
-        !displayUser?.examPreference &&
-        (!displayUser?.preferredSections || displayUser.preferredSections.length === 0) &&
-        !displayUser?.studyPreference && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 sm:p-6 text-center">
-            <TargetIcon className="w-8 h-8 sm:w-10 sm:h-10 text-blue-600 mx-auto mb-3" />
-            <h4 className="text-sm sm:text-base font-semibold text-gray-900 mb-2">Complete Your Preferences</h4>
-            <p className="text-xs sm:text-sm text-gray-600 mb-4">
-              Set your learning goals and preferences to get personalized recommendations.
-            </p>
-          </div>
-        )}
     </div>
   );
 };

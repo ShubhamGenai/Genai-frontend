@@ -21,7 +21,8 @@ import {
   ArrowRightIcon,
   StarIcon,
   TargetIcon,
-  ChevronRightIcon
+  ChevronRightIcon,
+  RefreshCwIcon
 } from "lucide-react";
 
 const Dashboard = () => {
@@ -39,6 +40,9 @@ const Dashboard = () => {
   const [profileData, setProfileData] = useState(null);
   const [profileLoading, setProfileLoading] = useState(false);
   const [profileError, setProfileError] = useState(null);
+  const [careerRecommendations, setCareerRecommendations] = useState([]);
+  const [recommendationsLoading, setRecommendationsLoading] = useState(false);
+  const [recommendationsError, setRecommendationsError] = useState(null);
 
   const navItems = [
     { name: "Overview" },
@@ -174,6 +178,91 @@ const Dashboard = () => {
     checkPendingTest();
   }, [user, token]);
 
+  // Fetch AI Career Recommendations function (extracted for reuse)
+  const fetchCareerRecommendations = async () => {
+    if (!token || !user) {
+      return;
+    }
+
+    setRecommendationsLoading(true);
+    setRecommendationsError(null);
+
+    try {
+      const response = await axios.get(USERENDPOINTS.GET_AI_CAREER_RECOMMENDATIONS, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (response.data.success && response.data.recommendations) {
+        setCareerRecommendations(response.data.recommendations);
+        toast.success('Recommendations refreshed successfully!');
+      } else {
+        setRecommendationsError('Failed to load recommendations');
+        // Fallback to default recommendations
+        setCareerRecommendations([
+          {
+            title: "Software Engineering",
+            match: 92,
+            description: "Strong programming skills and problem-solving ability.",
+            tags: ["Python", "DSA", "Web Development"],
+            color: "text-blue-600"
+          },
+          {
+            title: "Data Science",
+            match: 85,
+            description: "Good mathematical foundation and analytical thinking.",
+            tags: ["Statistics", "Python", "Machine Learning"],
+            color: "text-blue-600"
+          },
+          {
+            title: "Product Management",
+            match: 78,
+            description: "Business understanding and digital marketing expertise.",
+            tags: ["Analytics", "Strategy", "Communication"],
+            color: "text-blue-600"
+          }
+        ]);
+      }
+    } catch (err) {
+      console.error('Error fetching career recommendations:', err);
+      setRecommendationsError('Failed to load recommendations');
+      toast.error('Failed to refresh recommendations. Please try again.');
+      // Fallback to default recommendations
+      setCareerRecommendations([
+        {
+          title: "Software Engineering",
+          match: 92,
+          description: "Strong programming skills and problem-solving ability.",
+          tags: ["Python", "DSA", "Web Development"],
+          color: "text-blue-600"
+        },
+        {
+          title: "Data Science",
+          match: 85,
+          description: "Good mathematical foundation and analytical thinking.",
+          tags: ["Statistics", "Python", "Machine Learning"],
+          color: "text-blue-600"
+        },
+        {
+          title: "Product Management",
+          match: 78,
+          description: "Business understanding and digital marketing expertise.",
+          tags: ["Analytics", "Strategy", "Communication"],
+          color: "text-blue-600"
+        }
+      ]);
+    } finally {
+      setRecommendationsLoading(false);
+    }
+  };
+
+  // Fetch AI Career Recommendations on mount and tab change
+  useEffect(() => {
+    if (activeTab !== "Overview" || !token || !user) {
+      return;
+    }
+    fetchCareerRecommendations();
+  }, [activeTab, token, user]);
+
   // Default/fallback data
   const summaryCards = dashboardData?.summaryCards ? [
     {
@@ -244,31 +333,6 @@ const Dashboard = () => {
     icon: stage.completed ? CheckCircleIcon : stage.progress > 0 ? ClockIcon : TargetIcon,
     iconColor: stage.completed ? "text-green-600" : stage.progress > 0 ? "text-blue-600" : "text-gray-400"
   })) : [];
-
-  // AI Career Recommendations (placeholder - can be enhanced later)
-  const careerRecommendations = [
-    {
-      title: "Software Engineering",
-      match: 92,
-      description: "Strong programming skills and problem-solving ability.",
-      tags: ["Python", "DSA", "Web Development"],
-      color: "text-blue-600"
-    },
-    {
-      title: "Data Science",
-      match: 85,
-      description: "Good mathematical foundation and analytical thinking.",
-      tags: ["Statistics", "Python", "Machine Learning"],
-      color: "text-blue-600"
-    },
-    {
-      title: "Product Management",
-      match: 78,
-      description: "Business understanding and digital marketing expertise.",
-      tags: ["Analytics", "Strategy", "Communication"],
-      color: "text-blue-600"
-    }
-  ];
 
   const actionableItems = dashboardData?.actionableItems ? dashboardData.actionableItems.map(item => ({
     ...item,
@@ -494,25 +558,52 @@ const Dashboard = () => {
 
           {/* AI Career Path Recommendations Row */}
           <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-5 md:p-6 shadow-sm">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-4 sm:mb-6">AI Career Path Recommendations</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6">
-              {careerRecommendations.map((career, index) => (
-                <div key={index} className="border border-gray-200 rounded-lg p-3 sm:p-4 hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-2 sm:mb-3 gap-2">
-                    <h4 className="text-sm sm:text-base font-semibold text-gray-900 truncate flex-1">{career.title}</h4>
-                    <span className={`text-base sm:text-lg font-bold ${career.color} flex-shrink-0`}>{career.match}% match</span>
-                  </div>
-                  <p className="text-xs sm:text-sm text-gray-600 mb-3 sm:mb-4 line-clamp-2">{career.description}</p>
-                  <div className="flex flex-wrap gap-1.5 sm:gap-2">
-                    {career.tags.map((tag, tagIndex) => (
-                      <span key={tagIndex} className="px-2 py-0.5 sm:py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              ))}
+            <div className="flex items-center justify-between mb-4 sm:mb-6">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900">AI Career Path Recommendations</h3>
+              <button
+                onClick={fetchCareerRecommendations}
+                disabled={recommendationsLoading}
+                className="flex items-center gap-2 px-3 py-1.5 sm:py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg text-xs sm:text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Refresh recommendations"
+              >
+                <RefreshCwIcon className={`w-3 h-3 sm:w-4 sm:h-4 ${recommendationsLoading ? 'animate-spin' : ''}`} />
+                <span className="hidden sm:inline">Refresh</span>
+              </button>
             </div>
+            {recommendationsError && !recommendationsLoading && (
+              <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-3 py-2 rounded-lg mb-4 text-xs sm:text-sm">
+                {recommendationsError}
+              </div>
+            )}
+            {recommendationsLoading ? (
+              <div className="text-center py-8">
+                <div className="inline-block w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mb-2"></div>
+                <p className="text-xs sm:text-sm text-gray-600">Generating personalized recommendations...</p>
+              </div>
+            ) : careerRecommendations.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6">
+                {careerRecommendations.map((career, index) => (
+                  <div key={index} className="border border-gray-200 rounded-lg p-3 sm:p-4 hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between mb-2 sm:mb-3 gap-2">
+                      <h4 className="text-sm sm:text-base font-semibold text-gray-900 truncate flex-1">{career.title}</h4>
+                      <span className={`text-base sm:text-lg font-bold ${career.color || "text-blue-600"} flex-shrink-0`}>{career.match}% match</span>
+                    </div>
+                    <p className="text-xs sm:text-sm text-gray-600 mb-3 sm:mb-4 line-clamp-2">{career.description}</p>
+                    <div className="flex flex-wrap gap-1.5 sm:gap-2">
+                      {career.tags && career.tags.map((tag, tagIndex) => (
+                        <span key={tagIndex} className="px-2 py-0.5 sm:py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <p className="text-xs sm:text-sm text-gray-500">No recommendations available at the moment.</p>
+              </div>
+            )}
           </div>
 
           {/* Actionable Items Row */}

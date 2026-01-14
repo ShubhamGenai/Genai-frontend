@@ -163,6 +163,20 @@ const GoalSelectionModal = ({
     }
   };
 
+  // Initialize form with existing user preferences when modal opens
+  useEffect(() => {
+    if (open && user) {
+      setGoalForm({
+        learningGoal: user.learningGoal || "",
+        examPreference: user.examPreference || "",
+        preferredSections: user.preferredSections || [],
+        studyPreference: user.studyPreference || "",
+      });
+      // Reset to first step when opening modal
+      setCurrentStep(1);
+    }
+  }, [open, user]);
+
   // Lock body scroll when modal is open
   useEffect(() => {
     if (!open) return;

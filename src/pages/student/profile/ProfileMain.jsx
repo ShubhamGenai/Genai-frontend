@@ -136,7 +136,7 @@ const ProfileMain = () => {
     try {
       const response = await apiService.updateProfile({
         ...profileData,
-        userId: mockUser._id
+        userId: user?._id || user?.id
       });
 
       if (response.success) {
@@ -179,7 +179,7 @@ const ProfileMain = () => {
   const saveEducation = async (id) => {
     setLoading(true);
     try {
-      const response = await apiService.updateEducation(educationData, mockUser._id);
+      const response = await apiService.updateEducation(educationData, user?._id || user?.id);
 
       if (response.success) {
         setEditEducationId(null);
@@ -200,7 +200,7 @@ const ProfileMain = () => {
     try {
       const updatedEducation = educationData.filter(edu => edu._id !== id);
       
-      const response = await apiService.deleteEducation(updatedEducation, mockUser._id);
+      const response = await apiService.deleteEducation(updatedEducation, user?._id || user?.id);
 
       if (response.success) {
         setEducationData(updatedEducation);
@@ -229,7 +229,7 @@ const ProfileMain = () => {
         
         const updatedSkills = [...skills, newSkillObj];
         
-        const response = await apiService.updateSkills(updatedSkills, mockUser._id);
+        const response = await apiService.updateSkills(updatedSkills, user?._id || user?.id);
 
         if (response.success) {
           setSkills(updatedSkills);
@@ -253,7 +253,7 @@ const ProfileMain = () => {
     try {
       const updatedSkills = skills.filter((_, i) => i !== index);
       
-      const response = await apiService.updateSkills(updatedSkills, mockUser._id);
+      const response = await apiService.updateSkills(updatedSkills, user?._id || user?.id);
 
       if (response.success) {
         setSkills(updatedSkills);
@@ -327,35 +327,32 @@ const ProfileMain = () => {
   };
 
   return (
-    <div className={`min-h-screen bg-gray-50 transition-all duration-1000 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-      <div className="max-w-7xl mx-auto p-4 space-y-6">
-        
-        {/* Notification Component */}
-        <Notification message={message} />
+    <div className="p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6">
+      {/* Notification Component */}
+      <Notification message={message} />
 
-        {/* Loading Overlay Component */}
-        <LoadingOverlay loading={loading} />
-        
-        {/* Profile Header Component */}
-        <ProfileHeader 
-          profileData={profileData}
-          editProfile={editProfile}
-          setEditProfile={setEditProfile}
-          handleProfileChange={handleProfileChange}
-          saveProfile={saveProfile}
-          loading={loading}
-        />
+      {/* Loading Overlay Component */}
+      <LoadingOverlay loading={loading} />
+      
+      {/* Profile Header Component */}
+      <ProfileHeader 
+        profileData={profileData}
+        editProfile={editProfile}
+        setEditProfile={setEditProfile}
+        handleProfileChange={handleProfileChange}
+        saveProfile={saveProfile}
+        loading={loading}
+      />
 
-        {/* Tab Navigation Component */}
-        <TabNavigation 
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-        />
+      {/* Tab Navigation Component */}
+      <TabNavigation 
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+      />
 
-        {/* Tab Content Container */}
-        <div className="bg-white shadow-lg rounded-xl p-6">
-          {renderTabContent()}
-        </div>
+      {/* Tab Content Container */}
+      <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 sm:p-5 md:p-6">
+        {renderTabContent()}
       </div>
     </div>
   );

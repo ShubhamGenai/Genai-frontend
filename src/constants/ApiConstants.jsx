@@ -81,6 +81,7 @@ export const USERENDPOINTS = {
    AI_CHAT: `${API_BASE_URL}/student/ai-chat`, // AI Chat endpoint
    GENERATE_QUESTION_EXPLANATION: `${API_BASE_URL}/student/generate-question-explanation`, // Generate AI explanation for question
    ENROLL_FREE_TEST: `${API_BASE_URL}/student/enroll-free-test`, // Enroll in free test
+   GET_AI_CAREER_RECOMMENDATIONS: `${API_BASE_URL}/student/getAICareerRecommendations`, // Get AI-generated career recommendations
 };
 
 // Auth / profile specific endpoints
