@@ -32,6 +32,7 @@ const TestDetailsNew = () => {
   const [expandedQuizzes, setExpandedQuizzes] = useState({});
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
   const [isEnrolled, setIsEnrolled] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   // Map backend test data to frontend format
   const mapBackendTestToFrontend = (backendTest) => {
@@ -254,6 +255,64 @@ const TestDetailsNew = () => {
     fetchTestDetails();
   }, [testIdFromQuery, testFromState, user, token]);
 
+  // Check for pending test after login/signup
+  useEffect(() => {
+    const handlePendingTest = async () => {
+      // Only proceed if user is authenticated and test is loaded
+      if (!user || !token || !test) return;
+
+      const pendingTestId = localStorage.getItem('pendingTestId');
+      const pendingTestType = localStorage.getItem('pendingTestType');
+      const currentTestId = test?._id || test?.id;
+
+      // Check if this is the pending test
+      if (pendingTestId && currentTestId && String(pendingTestId) === String(currentTestId)) {
+        // Clear localStorage
+        localStorage.removeItem('pendingTestId');
+        localStorage.removeItem('pendingTestType');
+
+        if (pendingTestType === 'free') {
+          // Auto-enroll for free test
+          if (!isEnrolled) {
+            try {
+              const { data } = await axios.post(
+                USERENDPOINTS.ENROLL_FREE_TEST,
+                { testId: currentTestId },
+                {
+                  headers: { Authorization: `Bearer ${token}` }
+                }
+              );
+
+              if (data.success) {
+                setIsEnrolled(true);
+                toast.success('Test enrolled successfully!');
+                // Refresh test data
+                try {
+                  const response = await axios.get(`${USERENDPOINTS.GETTESTSBYID}/${currentTestId}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                  });
+                  const testData = response.data.test || response.data;
+                  const mappedTest = mapBackendTestToFrontend(testData);
+                  setTest(mappedTest);
+                } catch (err) {
+                  console.error('Error refreshing test data:', err);
+                }
+              }
+            } catch (error) {
+              console.error('Auto-enrollment error:', error);
+              toast.error('Failed to enroll in test. Please try again.');
+            }
+          }
+        } else if (pendingTestType === 'paid') {
+          // Show payment modal for paid test
+          setShowPaymentModal(true);
+        }
+      }
+    };
+
+    handlePendingTest();
+  }, [user, token, test, isEnrolled]);
+
   const tabsData = [
     { id: 'Courses', label: 'Courses', count: 0, countLabel: 'courses', path: isStudentRoute ? '/student/learn' : '/learn' },
     { id: 'Jobs', label: 'Jobs', count: 45, countLabel: 'jobs', path: isStudentRoute ? '/student/jobs' : '/jobs' },
@@ -434,6 +493,12 @@ const TestDetailsNew = () => {
   const handleTakeFreeTest = async () => {
     try {
       if (!token || !user) {
+        // Store test ID in localStorage for redirect after login
+        const testId = formatted.id || test?._id || test?.id;
+        if (testId) {
+          localStorage.setItem('pendingTestId', testId);
+          localStorage.setItem('pendingTestType', 'free');
+        }
         setShowPurchaseModal(true);
         return;
       }
@@ -494,6 +559,12 @@ const TestDetailsNew = () => {
   const handleBuyNow = async () => {
     try {
       if (!token || !user) {
+        // Store test ID in localStorage for redirect after login
+        const testId = formatted.id || test?._id || test?.id;
+        if (testId) {
+          localStorage.setItem('pendingTestId', testId);
+          localStorage.setItem('pendingTestType', 'paid');
+        }
         setShowPurchaseModal(true);
         return;
       }
@@ -789,16 +860,19 @@ const TestDetailsNew = () => {
           <div className="absolute inset-0 bg-black/50" onClick={() => setShowPurchaseModal(false)}></div>
           <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
             <h3 className="text-base font-light text-gray-900 mb-2">Login Required</h3>
-            <p className="text-sm text-gray-600 mb-4">Please log in to purchase this test. Already have an account? Sign in or create a new account to continue.</p>
+            <p className="text-sm text-gray-600 mb-4">Please log in to {isFree ? 'take' : 'purchase'} this test. Already have an account? Sign in or create a new account to continue.</p>
             <div className="flex items-center justify-end gap-3">
-              <button className="px-4 py-2 rounded-md border border-gray-200 text-sm text-gray-700 hover:bg-gray-50" onClick={() => setShowPurchaseModal(false)}>Cancel</button>
+              <button className="px-4 py-2 rounded-md border border-gray-200 text-sm text-gray-700 hover:bg-gray-50" onClick={() => {
+                localStorage.removeItem('pendingTestId');
+                localStorage.removeItem('pendingTestType');
+                setShowPurchaseModal(false);
+              }}>Cancel</button>
               <button className="px-4 py-2 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700"
                 onClick={() => {
+                  const testId = formatted.id || test?._id || test?.id;
                   navigate('/login', {
                     state: {
-                      from: location.pathname,
-                      itemId: test.id,
-                      itemType: 'test'
+                      from: location.pathname + (testId ? `?id=${testId}` : ''),
                     }
                   });
                 }}
@@ -807,16 +881,37 @@ const TestDetailsNew = () => {
               </button>
               <button className="px-4 py-2 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700"
                 onClick={() => {
+                  const testId = formatted.id || test?._id || test?.id;
                   navigate('/signup', {
                     state: {
-                      from: location.pathname,
-                      itemId: test.id,
-                      itemType: 'test'
+                      from: location.pathname + (testId ? `?id=${testId}` : ''),
                     }
                   });
                 }}
               >
                 Sign Up
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Payment Modal - Show after login for paid test */}
+      {showPaymentModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setShowPaymentModal(false)}></div>
+          <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
+            <h3 className="text-base font-light text-gray-900 mb-2">Complete Your Purchase</h3>
+            <p className="text-sm text-gray-600 mb-4">You selected this test. Complete the payment to enroll and start taking the test.</p>
+            <div className="flex items-center justify-end gap-3">
+              <button className="px-4 py-2 rounded-md border border-gray-200 text-sm text-gray-700 hover:bg-gray-50" onClick={() => setShowPaymentModal(false)}>Cancel</button>
+              <button className="px-4 py-2 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700"
+                onClick={() => {
+                  setShowPaymentModal(false);
+                  handleBuyNow();
+                }}
+              >
+                Make Payment
               </button>
             </div>
           </div>

@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { toast } from "react-toastify";
 import { mainContext } from "../../../context/MainContext";
 import { USERENDPOINTS } from "../../../constants/ApiConstants";
+import PendingTestPaymentModal from "./PendingTestPaymentModal";
 import MyCourses from "../progress/MyCourses";
 import MyTests from "../progress/MyTests";
 import MyJobApplications from "../progress/MyJobApplications";
@@ -39,6 +41,9 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [dashboardData, setDashboardData] = useState(null);
   const [error, setError] = useState(null);
+  const [pendingTest, setPendingTest] = useState(null);
+  const [pendingTestLoading, setPendingTestLoading] = useState(false);
+  const [showPendingTestModal, setShowPendingTestModal] = useState(false);
 
   const navItems = [
     { name: "Overview" },
@@ -78,6 +83,78 @@ const Dashboard = () => {
 
     fetchDashboardData();
   }, [activeTab, token, user]);
+
+  // Check for pending test in localStorage and show payment popup if needed
+  useEffect(() => {
+    const checkPendingTest = async () => {
+      try {
+        if (!user || !token) return;
+
+        const pendingTestId = localStorage.getItem("pendingTestId");
+        const pendingTestType = localStorage.getItem("pendingTestType");
+
+        // Only handle pending tests that require payment
+        if (!pendingTestId || pendingTestType !== "paid") return;
+
+        setPendingTestLoading(true);
+
+        // Fetch test details
+        const testRes = await axios.get(
+          `${USERENDPOINTS.GETTESTSBYID}/${pendingTestId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        const testData = testRes.data?.test || testRes.data;
+        if (!testData) {
+          // If test not found, clear pending state
+          localStorage.removeItem("pendingTestId");
+          localStorage.removeItem("pendingTestType");
+          return;
+        }
+
+        // Check if user already enrolled/purchased this test
+        let alreadyEnrolled = false;
+        try {
+          const enrolledRes = await axios.get(
+            USERENDPOINTS.GET_ENROLLED_TESTS,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+
+          if (enrolledRes.data?.success && Array.isArray(enrolledRes.data.tests)) {
+            const enrolledTests = enrolledRes.data.tests;
+            alreadyEnrolled = enrolledTests.some((t) => {
+              const id = t._id || t.id;
+              return id && String(id) === String(pendingTestId);
+            });
+          }
+        } catch (enrollErr) {
+          console.error("Error checking enrolled tests for pending test:", enrollErr);
+        }
+
+        if (alreadyEnrolled) {
+          // User already has this test – clear pending state and don't show payment popup
+          localStorage.removeItem("pendingTestId");
+          localStorage.removeItem("pendingTestType");
+          toast.info("You are already enrolled in this test.");
+          return;
+        }
+
+        // Not enrolled – show modal with test info for payment
+        setPendingTest(testData);
+        setShowPendingTestModal(true);
+      } catch (err) {
+        console.error("Error handling pending test on dashboard:", err);
+      } finally {
+        setPendingTestLoading(false);
+      }
+    };
+
+    checkPendingTest();
+  }, [user, token]);
 
   // Default/fallback data
   const summaryCards = dashboardData?.summaryCards ? [
@@ -198,6 +275,20 @@ const Dashboard = () => {
           </button>
         ))}
       </div>
+
+      <PendingTestPaymentModal
+        open={showPendingTestModal}
+        pendingTest={pendingTest}
+        loading={pendingTestLoading}
+        onClose={() => setShowPendingTestModal(false)}
+        onGoToPayment={() => {
+          setShowPendingTestModal(false);
+          const testId = pendingTest?._id || pendingTest?.id;
+          if (testId) {
+            navigate(`/student/test-details?id=${testId}`);
+          }
+        }}
+      />
 
       {/* Conditional rendering based on activeTab */}
       {activeTab === "Overview" && (

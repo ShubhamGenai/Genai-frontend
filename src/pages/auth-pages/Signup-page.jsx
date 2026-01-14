@@ -118,7 +118,19 @@ const handleGoogleSignup = async () => {
     setToken(token);
 
     toast.success('Google signup successful!');
-    navigate("/");
+    
+    // Check for pending test in localStorage
+    const pendingTestId = localStorage.getItem('pendingTestId');
+    if (pendingTestId) {
+      // Redirect back to test details page
+      const isStudentRoute = backendUser?.role === 'student';
+      const testPath = isStudentRoute 
+        ? `/student/test-details?id=${pendingTestId}`
+        : `/test-details?id=${pendingTestId}`;
+      navigate(testPath, { replace: true });
+    } else {
+      navigate("/");
+    }
   } catch (err) {
     console.error("Google signup error:", err);
 
@@ -150,7 +162,16 @@ const verifyOtp = async (e) => {
       if (response.data.success) {
           setOtpVerified(true);
           toast.success(response.data.message || 'OTP verified successfully!');
-          navigate("/login"); // Redirect to login after successful verification
+          
+          // Check for pending test in localStorage
+          const pendingTestId = localStorage.getItem('pendingTestId');
+          if (pendingTestId) {
+            // Redirect to test details page - user will need to login
+            const testPath = `/test-details?id=${pendingTestId}`;
+            navigate(`/login?redirect=${encodeURIComponent(testPath)}`, { replace: true });
+          } else {
+            navigate("/login"); // Redirect to login after successful verification
+          }
       } else {
           const errorMsg = response.data.message || 'OTP verification failed. Please try again.';
           setError(errorMsg);
@@ -297,7 +318,19 @@ const handleVerifyMobileOtp = async (e) => {
       localStorage.setItem('user', JSON.stringify(response.data.user || {}));
 
       toast.success(response.data.message || 'Signup successful!');
-      navigate('/');
+      
+      // Check for pending test in localStorage
+      const pendingTestId = localStorage.getItem('pendingTestId');
+      if (pendingTestId) {
+        // Redirect back to test details page
+        const isStudentRoute = user?.role === 'student';
+        const testPath = isStudentRoute 
+          ? `/student/test-details?id=${pendingTestId}`
+          : `/test-details?id=${pendingTestId}`;
+        navigate(testPath, { replace: true });
+      } else {
+        navigate('/');
+      }
     } else {
       const errorMsg = response.data?.message || 'Invalid OTP.';
       setError(errorMsg);

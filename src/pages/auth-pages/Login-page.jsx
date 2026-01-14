@@ -46,6 +46,31 @@ const LoginPage = () => {
   useEffect(() => {
     console.log('LoginPage: useEffect for redirection triggered. User:', user, 'RedirectToPayment:', redirectToPayment);
     if (user?.role) {
+      // Check for redirect query parameter (from signup)
+      const urlParams = new URLSearchParams(window.location.search);
+      const redirectPath = urlParams.get('redirect');
+      
+      // Check for pending test in localStorage
+      const pendingTestId = localStorage.getItem('pendingTestId');
+      
+      if (redirectPath) {
+        // Redirect to the path specified in query parameter
+        console.log(`LoginPage: User logged in, redirecting to: ${redirectPath}`);
+        navigate(decodeURIComponent(redirectPath), { replace: true });
+        return;
+      }
+      
+      if (pendingTestId) {
+        // Redirect back to test details page
+        const isStudentRoute = location.pathname.startsWith('/student') || user.role === 'student';
+        const testPath = isStudentRoute 
+          ? `/student/test-details?id=${pendingTestId}`
+          : `/test-details?id=${pendingTestId}`;
+        console.log(`LoginPage: User logged in, redirecting to test page: ${testPath}`);
+        navigate(testPath, { replace: true });
+        return;
+      }
+      
       if (redirectToPayment) {
         // If there's pending payment redirect, navigate there
         console.log(`LoginPage: User logged in, redirecting to payment for ${redirectToPayment.itemType} ID ${redirectToPayment.itemId}`);
