@@ -3,12 +3,13 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { mainContext } from "../../../context/MainContext";
-import { USERENDPOINTS } from "../../../constants/ApiConstants";
+import { USERENDPOINTS, AUTHENDPOINTS } from "../../../constants/ApiConstants";
 import PendingTestPaymentModal from "./PendingTestPaymentModal";
 import GoalSelectionModal from "./GoalSelectionModal";
 import MyCourses from "../progress/MyCourses";
 import MyTests from "../progress/MyTests";
 import MyJobApplications from "../progress/MyJobApplications";
+import ProfileComponent from "./ProfileComponent";
 import { 
   BookOpenIcon, 
   FileTextIcon, 
@@ -20,19 +21,8 @@ import {
   ArrowRightIcon,
   StarIcon,
   TargetIcon,
-  AwardIcon,
-  UsersIcon,
-  BarChart3Icon,
   ChevronRightIcon
 } from "lucide-react";
-
-// Placeholder for Profile component
-const ProfileComponent = () => (
-  <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-5 md:p-6 shadow-sm">
-    <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Profile Information</h3>
-    <p className="text-sm sm:text-base text-gray-600">This is your profile page content.</p>
-  </div>
-);
 
 const Dashboard = () => {
   const location = useLocation();
@@ -46,6 +36,9 @@ const Dashboard = () => {
   const [pendingTestLoading, setPendingTestLoading] = useState(false);
   const [showPendingTestModal, setShowPendingTestModal] = useState(false);
   const [showGoalModal, setShowGoalModal] = useState(false);
+  const [profileData, setProfileData] = useState(null);
+  const [profileLoading, setProfileLoading] = useState(false);
+  const [profileError, setProfileError] = useState(null);
 
   const navItems = [
     { name: "Overview" },
@@ -549,7 +542,14 @@ const Dashboard = () => {
       {activeTab === "My Courses" && <MyCourses />}
       {activeTab === "My Tests" && <MyTests />}
       {activeTab === "My Applications" && <MyJobApplications />}
-      {activeTab === "Profile" && <ProfileComponent />}
+      {activeTab === "Profile" && (
+        <ProfileComponent 
+          user={user} 
+          profileData={profileData}
+          loading={profileLoading}
+          error={profileError}
+        />
+      )}
     </div>
   );
 };

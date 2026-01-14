@@ -86,6 +86,7 @@ export const USERENDPOINTS = {
 // Auth / profile specific endpoints
 export const AUTHENDPOINTS = {
   SAVE_LEARNING_PREFERENCES: `${API_BASE_URL}/auth/save-learning-preferences`,
+  GET_USER_DETAILS: `${API_BASE_URL}/auth/userDetails`,
 };
 
 
