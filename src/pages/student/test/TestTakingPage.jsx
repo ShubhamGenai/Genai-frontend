@@ -28,6 +28,7 @@ const TestTakingPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [viewingImage, setViewingImage] = useState(null);
   const [showQuestionPalette, setShowQuestionPalette] = useState(false);
+  const [passageExpanded, setPassageExpanded] = useState(true);
   
   // Alert/Confirm popup state
   const [alertPopup, setAlertPopup] = useState({
@@ -53,6 +54,7 @@ const TestTakingPage = () => {
             id: q._id || q.id || questionIndex,
             question: q.questionText || q.question || '',
             questionText: q.questionText || q.question || '',
+            passage: q.passage || '', // Include passage for reading comprehension questions
             options: Array.isArray(q.options) ? q.options : [],
             subject: quiz.title || 'General',
             difficulty: 'Medium', // Default difficulty
@@ -222,6 +224,11 @@ const TestTakingPage = () => {
 
     fetchTestData();
   }, [location.state, location.search, user, token]);
+
+  // Reset passage expanded state when question changes
+  useEffect(() => {
+    setPassageExpanded(true);
+  }, [currentQuestionIndex]);
 
   // Generate mock questions as fallback
   const generateMockQuestions = (testData, questionCount) => {
@@ -867,31 +874,67 @@ const TestTakingPage = () => {
                 </button>
               </div>
 
-              {/* Scrollable Content Area */}
-              <div className="flex-1 overflow-y-auto pr-1 sm:pr-2">
-                {/* Question Header */}
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 mb-3 pb-2 border-b border-gray-200 flex-shrink-0">
-                  <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-                    <span className="text-xs sm:text-sm font-medium text-gray-700">Question {currentQuestionIndex + 1} of {totalQuestions}</span>
-                    <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded text-[10px] sm:text-xs font-medium">
+              {/* Scrollable Content Area - Optimized for single screen */}
+              <div className="flex-1 overflow-hidden pr-1 sm:pr-2 min-h-0 flex flex-col">
+                {/* Question Header - Compact */}
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 sm:gap-2 mb-2 pb-1.5 border-b border-gray-200 flex-shrink-0">
+                  <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                    <span className="text-[10px] sm:text-xs font-medium text-gray-700">Q{currentQuestionIndex + 1}/{totalQuestions}</span>
+                    <span className="bg-green-100 text-green-700 px-1.5 py-0.5 rounded text-[9px] sm:text-[10px] font-medium">
                       {currentQuestion.difficulty}
                     </span>
                   </div>
-                  <span className="bg-gray-900 text-white px-2 py-0.5 rounded text-[10px] sm:text-xs font-medium self-start sm:self-auto">
+                  <span className="bg-gray-900 text-white px-1.5 py-0.5 rounded text-[9px] sm:text-[10px] font-medium self-start sm:self-auto">
                     {currentQuestion.subject || currentQuestion.quizTitle || testSubject}
                   </span>
                 </div>
 
-                {/* Question Text */}
-                <div className="mb-3 flex-shrink-0">
-                  <div className="text-xs sm:text-sm text-gray-900 leading-relaxed">
+                {/* Passage Display (if available) - Collapsible and Compact */}
+                {currentQuestion.passage && currentQuestion.passage.trim() !== '' && (
+                  <div className="mb-2 bg-blue-50 border border-blue-300 rounded flex-shrink-0">
+                    <button
+                      onClick={() => setPassageExpanded(!passageExpanded)}
+                      className="w-full p-2 bg-blue-100 border-b border-blue-300 flex items-center justify-between hover:bg-blue-200 transition-colors"
+                    >
+                      <p className="text-[10px] sm:text-xs font-bold text-blue-900 uppercase tracking-wide flex items-center gap-1.5">
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
+                        Reading Passage {passageExpanded ? '(Click to collapse)' : '(Click to expand)'}
+                      </p>
+                      <svg 
+                        className={`w-4 h-4 text-blue-900 transition-transform ${passageExpanded ? 'rotate-180' : ''}`}
+                        fill="none" 
+                        stroke="currentColor" 
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                    {passageExpanded && (
+                      <div className="p-2 max-h-[25vh] overflow-y-auto">
+                        <div className="text-xs sm:text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">
+                          {(currentQuestion.passage.includes('$') || currentQuestion.passage.includes('\\(') || currentQuestion.passage.includes('\\[')) ? (
+                            <FormulaRenderer text={currentQuestion.passage} className="text-gray-800" />
+                          ) : (
+                            <div className="text-gray-800">{currentQuestion.passage}</div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Question Text - Compact */}
+                <div className="mb-2 flex-shrink-0">
+                  <div className="text-xs sm:text-sm text-gray-900 leading-snug font-medium">
                     <FormulaRenderer text={currentQuestion.questionText || currentQuestion.question || 'Question text not available'} className="text-gray-900" />
                   </div>
                 </div>
 
-                {/* Question Image if available */}
+                {/* Question Image if available - Compact */}
                 {currentQuestion.imageUrl && currentQuestion.imageUrl.trim() !== '' && (
-                  <div className="mb-3 rounded-lg overflow-hidden bg-gray-100 border border-gray-200 p-1.5 sm:p-2 relative group flex-shrink-0" style={{ height: '120px', minHeight: '120px' }}>
+                  <div className="mb-2 rounded overflow-hidden bg-gray-100 border border-gray-200 p-1 relative group flex-shrink-0" style={{ height: '80px', minHeight: '80px' }}>
                     <div className="h-full w-full flex items-center justify-center">
                       <img
                         src={currentQuestion.imageUrl}
@@ -907,16 +950,16 @@ const TestTakingPage = () => {
                     </div>
                     <button
                       onClick={() => setViewingImage(currentQuestion.imageUrl)}
-                      className="absolute top-1 right-1 sm:top-1.5 sm:right-1.5 bg-black/60 hover:bg-black/80 text-white p-1 sm:p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                      className="absolute top-0.5 right-0.5 bg-black/60 hover:bg-black/80 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
                       title="View full size"
                     >
-                      <Eye className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                      <Eye className="h-3 w-3" />
                     </button>
                   </div>
                 )}
 
-                {/* Answer Options */}
-                <div className="space-y-2 sm:space-y-2 mb-4 flex-shrink-0">
+                {/* Answer Options - Compact and Scrollable */}
+                <div className="flex-1 min-h-0 overflow-y-auto space-y-1.5 sm:space-y-2 pb-2">
                 {currentQuestion.options.map((option, idx) => {
                   const optionLetters = ['A', 'B', 'C', 'D'];
                   const isSelected = selectedAnswers[currentQuestion.id] === idx;
@@ -925,11 +968,11 @@ const TestTakingPage = () => {
                     <div
                       key={idx}
                       onClick={() => !isPaused && handleOptionSelect(currentQuestion.id, idx)}
-                      className={`p-2.5 sm:p-3 border-2 rounded-lg transition-all ${
+                      className={`p-2 sm:p-2.5 border-2 rounded transition-all ${
                         isPaused 
                           ? 'border-gray-200 bg-gray-50 opacity-50 cursor-not-allowed'
                           : isSelected
-                          ? 'border-blue-500 bg-blue-50 cursor-pointer'
+                          ? 'border-blue-500 bg-blue-50 cursor-pointer shadow-sm'
                           : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50 cursor-pointer'
                       }`}
                       title={isPaused ? 'Test is paused. Resume to select options.' : ''}
@@ -943,8 +986,8 @@ const TestTakingPage = () => {
                           disabled={isPaused}
                           className="mt-0.5 w-4 h-4 text-blue-600 flex-shrink-0"
                         />
-                        <span className="flex-1 text-xs sm:text-sm text-gray-700">
-                          <span className="font-medium mr-1 sm:mr-1.5">Option {optionLetters[idx]}:</span>
+                        <span className="flex-1 text-xs sm:text-sm text-gray-700 leading-snug">
+                          <span className="font-semibold mr-1.5 text-gray-900">({optionLetters[idx]})</span>
                           <FormulaRenderer text={option || ''} className="text-gray-700" />
                         </span>
                       </label>

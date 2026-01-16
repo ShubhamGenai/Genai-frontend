@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 import { CONTENTMANAGER } from '../../../../constants/ApiConstants';
 import { ArrowLeftIcon, XIcon } from '@heroicons/react/outline';
 import AlertPopup from '../../../../component/common/AlertPopup';
@@ -16,6 +17,7 @@ const EditQuiz = () => {
   const [saving, setSaving] = useState(false);
   const [uploadingQuizImage, setUploadingQuizImage] = useState(false);
   const [uploadingQuestionImages, setUploadingQuestionImages] = useState({});
+  const [showPassageInput, setShowPassageInput] = useState({}); // Track which questions have passage input visible
   
   // Modal state
   const [modal, setModal] = useState({
@@ -45,12 +47,21 @@ const EditQuiz = () => {
           setDuration(found.duration || '');
           setImageUrl(found.imageUrl || found.image || found.imageURL || '');
           
-          // Normalize questions to use imageUrl consistently
+          // Normalize questions to use imageUrl consistently and include passage
           const normalizedQuestions = (found.questions || []).map(q => ({
             ...q,
-            imageUrl: q.imageUrl || q.image || q.imageURL || ''
+            imageUrl: q.imageUrl || q.image || q.imageURL || '',
+            passage: q.passage || ''
           }));
           setQuestions(normalizedQuestions);
+          // Show passage input for questions that already have a passage
+          const initialPassageState = {};
+          normalizedQuestions.forEach((q, index) => {
+            if (q.passage && q.passage.trim() !== '') {
+              initialPassageState[index] = true;
+            }
+          });
+          setShowPassageInput(initialPassageState);
         } else {
           showModal('error', 'Quiz Not Found', 'The quiz you are trying to edit was not found.');
         }
@@ -83,8 +94,16 @@ const EditQuiz = () => {
   const addQuestion = () => {
     setQuestions([
       ...questions,
-      { questionText: '', options: ['', '', '', ''], answer: '', imageUrl: '' },
+      { questionText: '', passage: '', options: ['', '', '', ''], answer: '', imageUrl: '' },
     ]);
+    // New questions don't show passage input by default
+  };
+
+  const togglePassageInput = (questionIndex) => {
+    setShowPassageInput(prev => ({
+      ...prev,
+      [questionIndex]: !prev[questionIndex]
+    }));
   };
 
   const removeQuestion = (index) => {
@@ -218,7 +237,7 @@ const EditQuiz = () => {
     e.preventDefault();
     setSaving(true);
     try {
-      // Normalize question image fields to imageUrl
+      // Normalize question image fields to imageUrl and preserve passage formatting
       const normalizedQuestions = questions.map(q => {
         const question = { ...q };
         // If image or imageURL exists, use it as imageUrl
@@ -234,6 +253,10 @@ const EditQuiz = () => {
         if (question.imageUrl && !question.imageUrl.trim()) {
           delete question.imageUrl;
         }
+        // Ensure passage is included (preserve formatting, don't trim)
+        if (!question.passage) {
+          question.passage = '';
+        }
         return question;
       });
 
@@ -243,9 +266,11 @@ const EditQuiz = () => {
         imageUrl: imageUrl.trim() || undefined,
         questions: normalizedQuestions,
       });
-      showModal('success', 'Quiz Updated', 'Quiz updated successfully!', () => {
+      toast.success('Quiz updated successfully!');
+      // Navigate after a short delay to allow toast to be visible
+      setTimeout(() => {
         navigate('/content/quizzes');
-      });
+      }, 1000);
     } catch (err) {
       console.error(err);
       showModal('error', 'Update Failed', err.response?.data?.error || err.message || 'Failed to update quiz. Please try again.');
@@ -375,6 +400,54 @@ const EditQuiz = () => {
                 required
               />
             </div>
+
+            {/* Passage Section - Show button if no passage, show input if passage exists or button clicked */}
+            {(!q.passage || q.passage.trim() === '') && !showPassageInput[i] ? (
+              <div className="mb-4">
+                <button
+                  type="button"
+                  onClick={() => togglePassageInput(i)}
+                  className="flex items-center gap-2 px-4 py-2 bg-slate-700/50 hover:bg-slate-700 text-slate-300 hover:text-white rounded-lg transition-colors text-sm font-medium border border-slate-600/30"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                  </svg>
+                  Add Passage (Optional)
+                </button>
+              </div>
+            ) : (
+              <div className="mb-4">
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-sm font-medium text-slate-300">
+                    Passage (Optional)
+                    <span className="text-xs text-slate-400 font-normal ml-1">- For reading comprehension questions</span>
+                  </label>
+                  {(!q.passage || q.passage.trim() === '') && (
+                    <button
+                      type="button"
+                      onClick={() => togglePassageInput(i)}
+                      className="text-xs text-slate-400 hover:text-slate-300 transition-colors"
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
+                <textarea
+                  rows={6}
+                  placeholder="Enter passage text (e.g., reading comprehension passage, case study, etc.)... Press Enter for new paragraphs."
+                  className="w-full px-3 py-2 bg-slate-800/60 border border-slate-600/30 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 resize-y font-normal leading-relaxed"
+                  value={q.passage || ''}
+                  onChange={(e) => handleQuestionChange(i, 'passage', e.target.value)}
+                  style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}
+                />
+                {q.passage && q.passage.trim() !== '' && (
+                  <div className="mt-2 p-2 bg-slate-900/50 rounded text-xs border border-slate-600/30">
+                    <div className="text-slate-400 mb-1">Preview:</div>
+                    <div className="text-slate-200 whitespace-pre-wrap leading-relaxed">{q.passage}</div>
+                  </div>
+                )}
+              </div>
+            )}
 
             <div className="mb-4">
               <label className="block text-sm font-medium text-slate-300 mb-2">Question Image (optional)</label>

@@ -104,6 +104,7 @@ const TestResultsPage = () => {
           detailedAnswers: detailedAnswers.map(a => ({
             questionId: a.questionId,
             questionText: a.questionText || '',
+            passage: a.passage || '',
             selectedAnswer: a.selectedOption || a.selectedAnswer,
             correctAnswer: a.correctAnswer,
             isCorrect: a.isCorrect,
@@ -163,6 +164,7 @@ const TestResultsPage = () => {
       return {
         questionId: questionId,
         questionText: question.question || question.questionText || '',
+        passage: question.passage || '',
         options: question.options || [],
         selectedAnswer: selectedAnswer !== null && selectedAnswer !== undefined 
           ? (typeof selectedAnswer === 'number' && question.options 
@@ -471,6 +473,20 @@ const TestResultsPage = () => {
                     {expandedQuestions[answer.questionId] ? 'Hide' : 'Show'}
                   </button>
                 </div>
+                
+                {/* Passage Display (if available) */}
+                {answer.passage && answer.passage.trim() !== '' && (
+                  <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                    <p className="text-xs font-semibold text-blue-900 mb-2 uppercase tracking-wide">Passage:</p>
+                    <div className="text-xs text-gray-800 whitespace-pre-wrap leading-relaxed">
+                      {(answer.passage.includes('$') || answer.passage.includes('\\(') || answer.passage.includes('\\[')) ? (
+                        <FormulaRenderer text={answer.passage} className="text-gray-800" />
+                      ) : (
+                        <div>{answer.passage}</div>
+                      )}
+                    </div>
+                  </div>
+                )}
                 
                 <div className="text-xs sm:text-sm font-medium text-gray-900 mb-2 break-words">
                   <FormulaRenderer text={answer.questionText || ''} className="text-xs sm:text-sm font-medium text-gray-900" />

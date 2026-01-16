@@ -15,6 +15,7 @@ export default function AddQuiz() {
   const [questions, setQuestions] = useState([
     {
       questionText: '',
+      passage: '',
       options: ['', '', '', ''],
       answer: '',
       imageUrl: '',
@@ -61,6 +62,7 @@ export default function AddQuiz() {
       ...questions,
       {
         questionText: '',
+        passage: '',
         options: ['', '', '', ''],
         answer: '',
         imageUrl: '',
@@ -86,6 +88,7 @@ export default function AddQuiz() {
   // Clean and validate data before sending
   const cleanedQuestions = questions.map(q => ({
     questionText: q.questionText.trim(),
+    passage: q.passage && q.passage.trim() !== '' ? q.passage : '', // Preserve passage formatting (line breaks, paragraphs)
     options: q.options.map(opt => opt.trim()).filter(opt => opt !== ''),
     answer: q.answer.trim(),
     imageUrl: q.imageUrl && q.imageUrl.trim() !== '' ? q.imageUrl.trim() : '',
@@ -145,6 +148,7 @@ export default function AddQuiz() {
     setQuestions([
       {
         questionText: '',
+        passage: '',
         options: ['', '', '', ''],
         answer: '',
         imageUrl: '',
@@ -233,6 +237,7 @@ export default function AddQuiz() {
         const generated = response.data.data.questions.map((q, index) => ({
           id: `gen-${Date.now()}-${index}`, // Unique ID for each question
           questionText: q.questionText || '',
+          passage: q.passage || '',
           options: Array.isArray(q.options) && q.options.length >= 2 
             ? q.options 
             : ['', '', '', ''],
@@ -293,6 +298,7 @@ export default function AddQuiz() {
         updatedQuestions[questionIndex] = {
           id: generatedQuestions[questionIndex].id, // Keep the same ID
           questionText: newQuestion.questionText || '',
+          passage: newQuestion.passage || '',
           options: Array.isArray(newQuestion.options) && newQuestion.options.length >= 2 
             ? newQuestion.options 
             : ['', '', '', ''],
@@ -430,6 +436,51 @@ export default function AddQuiz() {
                       <div className="mt-2 p-2 bg-slate-800/50 rounded text-sm border border-slate-600/30">
                         <div className="text-slate-400 mb-1 text-xs">Preview:</div>
                         <FormulaRenderer text={q.questionText} className="text-slate-200" />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Passage Section (Optional) */}
+                  <div className="mb-3">
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="block text-sm font-bold text-slate-300">
+                        Passage (Optional)
+                        <span className="text-xs text-slate-400 font-normal ml-1">- For reading comprehension questions</span>
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => setFormulaHelper({ open: true, targetField: 'passage', questionIndex: i })}
+                        className="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1"
+                        title="Insert formula"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
+                        </svg>
+                        Formula
+                      </button>
+                    </div>
+                    <textarea
+                      rows={6}
+                      className="w-full bg-slate-700/40 border border-slate-600/30 rounded-lg px-3 py-1.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all resize-y font-normal leading-relaxed"
+                      value={q.passage || ''}
+                      onChange={(e) => handleQuestionChange(i, 'passage', e.target.value)}
+                      placeholder="Enter passage text (e.g., reading comprehension passage, case study, etc.)... Press Enter for new paragraphs. (Use $formula$ for math/chemistry)"
+                      style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}
+                    />
+                    {/* Formula Preview for Passage */}
+                    {q.passage && (q.passage.includes('$') || q.passage.includes('\\(') || q.passage.includes('\\[')) && (
+                      <div className="mt-2 p-2 bg-slate-800/50 rounded text-sm border border-slate-600/30">
+                        <div className="text-slate-400 mb-1 text-xs">Preview:</div>
+                        <div className="whitespace-pre-wrap">
+                          <FormulaRenderer text={q.passage} className="text-slate-200" />
+                        </div>
+                      </div>
+                    )}
+                    {/* Plain text preview when no formulas */}
+                    {q.passage && q.passage.trim() !== '' && !q.passage.includes('$') && !q.passage.includes('\\(') && !q.passage.includes('\\[') && (
+                      <div className="mt-2 p-2 bg-slate-800/50 rounded text-sm border border-slate-600/30">
+                        <div className="text-slate-400 mb-1 text-xs">Preview:</div>
+                        <div className="text-slate-200 whitespace-pre-wrap leading-relaxed">{q.passage}</div>
                       </div>
                     )}
                   </div>
@@ -695,6 +746,11 @@ export default function AddQuiz() {
                 const currentText = updatedQuestions[formulaHelper.questionIndex].questionText || '';
                 updatedQuestions[formulaHelper.questionIndex].questionText = currentText + (currentText ? ' ' : '') + formula;
                 setQuestions(updatedQuestions);
+              } else if (formulaHelper.targetField === 'passage' && formulaHelper.questionIndex !== null) {
+                const updatedQuestions = [...questions];
+                const currentText = updatedQuestions[formulaHelper.questionIndex].passage || '';
+                updatedQuestions[formulaHelper.questionIndex].passage = currentText + (currentText ? ' ' : '') + formula;
+                setQuestions(updatedQuestions);
               } else if (formulaHelper.targetField === 'option' && formulaHelper.questionIndex !== null && formulaHelper.optionIndex !== null) {
                 const updatedQuestions = [...questions];
                 const currentText = updatedQuestions[formulaHelper.questionIndex].options[formulaHelper.optionIndex] || '';
@@ -797,6 +853,18 @@ export default function AddQuiz() {
                           )}
                         </button>
                       </div>
+                      {q.passage && q.passage.trim() !== '' && (
+                        <div className="mb-3">
+                          <p className="text-sm font-semibold text-white mb-2">Passage:</p>
+                          <div className="text-sm text-slate-200 bg-slate-800/50 rounded p-3 whitespace-pre-wrap leading-relaxed border border-slate-600/30">
+                            {(q.passage.includes('$') || q.passage.includes('\\(') || q.passage.includes('\\[')) ? (
+                              <FormulaRenderer text={q.passage} className="text-slate-200" />
+                            ) : (
+                              <div className="text-slate-200">{q.passage}</div>
+                            )}
+                          </div>
+                        </div>
+                      )}
                       <div className="mb-2">
                         <p className="text-sm font-semibold text-white mb-1">Question:</p>
                         <div className="text-sm text-slate-200 bg-slate-800/50 rounded p-2">

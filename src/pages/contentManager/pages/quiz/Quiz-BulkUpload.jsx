@@ -200,6 +200,7 @@ const QuizBulkUpload = () => {
         const quiz = quizMap.get(key);
         quiz.questions.push({
           questionText: cleanQuestionText,
+          passage: '', // Initialize passage as empty (can be added during edit)
           options: [cleanOption1, cleanOption2, cleanOption3, cleanOption4].filter((o) => o && o.trim() !== ''),
           answer: cleanAnswer,
         });
@@ -281,12 +282,13 @@ const QuizBulkUpload = () => {
         if (parsedQuizzes.length === 0) {
           throw new Error("No valid quiz rows found in file.");
         }
-        // Initialize imageUrl for all questions
+        // Initialize imageUrl and passage for all questions
         const quizzesWithImages = parsedQuizzes.map(quiz => ({
           ...quiz,
           questions: quiz.questions.map(q => ({
             ...q,
-            imageUrl: q.imageUrl || ''
+            imageUrl: q.imageUrl || '',
+            passage: q.passage || ''
           }))
         }));
         setQuizzes(quizzesWithImages);
@@ -345,6 +347,18 @@ const QuizBulkUpload = () => {
     for (let i = 0; i < quizzes.length; i++) {
       const quizData = quizzes[i];
       
+      // Debug: Log raw quiz data from state before formatting
+      console.log(`[Bulk Upload] Raw quiz data from state for "${quizData.title}":`, {
+        questionsCount: quizData.questions?.length || 0,
+        questions: quizData.questions?.map((q, idx) => ({
+          index: idx + 1,
+          hasPassage: 'passage' in q,
+          passageType: typeof q.passage,
+          passageValue: q.passage,
+          passageLength: q.passage ? String(q.passage).length : 0
+        })) || []
+      });
+      
       // Format and validate quiz data before sending
       try {
         // Validate quiz title and duration first
@@ -365,6 +379,14 @@ const QuizBulkUpload = () => {
         }
         
         const formattedQuestions = quizData.questions.map((q, qIdx) => {
+          // Debug: Log raw question data before formatting
+          console.log(`[Bulk Upload] Raw question ${qIdx + 1} data:`, {
+            hasPassage: 'passage' in q,
+            passageType: typeof q.passage,
+            passageValue: q.passage,
+            passageLength: q.passage ? String(q.passage).length : 0
+          });
+          
           // Filter out empty options and trim all options
           const validOptions = (q.options || [])
             .map(opt => String(opt).trim())
@@ -393,13 +415,35 @@ const QuizBulkUpload = () => {
             throw new Error(`Question ${qIdx + 1}: Answer "${trimmedAnswer}" must match one of the options: ${validOptions.join(', ')}`);
           }
           
-          return {
+          // Handle passage - ensure it's always included as a string
+          // Check for passage in multiple ways to ensure we catch it
+          let passageValue = '';
+          if (q.hasOwnProperty('passage')) {
+            // Passage property exists, use it (even if empty string)
+            passageValue = (q.passage !== null && q.passage !== undefined) ? String(q.passage) : '';
+          } else {
+            // Passage property doesn't exist, default to empty string
+            passageValue = '';
+          }
+          
+          const formattedQuestion = {
             questionText: questionText,
+            passage: passageValue, // Preserve passage formatting (line breaks, paragraphs) - don't trim
             options: validOptions,
             answer: trimmedAnswer,
-            imageUrl: q.imageUrl || '',
-            marks: q.marks || 1
+            imageUrl: (q.imageUrl && String(q.imageUrl).trim()) ? String(q.imageUrl).trim() : '',
+            marks: q.marks && !isNaN(parseInt(q.marks)) ? parseInt(q.marks) : 1
           };
+          
+          // Debug: Log passage for each question
+          console.log(`[Bulk Upload] Formatted question ${qIdx + 1}:`, {
+            hasPassage: !!passageValue,
+            passageLength: passageValue.length,
+            passagePreview: passageValue ? passageValue.substring(0, 50) + '...' : 'empty',
+            fullPassage: passageValue
+          });
+          
+          return formattedQuestion;
         });
         
         const formattedQuiz = {
@@ -408,6 +452,18 @@ const QuizBulkUpload = () => {
           questions: formattedQuestions
         };
         
+        // Debug: Log passage data being sent
+        console.log(`[Bulk Upload] Sending quiz "${quizTitle}" with ${formattedQuestions.length} questions`);
+        formattedQuestions.forEach((q, idx) => {
+          if (q.passage && q.passage.trim() !== '') {
+            console.log(`[Bulk Upload] Question ${idx + 1} has passage (${q.passage.length} chars):`, q.passage.substring(0, 50) + '...');
+          } else {
+            console.log(`[Bulk Upload] Question ${idx + 1} has no passage`);
+          }
+        });
+        
+        // Log full quiz data structure to verify passage is included
+        console.log('[Bulk Upload] Full quiz data being sent:', JSON.stringify(formattedQuiz, null, 2));
         // Send to backend
         await axios.post(CONTENTMANAGER.ADD_QUIZ, formattedQuiz);
         successCount++;
@@ -528,8 +584,60 @@ const QuizBulkUpload = () => {
   };
 
   const handleSaveQuestion = (quizIndex, questionIndex, updatedQuestion) => {
-    const updatedQuizzes = [...quizzes];
-    updatedQuizzes[quizIndex].questions[questionIndex] = updatedQuestion;
+    console.log(`[Bulk Upload] handleSaveQuestion called for quiz ${quizIndex + 1}, question ${questionIndex + 1}`);
+    console.log(`[Bulk Upload] updatedQuestion received:`, {
+      hasPassage: 'passage' in updatedQuestion,
+      passageType: typeof updatedQuestion.passage,
+      passageValue: updatedQuestion.passage,
+      passageLength: updatedQuestion.passage ? String(updatedQuestion.passage).length : 0
+    });
+    
+    const updatedQuizzes = quizzes.map((quiz, qIdx) => {
+      if (qIdx === quizIndex) {
+        return {
+          ...quiz,
+          questions: quiz.questions.map((q, qIndex) => {
+            if (qIndex === questionIndex) {
+              // Ensure passage is explicitly included and properly formatted
+              let passageValue = '';
+              if (updatedQuestion.hasOwnProperty('passage')) {
+                // Passage property exists, use it (preserve even empty strings)
+                passageValue = (updatedQuestion.passage !== null && updatedQuestion.passage !== undefined) ? String(updatedQuestion.passage) : '';
+              } else {
+                // Passage property doesn't exist, check if original question has it
+                passageValue = (q.passage !== null && q.passage !== undefined) ? String(q.passage) : '';
+              }
+              
+              const savedQuestion = {
+                questionText: updatedQuestion.questionText || q.questionText,
+                passage: passageValue, // Preserve passage formatting - explicitly set
+                options: updatedQuestion.options || q.options,
+                answer: updatedQuestion.answer || q.answer,
+                imageUrl: updatedQuestion.imageUrl || q.imageUrl || '',
+                marks: updatedQuestion.marks || q.marks || 1
+              };
+              // Debug: Log saved passage
+              console.log(`[Bulk Upload] Saved question ${questionIndex + 1} in quiz ${quizIndex + 1}:`, {
+                hasPassage: !!passageValue,
+                passageLength: passageValue.length,
+                passagePreview: passageValue ? passageValue.substring(0, 50) + '...' : 'empty',
+                fullSavedQuestion: savedQuestion
+              });
+              return savedQuestion;
+            }
+            return q;
+          })
+        };
+      }
+      return quiz;
+    });
+    
+    // Debug: Verify the updated state
+    console.log(`[Bulk Upload] Updated quizzes state - question ${questionIndex + 1} in quiz ${quizIndex + 1}:`, {
+      passage: updatedQuizzes[quizIndex].questions[questionIndex].passage,
+      passageLength: updatedQuizzes[quizIndex].questions[questionIndex].passage ? String(updatedQuizzes[quizIndex].questions[questionIndex].passage).length : 0
+    });
+    
     setQuizzes(updatedQuizzes);
     setEditingQuestion(null);
   };
@@ -679,6 +787,14 @@ const QuizBulkUpload = () => {
   const QuestionDisplay = ({ question, onImageUpload, onRemoveImage }) => (
     <div className="space-y-3">
       <div>
+        {question.passage && question.passage.trim() !== '' && (
+          <div className="mb-3 p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+            <p className="text-xs font-semibold text-blue-300 mb-2 uppercase tracking-wide">Passage:</p>
+            <div className="text-sm text-slate-200 whitespace-pre-wrap leading-relaxed">
+              {question.passage}
+            </div>
+          </div>
+        )}
         <p className="text-white font-medium mb-2">{question.questionText}</p>
         {question.imageUrl && (
           <div className="relative mb-3 inline-block">
@@ -727,8 +843,14 @@ const QuizBulkUpload = () => {
 
   // Edit Question Form Component
   const EditQuestionForm = ({ question, quizIndex, questionIndex, onSave, onCancel, onImageUpload, onRemoveImage }) => {
-    const [editedQuestion, setEditedQuestion] = useState({ ...question });
+    // Ensure passage is always initialized as a string
+    const initialPassage = (question.passage !== null && question.passage !== undefined) ? String(question.passage) : '';
+    const [editedQuestion, setEditedQuestion] = useState({ 
+      ...question, 
+      passage: initialPassage 
+    });
     const [editError, setEditError] = useState(null);
+    const [showPassageInput, setShowPassageInput] = useState(!!(initialPassage && initialPassage.trim() !== ''));
 
     const handleAddOption = () => {
       const newOptions = [...editedQuestion.options, ''];
@@ -780,11 +902,37 @@ const QuizBulkUpload = () => {
         setEditError("Answer must match one of the options");
         return;
       }
-      // Filter out empty options before saving
+      // Filter out empty options before saving, ensure passage is included
+      // Get passage value - check if it exists in editedQuestion, even if empty string
+      let passageValue = '';
+      if (editedQuestion.hasOwnProperty('passage')) {
+        // Passage property exists, use it (preserve even empty strings)
+        passageValue = (editedQuestion.passage !== null && editedQuestion.passage !== undefined) ? String(editedQuestion.passage) : '';
+      } else {
+        // Passage property doesn't exist, default to empty
+        passageValue = '';
+      }
+      
       const cleanedQuestion = {
-        ...editedQuestion,
-        options: validOptions
+        questionText: editedQuestion.questionText.trim(),
+        passage: passageValue, // Preserve passage formatting (line breaks, paragraphs) - don't trim
+        options: validOptions,
+        answer: editedQuestion.answer.trim(),
+        imageUrl: editedQuestion.imageUrl || '',
+        marks: editedQuestion.marks || 1
       };
+      
+      // Debug: Log passage before saving - show full details
+      console.log(`[Bulk Upload] Saving question ${questionIndex + 1} in quiz ${quizIndex + 1}:`, {
+        editedQuestionPassage: editedQuestion.passage,
+        passageType: typeof editedQuestion.passage,
+        hasPassageProperty: editedQuestion.hasOwnProperty('passage'),
+        passageValue: passageValue,
+        passageLength: passageValue.length,
+        passagePreview: passageValue ? passageValue.substring(0, 100) + '...' : 'empty',
+        questionText: cleanedQuestion.questionText.substring(0, 50) + '...',
+        fullCleanedQuestion: cleanedQuestion
+      });
       onSave(quizIndex, questionIndex, cleanedQuestion);
     };
 
@@ -807,6 +955,60 @@ const QuizBulkUpload = () => {
             rows={3}
           />
         </div>
+
+        {/* Passage Section - Show button if no passage, show input if passage exists or button clicked */}
+        {(!editedQuestion.passage || editedQuestion.passage.trim() === '') && !showPassageInput ? (
+          <div>
+            <button
+              type="button"
+              onClick={() => setShowPassageInput(true)}
+              className="flex items-center gap-2 px-3 py-2 bg-slate-700/50 hover:bg-slate-700 text-slate-300 hover:text-white rounded-lg transition-colors text-xs font-medium border border-slate-600/30"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              </svg>
+              Add Passage (Optional)
+            </button>
+          </div>
+        ) : (
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-xs font-medium text-slate-300">
+                Passage (Optional)
+                <span className="text-xs text-slate-400 font-normal ml-1">- For reading comprehension questions</span>
+              </label>
+              {(!editedQuestion.passage || editedQuestion.passage.trim() === '') && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowPassageInput(false);
+                    setEditedQuestion({ ...editedQuestion, passage: '' });
+                  }}
+                  className="text-xs text-slate-400 hover:text-slate-300 transition-colors"
+                >
+                  Remove
+                </button>
+              )}
+            </div>
+            <textarea
+              rows={4}
+              placeholder="Enter passage text (e.g., reading comprehension passage, case study, etc.)... Press Enter for new paragraphs."
+              className="w-full px-3 py-2 bg-slate-800/50 border border-slate-600/30 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-y font-normal leading-relaxed"
+              value={editedQuestion.passage || ''}
+              onChange={(e) => {
+                setEditedQuestion({ ...editedQuestion, passage: e.target.value });
+                setEditError(null);
+              }}
+              style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}
+            />
+            {editedQuestion.passage && editedQuestion.passage.trim() !== '' && (
+              <div className="mt-2 p-2 bg-slate-900/50 rounded text-xs border border-slate-600/30">
+                <div className="text-slate-400 mb-1">Preview:</div>
+                <div className="text-slate-200 whitespace-pre-wrap leading-relaxed">{editedQuestion.passage}</div>
+              </div>
+            )}
+          </div>
+        )}
 
         {editedQuestion.imageUrl && (
           <div className="relative inline-block">

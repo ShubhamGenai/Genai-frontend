@@ -13,6 +13,7 @@ const QuizView = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [viewingImage, setViewingImage] = useState(null);
+  const [expandedPassages, setExpandedPassages] = useState(new Set());
 
   useEffect(() => {
     const fetchQuiz = async () => {
@@ -131,6 +132,50 @@ const QuizView = () => {
                 <div className="flex gap-4 items-start">
                   {/* Left column - Question content */}
                   <div className="flex-1 min-w-0">
+                    {/* Passage Display - Collapsible */}
+                    {q.passage && q.passage.trim() !== '' && (
+                      <div className="mb-4 bg-slate-700/40 rounded-lg border border-slate-600/30 overflow-hidden">
+                        <button
+                          onClick={() => {
+                            const newExpanded = new Set(expandedPassages);
+                            if (newExpanded.has(index)) {
+                              newExpanded.delete(index);
+                            } else {
+                              newExpanded.add(index);
+                            }
+                            setExpandedPassages(newExpanded);
+                          }}
+                          className="w-full p-3 flex items-center justify-between hover:bg-slate-700/60 transition-colors"
+                        >
+                          <p className="text-xs font-semibold text-slate-300 uppercase tracking-wide flex items-center gap-2">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                            </svg>
+                            Reading Passage {expandedPassages.has(index) ? '(Click to collapse)' : '(Click to expand)'}
+                          </p>
+                          <svg 
+                            className={`w-4 h-4 text-slate-300 transition-transform ${expandedPassages.has(index) ? 'rotate-180' : ''}`}
+                            fill="none" 
+                            stroke="currentColor" 
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </button>
+                        {expandedPassages.has(index) && (
+                          <div className="p-3 pt-0 border-t border-slate-600/30">
+                            <div className="text-sm text-slate-200 whitespace-pre-wrap leading-relaxed">
+                              {(q.passage.includes('$') || q.passage.includes('\\(') || q.passage.includes('\\[')) ? (
+                                <FormulaRenderer text={q.passage} className="text-slate-200" />
+                              ) : (
+                                <div>{q.passage}</div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    
                     <div className="mb-3">
                       <h2 className="text-lg font-semibold text-white">
                         <span className="mr-2">Q{index + 1}.</span>
