@@ -1,9 +1,13 @@
-import React, { useState } from 'react';
-import { Folder, FileText, ChevronDown, ChevronRight } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Folder, FileText, ChevronDown, ChevronRight, Loader } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { subCategories, resources } from '../../../mock-data/libraryMockData';
+import axios from 'axios';
+import { USERENDPOINTS } from '../../../constants/ApiConstants';
 
 const LibraryPage = () => {
+  const [documents, setDocuments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [expandedCategories, setExpandedCategories] = useState({
     'ncert': true,
     'competitive': false,
@@ -25,6 +29,29 @@ const LibraryPage = () => {
   });
   const [selectedCategory, setSelectedCategory] = useState('ncert');
 
+  useEffect(() => {
+    fetchLibraryDocuments();
+  }, []);
+
+  const fetchLibraryDocuments = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await axios.get(USERENDPOINTS.GET_LIBRARY_DOCUMENTS);
+      if (res.data && res.data.success && res.data.documents) {
+        setDocuments(res.data.documents);
+      } else {
+        setDocuments([]);
+      }
+    } catch (err) {
+      console.error('Failed to fetch library documents:', err);
+      setError('Failed to load library documents. Please try again.');
+      setDocuments([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const toggleCategory = (categoryId) => {
     setExpandedCategories(prev => ({
       ...prev,
@@ -32,20 +59,107 @@ const LibraryPage = () => {
     }));
   };
 
+  // Organize documents by class and category
+  const organizeDocuments = () => {
+    const organized = {
+      ncert: {
+        class8: [],
+        class9: [],
+        class10: [],
+        class11: [],
+        class12: []
+      },
+      competitive: {
+        jee: [],
+        neet: [],
+        upsc: []
+      },
+      professional: {
+        webdev: [],
+        data: [],
+        ai: []
+      },
+      study: {
+        notes: [],
+        guides: []
+      }
+    };
+
+    documents.forEach(doc => {
+      const docClass = doc.class?.toLowerCase() || '';
+      const category = doc.category?.toLowerCase() || '';
+
+      // Map to NCERT classes
+      if (docClass.includes('class 8') || docClass.includes('class8')) {
+        organized.ncert.class8.push(doc);
+      } else if (docClass.includes('class 9') || docClass.includes('class9')) {
+        organized.ncert.class9.push(doc);
+      } else if (docClass.includes('class 10') || docClass.includes('class10')) {
+        organized.ncert.class10.push(doc);
+      } else if (docClass.includes('class 11') || docClass.includes('class11')) {
+        organized.ncert.class11.push(doc);
+      } else if (docClass.includes('class 12') || docClass.includes('class12')) {
+        organized.ncert.class12.push(doc);
+      }
+
+      // Map to competitive exams
+      if (category.includes('jee') || category.includes('engineering')) {
+        organized.competitive.jee.push(doc);
+      } else if (category.includes('neet') || category.includes('medical')) {
+        organized.competitive.neet.push(doc);
+      } else if (category.includes('upsc') || category.includes('civil')) {
+        organized.competitive.upsc.push(doc);
+      }
+
+      // Map to professional skills
+      if (category.includes('web') || category.includes('frontend') || category.includes('backend')) {
+        organized.professional.webdev.push(doc);
+      } else if (category.includes('data') || category.includes('analytics')) {
+        organized.professional.data.push(doc);
+      } else if (category.includes('ai') || category.includes('machine learning') || category.includes('ml')) {
+        organized.professional.ai.push(doc);
+      }
+
+      // Map to study materials
+      if (category.includes('note') || category.includes('study')) {
+        organized.study.notes.push(doc);
+      } else if (category.includes('guide') || category.includes('preparation')) {
+        organized.study.guides.push(doc);
+      }
+    });
+
+    return organized;
+  };
+
+  const organizedDocs = organizeDocuments();
+
   const getCategoryCount = (categoryId) => {
     if (categoryId === 'ncert') {
-      return subCategories.ncert.length; // Number of sub-categories
+      return Object.keys(organizedDocs.ncert).filter(key => organizedDocs.ncert[key].length > 0).length;
     }
     if (categoryId === 'competitive') {
-      return subCategories.competitive.length; // Number of sub-categories
+      return Object.keys(organizedDocs.competitive).filter(key => organizedDocs.competitive[key].length > 0).length;
     }
     if (categoryId === 'professional') {
-      return subCategories.professional.length; // Number of sub-categories
+      return Object.keys(organizedDocs.professional).filter(key => organizedDocs.professional[key].length > 0).length;
     }
     if (categoryId === 'study') {
-      return subCategories.study.length; // Number of sub-categories
+      return Object.keys(organizedDocs.study).filter(key => organizedDocs.study[key].length > 0).length;
     }
-    return resources[categoryId]?.length || 0;
+    // For sub-categories, return document count
+    if (organizedDocs.ncert[categoryId]) {
+      return organizedDocs.ncert[categoryId].length;
+    }
+    if (organizedDocs.competitive[categoryId]) {
+      return organizedDocs.competitive[categoryId].length;
+    }
+    if (organizedDocs.professional[categoryId]) {
+      return organizedDocs.professional[categoryId].length;
+    }
+    if (organizedDocs.study[categoryId]) {
+      return organizedDocs.study[categoryId].length;
+    }
+    return 0;
   };
 
   const getMainCategoryName = (categoryId) => {
@@ -59,24 +173,127 @@ const LibraryPage = () => {
   };
 
   const getSubCategoryName = (categoryId) => {
-    const allSubCategories = [
-      ...subCategories.ncert,
-      ...subCategories.competitive,
-      ...subCategories.professional,
-      ...subCategories.study
-    ];
-    const subCategory = allSubCategories.find(sub => sub.id === categoryId);
-    return subCategory ? subCategory.name : categoryId;
+    const names = {
+      'class8': 'Class 8',
+      'class9': 'Class 9',
+      'class10': 'Class 10',
+      'class11': 'Class 11',
+      'class12': 'Class 12',
+      'jee': 'JEE Preparation',
+      'neet': 'NEET Preparation',
+      'upsc': 'UPSC',
+      'webdev': 'Web Development',
+      'data': 'Data Science',
+      'ai': 'AI & ML',
+      'notes': 'Study Notes',
+      'guides': 'Exam Guides'
+    };
+    return names[categoryId] || categoryId;
   };
 
   const isMainCategory = (categoryId) => {
     return ['ncert', 'competitive', 'professional', 'study'].includes(categoryId);
   };
 
-  const selectedResources = isMainCategory(selectedCategory) ? [] : (resources[selectedCategory] || []);
-  const selectedSubCategories = isMainCategory(selectedCategory) ? (subCategories[selectedCategory] || []) : [];
+  const getSelectedResources = () => {
+    if (isMainCategory(selectedCategory)) {
+      return [];
+    }
+    if (organizedDocs.ncert[selectedCategory]) {
+      return organizedDocs.ncert[selectedCategory];
+    }
+    if (organizedDocs.competitive[selectedCategory]) {
+      return organizedDocs.competitive[selectedCategory];
+    }
+    if (organizedDocs.professional[selectedCategory]) {
+      return organizedDocs.professional[selectedCategory];
+    }
+    if (organizedDocs.study[selectedCategory]) {
+      return organizedDocs.study[selectedCategory];
+    }
+    return [];
+  };
+
+  const getSelectedSubCategories = () => {
+    if (!isMainCategory(selectedCategory)) {
+      return [];
+    }
+    if (selectedCategory === 'ncert') {
+      return ['class8', 'class9', 'class10', 'class11', 'class12'].filter(key => organizedDocs.ncert[key].length > 0);
+    }
+    if (selectedCategory === 'competitive') {
+      return ['jee', 'neet', 'upsc'].filter(key => organizedDocs.competitive[key].length > 0);
+    }
+    if (selectedCategory === 'professional') {
+      return ['webdev', 'data', 'ai'].filter(key => organizedDocs.professional[key].length > 0);
+    }
+    if (selectedCategory === 'study') {
+      return ['notes', 'guides'].filter(key => organizedDocs.study[key].length > 0);
+    }
+    return [];
+  };
+
+  const selectedResources = getSelectedResources();
+  const selectedSubCategories = getSelectedSubCategories();
 
   const navigate = useNavigate();
+
+  // Helper function to get resources for a category
+  const getResourcesForCategory = (categoryId) => {
+    if (organizedDocs.ncert[categoryId]) {
+      return organizedDocs.ncert[categoryId];
+    }
+    if (organizedDocs.competitive[categoryId]) {
+      return organizedDocs.competitive[categoryId];
+    }
+    if (organizedDocs.professional[categoryId]) {
+      return organizedDocs.professional[categoryId];
+    }
+    if (organizedDocs.study[categoryId]) {
+      return organizedDocs.study[categoryId];
+    }
+    return [];
+  };
+
+  // Map document to UI format
+  const mapDocumentToResource = (doc) => {
+    const isFree = !doc.price || !doc.price.discounted || Number(doc.price.discounted) === 0;
+    return {
+      id: doc._id,
+      title: doc.name || 'Library Document',
+      subtitle: doc.category || 'Library',
+      size: doc.fileSize ? `${(doc.fileSize / (1024 * 1024)).toFixed(1)} MB` : '—',
+      price: isFree ? 'Free' : `₹${Number(doc.price.discounted)}`,
+      iconColor: isFree ? 'gray' : 'orange'
+    };
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <Loader className="w-8 h-8 text-blue-600 animate-spin mx-auto mb-2" />
+          <p className="text-gray-600 text-sm">Loading library...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center bg-white p-6 rounded-lg shadow-md max-w-md">
+          <p className="text-red-600 text-sm mb-4">{error}</p>
+          <button
+            onClick={fetchLibraryDocuments}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white flex">
@@ -131,26 +348,33 @@ const LibraryPage = () => {
                         Class 8
                       </span>
                     </div>
-                    <span className="text-xs text-black">{resources.class8?.length || 0}</span>
+                    <span className="text-xs text-black">{getResourcesForCategory('class8').length}</span>
                   </button>
 
                   {expandedCategories.class8 && (
                     <div className="ml-3 mt-0.5 space-y-0.5">
-                      {resources.class8.map((resource) => (
-                        <div
-                          key={resource.id}
-                          onClick={() => navigate(`/library/details/${resource.id}`)}
-                          className="flex items-center gap-1 p-1 hover:bg-gray-50 rounded cursor-pointer"
-                        >
-                          <FileText className={`w-2.5 h-2.5 ${resource.iconColor === 'orange' ? 'text-orange-500' : 'text-black'}`} />
-                          <span className="text-xs text-black flex-1">{resource.title}</span>
-                          {resource.price === "Free" ? (
-                            <span className="text-xs px-1 py-0.5 bg-green-100 text-green-700 rounded-full font-normal">Free</span>
-                          ) : (
-                            <span className="text-xs px-1 py-0.5 bg-orange-100 text-orange-700 rounded-full font-normal">{resource.price}</span>
-                          )}
-                        </div>
-                      ))}
+                      {organizedDocs.ncert.class8.length === 0 ? (
+                        <div className="text-xs text-gray-500 p-1">No documents available</div>
+                      ) : (
+                        organizedDocs.ncert.class8.map((doc) => {
+                          const resource = mapDocumentToResource(doc);
+                          return (
+                            <div
+                              key={resource.id}
+                              onClick={() => navigate(`/library/details/${resource.id}`)}
+                              className="flex items-center gap-1 p-1 hover:bg-gray-50 rounded cursor-pointer"
+                            >
+                              <FileText className={`w-2.5 h-2.5 ${resource.iconColor === 'orange' ? 'text-orange-500' : 'text-black'}`} />
+                              <span className="text-xs text-black flex-1">{resource.title}</span>
+                              {resource.price === "Free" ? (
+                                <span className="text-xs px-1 py-0.5 bg-green-100 text-green-700 rounded-full font-normal">Free</span>
+                              ) : (
+                                <span className="text-xs px-1 py-0.5 bg-orange-100 text-orange-700 rounded-full font-normal">{resource.price}</span>
+                              )}
+                            </div>
+                          );
+                        })
+                      )}
                     </div>
                   )}
                 </div>
@@ -175,56 +399,17 @@ const LibraryPage = () => {
                         Class 9
                       </span>
                     </div>
-                    <span className="text-xs text-black">{resources.class9?.length || 0}</span>
+                    <span className="text-xs text-black">{getResourcesForCategory('class9').length}</span>
                   </button>
 
                   {expandedCategories.class9 && (
                     <div className="ml-3 mt-0.5 space-y-0.5">
-                      {resources.class9.map((resource) => (
-                        <div
-                          key={resource.id}
-                          onClick={() => navigate(`/library/details/${resource.id}`)}
-                          className="flex items-center gap-1 p-1 hover:bg-gray-50 rounded cursor-pointer"
-                        >
-                          <FileText className={`w-2.5 h-2.5 ${resource.iconColor === 'orange' ? 'text-orange-500' : 'text-black'}`} />
-                          <span className="text-xs text-black flex-1">{resource.title}</span>
-                          {resource.price === "Free" ? (
-                            <span className="text-xs px-1 py-0.5 bg-green-100 text-green-700 rounded-full font-normal">Free</span>
-                          ) : (
-                            <span className="text-xs px-1 py-0.5 bg-orange-100 text-orange-700 rounded-full font-normal">{resource.price}</span>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* Class 10 */}
-                <div className="mb-0.5">
-                  <button
-                    onClick={() => {
-                      toggleCategory('class10');
-                      setSelectedCategory('class10');
-                    }}
-                    className={`w-full flex items-center justify-between p-1 rounded ${selectedCategory === 'class10' ? 'bg-gray-100' : 'hover:bg-gray-50'}`}
-                  >
-                    <div className="flex items-center gap-1">
-                      {expandedCategories.class10 ? (
-                        <ChevronDown className="w-2.5 h-2.5 text-black" />
+                      {getResourcesForCategory('class9').length === 0 ? (
+                        <div className="text-xs text-gray-500 p-1">No documents available</div>
                       ) : (
-                        <ChevronRight className="w-2.5 h-2.5 text-black" />
-                      )}
-                      <Folder className="w-2.5 h-2.5 text-blue-600" />
-                      <span className={`text-xs ${selectedCategory === 'class10' ? 'font-medium' : 'font-normal'} text-black`}>
-                        Class 10
-                      </span>
-                    </div>
-                    <span className="text-xs text-black">{resources.class10?.length || 0}</span>
-              </button>
-
-                  {expandedCategories.class10 && (
-                    <div className="ml-3 mt-0.5 space-y-0.5">
-                      {resources.class10.map((resource) => (
+                        getResourcesForCategory('class9').map((doc) => {
+                          const resource = mapDocumentToResource(doc);
+                          return (
                         <div
                           key={resource.id}
                           onClick={() => navigate(`/library/details/${resource.id}`)}
@@ -238,7 +423,9 @@ const LibraryPage = () => {
                             <span className="text-xs px-1 py-0.5 bg-orange-100 text-orange-700 rounded-full font-normal">{resource.price}</span>
                           )}
                         </div>
-                      ))}
+                      );
+                    })
+                  )}
                     </div>
                   )}
                 </div>
@@ -263,26 +450,33 @@ const LibraryPage = () => {
                         Class 11
                       </span>
                     </div>
-                    <span className="text-xs text-black">{resources.class11?.length || 0}</span>
+                    <span className="text-xs text-black">{getResourcesForCategory('class11').length}</span>
                   </button>
 
                   {expandedCategories.class11 && (
                     <div className="ml-3 mt-0.5 space-y-0.5">
-                      {resources.class11.map((resource) => (
-                        <div
-                          key={resource.id}
-                          onClick={() => navigate(`/library/details/${resource.id}`)}
-                          className="flex items-center gap-1 p-1 hover:bg-gray-50 rounded cursor-pointer"
-                        >
-                          <FileText className={`w-2.5 h-2.5 ${resource.iconColor === 'orange' ? 'text-orange-500' : 'text-black'}`} />
-                          <span className="text-xs text-black flex-1">{resource.title}</span>
-                          {resource.price === "Free" ? (
-                            <span className="text-xs px-1 py-0.5 bg-green-100 text-green-700 rounded-full font-normal">Free</span>
-                          ) : (
-                            <span className="text-xs px-1 py-0.5 bg-orange-100 text-orange-700 rounded-full font-normal">{resource.price}</span>
-                          )}
-                        </div>
-                      ))}
+                      {getResourcesForCategory('class11').length === 0 ? (
+                        <div className="text-xs text-gray-500 p-1">No documents available</div>
+                      ) : (
+                        getResourcesForCategory('class11').map((doc) => {
+                          const resource = mapDocumentToResource(doc);
+                          return (
+                            <div
+                              key={resource.id}
+                              onClick={() => navigate(`/library/details/${resource.id}`)}
+                              className="flex items-center gap-1 p-1 hover:bg-gray-50 rounded cursor-pointer"
+                            >
+                              <FileText className={`w-2.5 h-2.5 ${resource.iconColor === 'orange' ? 'text-orange-500' : 'text-black'}`} />
+                              <span className="text-xs text-black flex-1">{resource.title}</span>
+                              {resource.price === "Free" ? (
+                                <span className="text-xs px-1 py-0.5 bg-green-100 text-green-700 rounded-full font-normal">Free</span>
+                              ) : (
+                                <span className="text-xs px-1 py-0.5 bg-orange-100 text-orange-700 rounded-full font-normal">{resource.price}</span>
+                              )}
+                            </div>
+                          );
+                        })
+                      )}
                     </div>
                   )}
                 </div>
@@ -307,12 +501,17 @@ const LibraryPage = () => {
                         Class 12
                       </span>
                     </div>
-                    <span className="text-xs text-black">{resources.class12?.length || 0}</span>
+                    <span className="text-xs text-black">{getResourcesForCategory('class12').length}</span>
                   </button>
 
                   {expandedCategories.class12 && (
                     <div className="ml-3 mt-0.5 space-y-0.5">
-                      {resources.class12.map((resource) => (
+                      {getResourcesForCategory('class12').length === 0 ? (
+                        <div className="text-xs text-gray-500 p-1">No documents available</div>
+                      ) : (
+                        getResourcesForCategory('class12').map((doc) => {
+                          const resource = mapDocumentToResource(doc);
+                          return (
                         <div
                           key={resource.id}
                           onClick={() => navigate(`/library/details/${resource.id}`)}
@@ -326,7 +525,9 @@ const LibraryPage = () => {
                             <span className="text-xs px-1 py-0.5 bg-orange-100 text-orange-700 rounded-full font-normal">{resource.price}</span>
                           )}
                         </div>
-                      ))}
+                      );
+                    })
+                  )}
                     </div>
                   )}
                 </div>
@@ -379,26 +580,33 @@ const LibraryPage = () => {
                         JEE Preparation
                       </span>
                     </div>
-                    <span className="text-xs text-black">{resources.jee?.length || 0}</span>
+                    <span className="text-xs text-black">{getResourcesForCategory('jee').length}</span>
                   </button>
 
                   {expandedCategories.jee && (
                     <div className="ml-3 mt-0.5 space-y-0.5">
-                      {resources.jee.map((resource) => (
-                        <div
-                          key={resource.id}
-                          onClick={() => navigate(`/library/details/${resource.id}`)}
-                          className="flex items-center gap-1 p-1 hover:bg-gray-50 rounded cursor-pointer"
-                        >
-                          <FileText className={`w-2.5 h-2.5 ${resource.iconColor === 'orange' ? 'text-orange-500' : 'text-black'}`} />
-                          <span className="text-xs text-black flex-1">{resource.title}</span>
-                          {resource.price === "Free" ? (
-                            <span className="text-xs px-1 py-0.5 bg-green-100 text-green-700 rounded-full font-normal">Free</span>
-                          ) : (
-                            <span className="text-xs px-1 py-0.5 bg-orange-100 text-orange-700 rounded-full font-normal">{resource.price}</span>
-                          )}
-                        </div>
-                      ))}
+                      {getResourcesForCategory('jee').length === 0 ? (
+                        <div className="text-xs text-gray-500 p-1">No documents available</div>
+                      ) : (
+                        getResourcesForCategory('jee').map((doc) => {
+                          const resource = mapDocumentToResource(doc);
+                          return (
+                            <div
+                              key={resource.id}
+                              onClick={() => navigate(`/library/details/${resource.id}`)}
+                              className="flex items-center gap-1 p-1 hover:bg-gray-50 rounded cursor-pointer"
+                            >
+                              <FileText className={`w-2.5 h-2.5 ${resource.iconColor === 'orange' ? 'text-orange-500' : 'text-black'}`} />
+                              <span className="text-xs text-black flex-1">{resource.title}</span>
+                              {resource.price === "Free" ? (
+                                <span className="text-xs px-1 py-0.5 bg-green-100 text-green-700 rounded-full font-normal">Free</span>
+                              ) : (
+                                <span className="text-xs px-1 py-0.5 bg-orange-100 text-orange-700 rounded-full font-normal">{resource.price}</span>
+                              )}
+                            </div>
+                          );
+                        })
+                      )}
                     </div>
                   )}
                 </div>
@@ -423,26 +631,33 @@ const LibraryPage = () => {
                         NEET Preparation
                       </span>
                     </div>
-                    <span className="text-xs text-black">{resources.neet?.length || 0}</span>
+                    <span className="text-xs text-black">{getResourcesForCategory('neet').length}</span>
                   </button>
 
                   {expandedCategories.neet && (
                     <div className="ml-3 mt-0.5 space-y-0.5">
-                      {resources.neet.map((resource) => (
-                        <div
-                          key={resource.id}
-                          onClick={() => navigate(`/library/details/${resource.id}`)}
-                          className="flex items-center gap-1 p-1 hover:bg-gray-50 rounded cursor-pointer"
-                        >
-                          <FileText className={`w-2.5 h-2.5 ${resource.iconColor === 'orange' ? 'text-orange-500' : 'text-black'}`} />
-                          <span className="text-xs text-black flex-1">{resource.title}</span>
-                          {resource.price === "Free" ? (
-                            <span className="text-xs px-1 py-0.5 bg-green-100 text-green-700 rounded-full font-normal">Free</span>
-                          ) : (
-                            <span className="text-xs px-1 py-0.5 bg-orange-100 text-orange-700 rounded-full font-normal">{resource.price}</span>
-                          )}
-                        </div>
-                      ))}
+                      {getResourcesForCategory('neet').length === 0 ? (
+                        <div className="text-xs text-gray-500 p-1">No documents available</div>
+                      ) : (
+                        getResourcesForCategory('neet').map((doc) => {
+                          const resource = mapDocumentToResource(doc);
+                          return (
+                            <div
+                              key={resource.id}
+                              onClick={() => navigate(`/library/details/${resource.id}`)}
+                              className="flex items-center gap-1 p-1 hover:bg-gray-50 rounded cursor-pointer"
+                            >
+                              <FileText className={`w-2.5 h-2.5 ${resource.iconColor === 'orange' ? 'text-orange-500' : 'text-black'}`} />
+                              <span className="text-xs text-black flex-1">{resource.title}</span>
+                              {resource.price === "Free" ? (
+                                <span className="text-xs px-1 py-0.5 bg-green-100 text-green-700 rounded-full font-normal">Free</span>
+                              ) : (
+                                <span className="text-xs px-1 py-0.5 bg-orange-100 text-orange-700 rounded-full font-normal">{resource.price}</span>
+                              )}
+                            </div>
+                          );
+                        })
+                      )}
                     </div>
                   )}
                 </div>
@@ -467,26 +682,33 @@ const LibraryPage = () => {
                         UPSC
                       </span>
                     </div>
-                    <span className="text-xs text-black">{resources.upsc?.length || 0}</span>
+                    <span className="text-xs text-black">{getResourcesForCategory('upsc').length}</span>
                   </button>
 
                   {expandedCategories.upsc && (
                     <div className="ml-3 mt-0.5 space-y-0.5">
-                      {resources.upsc.map((resource) => (
-                        <div
-                          key={resource.id}
-                          onClick={() => navigate(`/library/details/${resource.id}`)}
-                          className="flex items-center gap-1 p-1 hover:bg-gray-50 rounded cursor-pointer"
-                        >
-                          <FileText className={`w-2.5 h-2.5 ${resource.iconColor === 'orange' ? 'text-orange-500' : 'text-black'}`} />
-                          <span className="text-xs text-black flex-1">{resource.title}</span>
-                          {resource.price === "Free" ? (
-                            <span className="text-xs px-1 py-0.5 bg-green-100 text-green-700 rounded-full font-normal">Free</span>
-                          ) : (
-                            <span className="text-xs px-1 py-0.5 bg-orange-100 text-orange-700 rounded-full font-normal">{resource.price}</span>
-                          )}
-                        </div>
-                      ))}
+                      {getResourcesForCategory('upsc').length === 0 ? (
+                        <div className="text-xs text-gray-500 p-1">No documents available</div>
+                      ) : (
+                        getResourcesForCategory('upsc').map((doc) => {
+                          const resource = mapDocumentToResource(doc);
+                          return (
+                            <div
+                              key={resource.id}
+                              onClick={() => navigate(`/library/details/${resource.id}`)}
+                              className="flex items-center gap-1 p-1 hover:bg-gray-50 rounded cursor-pointer"
+                            >
+                              <FileText className={`w-2.5 h-2.5 ${resource.iconColor === 'orange' ? 'text-orange-500' : 'text-black'}`} />
+                              <span className="text-xs text-black flex-1">{resource.title}</span>
+                              {resource.price === "Free" ? (
+                                <span className="text-xs px-1 py-0.5 bg-green-100 text-green-700 rounded-full font-normal">Free</span>
+                              ) : (
+                                <span className="text-xs px-1 py-0.5 bg-orange-100 text-orange-700 rounded-full font-normal">{resource.price}</span>
+                              )}
+                            </div>
+                          );
+                        })
+                      )}
                     </div>
                   )}
                 </div>
@@ -539,26 +761,33 @@ const LibraryPage = () => {
                         Web Development
                       </span>
                     </div>
-                    <span className="text-xs text-black">{resources.webdev?.length || 0}</span>
+                    <span className="text-xs text-black">{getResourcesForCategory('webdev').length}</span>
                   </button>
 
                   {expandedCategories.webdev && (
                     <div className="ml-3 mt-0.5 space-y-0.5">
-                      {resources.webdev.map((resource) => (
-                        <div
-                          key={resource.id}
-                          onClick={() => navigate(`/library/details/${resource.id}`)}
-                          className="flex items-center gap-1 p-1 hover:bg-gray-50 rounded cursor-pointer"
-                        >
-                          <FileText className={`w-2.5 h-2.5 ${resource.iconColor === 'orange' ? 'text-orange-500' : 'text-black'}`} />
-                          <span className="text-xs text-black flex-1">{resource.title}</span>
-                          {resource.price === "Free" ? (
-                            <span className="text-xs px-1 py-0.5 bg-green-100 text-green-700 rounded-full font-normal">Free</span>
-                          ) : (
-                            <span className="text-xs px-1 py-0.5 bg-orange-100 text-orange-700 rounded-full font-normal">{resource.price}</span>
-                          )}
-                        </div>
-                      ))}
+                      {getResourcesForCategory('webdev').length === 0 ? (
+                        <div className="text-xs text-gray-500 p-1">No documents available</div>
+                      ) : (
+                        getResourcesForCategory('webdev').map((doc) => {
+                          const resource = mapDocumentToResource(doc);
+                          return (
+                            <div
+                              key={resource.id}
+                              onClick={() => navigate(`/library/details/${resource.id}`)}
+                              className="flex items-center gap-1 p-1 hover:bg-gray-50 rounded cursor-pointer"
+                            >
+                              <FileText className={`w-2.5 h-2.5 ${resource.iconColor === 'orange' ? 'text-orange-500' : 'text-black'}`} />
+                              <span className="text-xs text-black flex-1">{resource.title}</span>
+                              {resource.price === "Free" ? (
+                                <span className="text-xs px-1 py-0.5 bg-green-100 text-green-700 rounded-full font-normal">Free</span>
+                              ) : (
+                                <span className="text-xs px-1 py-0.5 bg-orange-100 text-orange-700 rounded-full font-normal">{resource.price}</span>
+                              )}
+                            </div>
+                          );
+                        })
+                      )}
                     </div>
                   )}
                 </div>
@@ -583,26 +812,33 @@ const LibraryPage = () => {
                         Data Science
                       </span>
                     </div>
-                    <span className="text-xs text-black">{resources.data?.length || 0}</span>
+                    <span className="text-xs text-black">{getResourcesForCategory('data').length}</span>
                   </button>
 
                   {expandedCategories.data && (
                     <div className="ml-3 mt-0.5 space-y-0.5">
-                      {resources.data.map((resource) => (
-                        <div
-                          key={resource.id}
-                          onClick={() => navigate(`/library/details/${resource.id}`)}
-                          className="flex items-center gap-1 p-1 hover:bg-gray-50 rounded cursor-pointer"
-                        >
-                          <FileText className={`w-2.5 h-2.5 ${resource.iconColor === 'orange' ? 'text-orange-500' : 'text-black'}`} />
-                          <span className="text-xs text-black flex-1">{resource.title}</span>
-                          {resource.price === "Free" ? (
-                            <span className="text-xs px-1 py-0.5 bg-green-100 text-green-700 rounded-full font-normal">Free</span>
-                          ) : (
-                            <span className="text-xs px-1 py-0.5 bg-orange-100 text-orange-700 rounded-full font-normal">{resource.price}</span>
-                          )}
-                        </div>
-                      ))}
+                      {getResourcesForCategory('data').length === 0 ? (
+                        <div className="text-xs text-gray-500 p-1">No documents available</div>
+                      ) : (
+                        getResourcesForCategory('data').map((doc) => {
+                          const resource = mapDocumentToResource(doc);
+                          return (
+                            <div
+                              key={resource.id}
+                              onClick={() => navigate(`/library/details/${resource.id}`)}
+                              className="flex items-center gap-1 p-1 hover:bg-gray-50 rounded cursor-pointer"
+                            >
+                              <FileText className={`w-2.5 h-2.5 ${resource.iconColor === 'orange' ? 'text-orange-500' : 'text-black'}`} />
+                              <span className="text-xs text-black flex-1">{resource.title}</span>
+                              {resource.price === "Free" ? (
+                                <span className="text-xs px-1 py-0.5 bg-green-100 text-green-700 rounded-full font-normal">Free</span>
+                              ) : (
+                                <span className="text-xs px-1 py-0.5 bg-orange-100 text-orange-700 rounded-full font-normal">{resource.price}</span>
+                              )}
+                            </div>
+                          );
+                        })
+                      )}
                     </div>
                   )}
                 </div>
@@ -627,26 +863,33 @@ const LibraryPage = () => {
                         AI & ML
                       </span>
                     </div>
-                    <span className="text-xs text-black">{resources.ai?.length || 0}</span>
+                    <span className="text-xs text-black">{getResourcesForCategory('ai').length}</span>
                   </button>
 
                   {expandedCategories.ai && (
                     <div className="ml-3 mt-0.5 space-y-0.5">
-                      {resources.ai.map((resource) => (
-                        <div
-                          key={resource.id}
-                          onClick={() => navigate(`/library/details/${resource.id}`)}
-                          className="flex items-center gap-1 p-1 hover:bg-gray-50 rounded cursor-pointer"
-                        >
-                          <FileText className={`w-2.5 h-2.5 ${resource.iconColor === 'orange' ? 'text-orange-500' : 'text-black'}`} />
-                          <span className="text-xs text-black flex-1">{resource.title}</span>
-                          {resource.price === "Free" ? (
-                            <span className="text-xs px-1 py-0.5 bg-green-100 text-green-700 rounded-full font-normal">Free</span>
-                          ) : (
-                            <span className="text-xs px-1 py-0.5 bg-orange-100 text-orange-700 rounded-full font-normal">{resource.price}</span>
-                          )}
-                        </div>
-                      ))}
+                      {getResourcesForCategory('ai').length === 0 ? (
+                        <div className="text-xs text-gray-500 p-1">No documents available</div>
+                      ) : (
+                        getResourcesForCategory('ai').map((doc) => {
+                          const resource = mapDocumentToResource(doc);
+                          return (
+                            <div
+                              key={resource.id}
+                              onClick={() => navigate(`/library/details/${resource.id}`)}
+                              className="flex items-center gap-1 p-1 hover:bg-gray-50 rounded cursor-pointer"
+                            >
+                              <FileText className={`w-2.5 h-2.5 ${resource.iconColor === 'orange' ? 'text-orange-500' : 'text-black'}`} />
+                              <span className="text-xs text-black flex-1">{resource.title}</span>
+                              {resource.price === "Free" ? (
+                                <span className="text-xs px-1 py-0.5 bg-green-100 text-green-700 rounded-full font-normal">Free</span>
+                              ) : (
+                                <span className="text-xs px-1 py-0.5 bg-orange-100 text-orange-700 rounded-full font-normal">{resource.price}</span>
+                              )}
+                            </div>
+                          );
+                        })
+                      )}
                     </div>
                   )}
                 </div>
@@ -699,26 +942,33 @@ const LibraryPage = () => {
                         Study Notes
                       </span>
                     </div>
-                    <span className="text-xs text-black">{resources.notes?.length || 0}</span>
+                    <span className="text-xs text-black">{getResourcesForCategory('notes').length}</span>
                   </button>
 
                   {expandedCategories.notes && (
                     <div className="ml-3 mt-0.5 space-y-0.5">
-                      {resources.notes.map((resource) => (
-                        <div
-                          key={resource.id}
-                          onClick={() => navigate(`/library/details/${resource.id}`)}
-                          className="flex items-center gap-1 p-1 hover:bg-gray-50 rounded cursor-pointer"
-                        >
-                          <FileText className={`w-2.5 h-2.5 ${resource.iconColor === 'orange' ? 'text-orange-500' : 'text-black'}`} />
-                          <span className="text-xs text-black flex-1">{resource.title}</span>
-                          {resource.price === "Free" ? (
-                            <span className="text-xs px-1 py-0.5 bg-green-100 text-green-700 rounded-full font-normal">Free</span>
-                          ) : (
-                            <span className="text-xs px-1 py-0.5 bg-orange-100 text-orange-700 rounded-full font-normal">{resource.price}</span>
-                          )}
-                        </div>
-                      ))}
+                      {getResourcesForCategory('notes').length === 0 ? (
+                        <div className="text-xs text-gray-500 p-1">No documents available</div>
+                      ) : (
+                        getResourcesForCategory('notes').map((doc) => {
+                          const resource = mapDocumentToResource(doc);
+                          return (
+                            <div
+                              key={resource.id}
+                              onClick={() => navigate(`/library/details/${resource.id}`)}
+                              className="flex items-center gap-1 p-1 hover:bg-gray-50 rounded cursor-pointer"
+                            >
+                              <FileText className={`w-2.5 h-2.5 ${resource.iconColor === 'orange' ? 'text-orange-500' : 'text-black'}`} />
+                              <span className="text-xs text-black flex-1">{resource.title}</span>
+                              {resource.price === "Free" ? (
+                                <span className="text-xs px-1 py-0.5 bg-green-100 text-green-700 rounded-full font-normal">Free</span>
+                              ) : (
+                                <span className="text-xs px-1 py-0.5 bg-orange-100 text-orange-700 rounded-full font-normal">{resource.price}</span>
+                              )}
+                            </div>
+                          );
+                        })
+                      )}
                     </div>
                   )}
                 </div>
@@ -743,26 +993,33 @@ const LibraryPage = () => {
                         Exam Guides
                       </span>
                     </div>
-                    <span className="text-xs text-black">{resources.guides?.length || 0}</span>
+                    <span className="text-xs text-black">{getResourcesForCategory('guides').length}</span>
                   </button>
 
                   {expandedCategories.guides && (
                     <div className="ml-3 mt-0.5 space-y-0.5">
-                      {resources.guides.map((resource) => (
-                        <div
-                          key={resource.id}
-                          onClick={() => navigate(`/library/details/${resource.id}`)}
-                          className="flex items-center gap-1 p-1 hover:bg-gray-50 rounded cursor-pointer"
-                        >
-                          <FileText className={`w-2.5 h-2.5 ${resource.iconColor === 'orange' ? 'text-orange-500' : 'text-black'}`} />
-                          <span className="text-xs text-black flex-1">{resource.title}</span>
-                          {resource.price === "Free" ? (
-                            <span className="text-xs px-1 py-0.5 bg-green-100 text-green-700 rounded-full font-normal">Free</span>
-                          ) : (
-                            <span className="text-xs px-1 py-0.5 bg-orange-100 text-orange-700 rounded-full font-normal">{resource.price}</span>
-                          )}
-                        </div>
-                      ))}
+                      {getResourcesForCategory('guides').length === 0 ? (
+                        <div className="text-xs text-gray-500 p-1">No documents available</div>
+                      ) : (
+                        getResourcesForCategory('guides').map((doc) => {
+                          const resource = mapDocumentToResource(doc);
+                          return (
+                            <div
+                              key={resource.id}
+                              onClick={() => navigate(`/library/details/${resource.id}`)}
+                              className="flex items-center gap-1 p-1 hover:bg-gray-50 rounded cursor-pointer"
+                            >
+                              <FileText className={`w-2.5 h-2.5 ${resource.iconColor === 'orange' ? 'text-orange-500' : 'text-black'}`} />
+                              <span className="text-xs text-black flex-1">{resource.title}</span>
+                              {resource.price === "Free" ? (
+                                <span className="text-xs px-1 py-0.5 bg-green-100 text-green-700 rounded-full font-normal">Free</span>
+                              ) : (
+                                <span className="text-xs px-1 py-0.5 bg-orange-100 text-orange-700 rounded-full font-normal">{resource.price}</span>
+                              )}
+                            </div>
+                          );
+                        })
+                      )}
                     </div>
                   )}
                 </div>
@@ -792,60 +1049,71 @@ const LibraryPage = () => {
           {/* Folder Cards Grid (when main category is selected) */}
           {isMainCategory(selectedCategory) && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
-              {selectedSubCategories.map((subCategory) => (
-                <div
-                  key={subCategory.id}
-                  onClick={() => setSelectedCategory(subCategory.id)}
-                  className="bg-white border border-gray-200 rounded-lg p-3 hover:shadow-md transition-shadow cursor-pointer flex flex-col items-center text-center"
-                >
-                  {/* Folder Icon */}
-                  <div className="flex justify-center mb-2">
-                    <Folder className="w-8 h-8 text-blue-600" />
+              {selectedSubCategories.length === 0 ? (
+                <div className="text-sm text-gray-500 col-span-full text-center py-8">No categories available</div>
+              ) : (
+                selectedSubCategories.map((subCategoryId) => (
+                  <div
+                    key={subCategoryId}
+                    onClick={() => setSelectedCategory(subCategoryId)}
+                    className="bg-white border border-gray-200 rounded-lg p-3 hover:shadow-md transition-shadow cursor-pointer flex flex-col items-center text-center"
+                  >
+                    {/* Folder Icon */}
+                    <div className="flex justify-center mb-2">
+                      <Folder className="w-8 h-8 text-blue-600" />
+                    </div>
+
+                    {/* Sub-category Name */}
+                    <h3 className="font-normal text-black text-xs mb-1">{getSubCategoryName(subCategoryId)}</h3>
+
+                    {/* Item Count */}
+                    <p className="text-xs text-black">{getResourcesForCategory(subCategoryId).length} items</p>
                   </div>
-
-                  {/* Sub-category Name */}
-                  <h3 className="font-normal text-black text-xs mb-1">{subCategory.name}</h3>
-
-                  {/* Item Count */}
-                  <p className="text-xs text-black">{subCategory.count} items</p>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           )}
 
           {/* Resource Grid (when sub-category is selected) */}
           {!isMainCategory(selectedCategory) && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
-              {selectedResources.map((resource) => (
-                <div
-                  key={resource.id}
-                  onClick={() => navigate(`/library/details/${resource.id}`)}
-                  className="bg-white border border-gray-200 rounded-lg p-2.5 hover:shadow-md transition-shadow cursor-pointer"
-                >
-                  {/* Document Icon */}
-                  <div className="flex justify-center mb-2">
-                    <FileText
-                      className={`w-8 h-8 ${resource.iconColor === 'orange' ? 'text-orange-500' : 'text-black'}`}
-                    />
-                  </div>
+              {selectedResources.length === 0 ? (
+                <div className="text-sm text-gray-500 col-span-full text-center py-8">No documents available</div>
+              ) : (
+                selectedResources.map((doc) => {
+                  const resource = mapDocumentToResource(doc);
+                  return (
+                    <div
+                      key={resource.id}
+                      onClick={() => navigate(`/library/details/${resource.id}`)}
+                      className="bg-white border border-gray-200 rounded-lg p-2.5 hover:shadow-md transition-shadow cursor-pointer"
+                    >
+                      {/* Document Icon */}
+                      <div className="flex justify-center mb-2">
+                        <FileText
+                          className={`w-8 h-8 ${resource.iconColor === 'orange' ? 'text-orange-500' : 'text-black'}`}
+                        />
+                      </div>
 
-                  {/* Title */}
-                  <h3 className="font-normal text-black text-xs mb-0.5 line-clamp-2">{resource.title}</h3>
+                      {/* Title */}
+                      <h3 className="font-normal text-black text-xs mb-0.5 line-clamp-2">{resource.title}</h3>
 
-                  {/* Subtitle */}
-                  <p className="text-xs text-black mb-2">{resource.subtitle}</p>
+                      {/* Subtitle */}
+                      <p className="text-xs text-black mb-2">{resource.subtitle}</p>
 
-                  {/* Footer */}
-                  <div className="flex items-center justify-between mt-auto">
-                    <span className="text-xs text-black">{resource.size}</span>
-                    {resource.price === "Free" ? (
-                      <span className="text-xs px-1 py-0.5 bg-green-100 text-green-700 rounded-full font-normal">Free</span>
-                    ) : (
-                      <span className="text-xs px-1 py-0.5 bg-orange-100 text-orange-700 rounded-full font-normal">{resource.price}</span>
-                    )}
-                  </div>
-                </div>
-              ))}
+                      {/* Footer */}
+                      <div className="flex items-center justify-between mt-auto">
+                        <span className="text-xs text-black">{resource.size}</span>
+                        {resource.price === "Free" ? (
+                          <span className="text-xs px-1 py-0.5 bg-green-100 text-green-700 rounded-full font-normal">Free</span>
+                        ) : (
+                          <span className="text-xs px-1 py-0.5 bg-orange-100 text-orange-700 rounded-full font-normal">{resource.price}</span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })
+              )}
             </div>
           )}
         </div>

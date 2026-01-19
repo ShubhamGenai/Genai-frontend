@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ChevronLeft, FileText, Check, Download, Info, BookOpen, Users, Star, Loader, Calculator, Microscope, Atom, Trophy, Code, Layers, Code2, Brain, Bot, Network, Package, Target, Lightbulb } from 'lucide-react';
-import { mockResourceDetails } from '../../../../mock-data/libraryMockData';
+import axios from 'axios';
+import { USERENDPOINTS } from '../../../../constants/ApiConstants';
 
 
 const IconComponents = {
@@ -30,23 +31,139 @@ const LibraryDetailsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Default static content when backend doesn't provide data
+  const defaultDescription =
+    'High-quality study material available for download.';
+
+  const defaultWhatsIncluded = [
+    'High-quality PDF format',
+    'All chapters/content included',
+    'Printable format'
+  ];
+
+  const defaultAdditionalInfo = {
+    bestFor: 'Students preparing for exams and concept building.',
+    prerequisites: 'Basic understanding of the subject.',
+    support: 'Support available for any download issues.'
+  };
+
   useEffect(() => {
     fetchResourceDetails();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
+
+  const handleDownload = async () => {
+    if (!resource || !resource.isFree || !resource.fileUrl) {
+      return;
+    }
+
+    try {
+      // Fetch the file from Cloudinary URL
+      const response = await fetch(resource.fileUrl);
+      if (!response.ok) {
+        throw new Error('Failed to download file');
+      }
+
+      // Create a blob from the response
+      const blob = await response.blob();
+      
+      // Create a temporary URL for the blob
+      const url = window.URL.createObjectURL(blob);
+      
+      // Create a temporary anchor element and trigger download
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = resource.fileName || `${resource.title}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      
+      // Cleanup
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Download error:', err);
+      // Fallback: open in new tab
+      if (resource.fileUrl) {
+        window.open(resource.fileUrl, '_blank');
+      }
+    }
+  };
 
   const fetchResourceDetails = async () => {
     setLoading(true);
     setError(null);
     try {
-      await new Promise(resolve => setTimeout(resolve, 800)); // Simulate API call
-
-      const foundResource = mockResourceDetails.find(res => res.id === parseInt(id));
-
-      if (foundResource) {
-        setResource(foundResource);
-      } else {
+      // Fetch single library document for student
+      const res = await axios.get(`${USERENDPOINTS.GET_LIBRARY_DOCUMENT_BY_ID}/${id}`);
+      if (!res.data || !res.data.success || !res.data.document) {
         setError('Resource not found.');
+        setLoading(false);
+        return;
       }
+
+      const doc = res.data.document || {};
+
+      // Safely derive description (fallback to static text if empty)
+      const safeDescription =
+        doc.description && typeof doc.description === 'string' && doc.description.trim().length > 0
+          ? doc.description.trim()
+          : defaultDescription;
+
+      // Safely derive whatsIncluded (fallback list if missing/empty)
+      const rawWhatsIncluded = Array.isArray(doc.whatsIncluded)
+        ? doc.whatsIncluded.filter(item => typeof item === 'string' && item.trim().length > 0)
+        : [];
+      const safeWhatsIncluded =
+        rawWhatsIncluded.length > 0 ? rawWhatsIncluded : defaultWhatsIncluded;
+
+      // Safely derive additional info (fallback texts if missing/empty)
+      const rawAdditionalInfo = (doc.additionalInfo && typeof doc.additionalInfo === 'object')
+        ? doc.additionalInfo
+        : {};
+
+      const safeAdditionalInfo = {
+        bestFor:
+          rawAdditionalInfo.bestFor && typeof rawAdditionalInfo.bestFor === 'string' && rawAdditionalInfo.bestFor.trim().length > 0
+            ? rawAdditionalInfo.bestFor.trim()
+            : defaultAdditionalInfo.bestFor,
+        prerequisites:
+          rawAdditionalInfo.prerequisites && typeof rawAdditionalInfo.prerequisites === 'string' && rawAdditionalInfo.prerequisites.trim().length > 0
+            ? rawAdditionalInfo.prerequisites.trim()
+            : defaultAdditionalInfo.prerequisites,
+        support:
+          rawAdditionalInfo.support && typeof rawAdditionalInfo.support === 'string' && rawAdditionalInfo.support.trim().length > 0
+            ? rawAdditionalInfo.support.trim()
+            : defaultAdditionalInfo.support
+      };
+
+      // Map backend document to the shape expected by this UI
+      const mappedResource = {
+        id: doc._id,
+        category: doc.category || 'Library',
+        title: doc.name || 'Library Document',
+        description: safeDescription,
+        whatsIncluded: safeWhatsIncluded,
+        additionalInfo: safeAdditionalInfo,
+        fileSize: doc.fileSize
+          ? `${(doc.fileSize / (1024 * 1024)).toFixed(1)} MB`
+          : '—',
+        format: doc.format || 'PDF',
+        downloads: (doc.downloads || 0).toLocaleString(),
+        isFree:
+          !doc.price || !doc.price.discounted || Number(doc.price.discounted) === 0,
+        icon:
+          doc.icon && IconComponents[doc.icon]
+            ? doc.icon
+            : 'FileText',
+        price:
+          doc.price && Number(doc.price.discounted) > 0
+            ? `₹${Number(doc.price.discounted)}`
+            : 'Free',
+        fileUrl: doc.fileUrl || '',
+        fileName: doc.fileName || `${doc.name || 'document'}.pdf`
+      };
+
+      setResource(mappedResource);
     } catch (err) {
       setError('Failed to load resource details. Please try again later.');
     }
@@ -162,7 +279,10 @@ const LibraryDetailsPage = () => {
               )}
 
               {resource.isFree ? (
-                <button className="w-full bg-blue-600 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
+                <button 
+                  onClick={handleDownload}
+                  className="w-full bg-blue-600 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+                >
                   <Download className="w-4 h-4" />
                   Download Free
                 </button>

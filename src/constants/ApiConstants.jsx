@@ -82,6 +82,8 @@ export const USERENDPOINTS = {
    GENERATE_QUESTION_EXPLANATION: `${API_BASE_URL}/student/generate-question-explanation`, // Generate AI explanation for question
    ENROLL_FREE_TEST: `${API_BASE_URL}/student/enroll-free-test`, // Enroll in free test
    GET_AI_CAREER_RECOMMENDATIONS: `${API_BASE_URL}/student/getAICareerRecommendations`, // Get AI-generated career recommendations
+   GET_LIBRARY_DOCUMENTS: `${API_BASE_URL}/student/library-documents`,
+   GET_LIBRARY_DOCUMENT_BY_ID: `${API_BASE_URL}/student/library-documents`, // + '/:id' on use
 };
 
 // Auth / profile specific endpoints
@@ -135,6 +137,10 @@ export const CONTENTMANAGER = {
   DELETE_TEST:`${API_BASE_URL}/content/delete-test`,
   UPLOAD_LIBRARY_DOCUMENT:`${API_BASE_URL}/content/upload-library-document`,
   GET_LIBRARY_DOCUMENTS:`${API_BASE_URL}/content/get-library-documents`,
+  ADD_LIBRARY_CATEGORY:`${API_BASE_URL}/content/add-library-category`,
+  GET_LIBRARY_CATEGORIES:`${API_BASE_URL}/content/get-library-categories`,
+  ADD_LIBRARY_CLASS:`${API_BASE_URL}/content/add-library-class`,
+  GET_LIBRARY_CLASSES:`${API_BASE_URL}/content/get-library-classes`,
   DASHBOARD_STATS:`${API_BASE_URL}/content/dashboard-stats`,
   RECENT_ACTIVITIES:`${API_BASE_URL}/content/recent-activities`,
   PARSE_PDF_UPLOAD:`${API_BASE_URL}/content/parse-pdf`,
