@@ -160,7 +160,7 @@ const EditQuiz = () => {
 
       if (response.data.success && response.data.imageUrl) {
         setImageUrl(response.data.imageUrl);
-        showModal('success', 'Image Uploaded', 'Quiz image uploaded successfully!');
+        toast.success('Quiz image uploaded successfully!');
       } else {
         showModal('error', 'Upload Failed', 'Failed to upload image. Please try again.');
       }
@@ -203,7 +203,7 @@ const EditQuiz = () => {
 
       if (response.data.success && response.data.imageUrl) {
         handleQuestionChange(qIndex, 'imageUrl', response.data.imageUrl);
-        showModal('success', 'Image Uploaded', 'Question image uploaded successfully!');
+        toast.success('Question image uploaded successfully!');
       } else {
         showModal('error', 'Upload Failed', 'Failed to upload image. Please try again.');
       }
