@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
@@ -13,6 +13,7 @@ const EditQuiz = () => {
   const [duration, setDuration] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [questions, setQuestions] = useState([]);
+  const questionsRef = useRef(questions); // Ref to track latest questions state
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploadingQuizImage, setUploadingQuizImage] = useState(false);
@@ -48,11 +49,26 @@ const EditQuiz = () => {
           setImageUrl(found.imageUrl || found.image || found.imageURL || '');
           
           // Normalize questions to use imageUrl consistently and include passage
-          const normalizedQuestions = (found.questions || []).map(q => ({
-            ...q,
-            imageUrl: q.imageUrl || q.image || q.imageURL || '',
-            passage: q.passage || ''
-          }));
+          // IMPORTANT: Preserve _id for existing questions (needed for updates)
+          const normalizedQuestions = (found.questions || []).map(q => {
+            const normalized = {
+              ...q, // This preserves _id and all other fields
+              imageUrl: q.imageUrl || q.image || q.imageURL || '',
+              imagePublicId: q.imagePublicId || null, // Explicitly preserve imagePublicId
+              passage: q.passage || ''
+            };
+            
+            // Log to verify imagePublicId is preserved when loading
+            if (q.imagePublicId) {
+              console.log('Loaded question with imagePublicId:', {
+                _id: q._id,
+                imageUrl: normalized.imageUrl,
+                imagePublicId: normalized.imagePublicId
+              });
+            }
+            
+            return normalized;
+          });
           setQuestions(normalizedQuestions);
           // Show passage input for questions that already have a passage
           const initialPassageState = {};
@@ -63,26 +79,64 @@ const EditQuiz = () => {
           });
           setShowPassageInput(initialPassageState);
         } else {
-          showModal('error', 'Quiz Not Found', 'The quiz you are trying to edit was not found.');
+          toast.error('Quiz Not Found: The quiz you are trying to edit was not found.');
         }
         setLoading(false);
       } catch (err) {
         console.error('Failed to load quiz:', err);
-        showModal('error', 'Error Loading Quiz', 'Failed to load quiz. Please try again.');
+        toast.error('Failed to load quiz. Please try again.');
         setLoading(false);
       }
     };
     fetchQuiz();
   }, [id]);
 
+  // Update ref whenever questions state changes
+  useEffect(() => {
+    questionsRef.current = questions;
+  }, [questions]);
+
+  // Debug: Log questions state whenever it changes (to track imageUrl/imagePublicId)
+  useEffect(() => {
+    console.log('========== QUESTIONS STATE CHANGED ==========');
+    console.log('Questions count:', questions.length);
+    questions.forEach((q, idx) => {
+      if (q.imageUrl || q.imagePublicId) {
+        console.log(`Question ${idx + 1} HAS IMAGE DATA:`, {
+          imageUrl: q.imageUrl || 'NONE',
+          imagePublicId: q.imagePublicId || 'NONE',
+          _id: q._id
+        });
+      }
+    });
+    console.log('=============================================');
+  }, [questions]);
+
   const handleQuestionChange = (index, field, value) => {
-    const updated = [...questions];
-    if (field === 'options') {
-      updated[index].options = value;
-    } else {
-      updated[index][field] = value;
-    }
-    setQuestions(updated);
+    // Use functional update to ensure we're working with latest state
+    setQuestions(prevQuestions => {
+      const updated = prevQuestions.map((q, i) => {
+        if (i === index) {
+          // Create a new object to avoid mutation
+          if (field === 'options') {
+            return { ...q, options: value };
+          } else {
+            return { ...q, [field]: value };
+          }
+        }
+        return q; // Return unchanged questions
+      });
+      
+      // Log when imageUrl or imagePublicId is being changed
+      if (field === 'imageUrl' || field === 'imagePublicId') {
+        console.log(`[handleQuestionChange] Updated Question ${index + 1} ${field}:`, {
+          'new value': value,
+          'question after update': updated[index]
+        });
+      }
+      
+      return updated;
+    });
   };
 
   const handleOptionChange = (qIndex, optIndex, value) => {
@@ -137,12 +191,12 @@ const EditQuiz = () => {
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
-      showModal('warning', 'Invalid File Type', 'Please select an image file.');
+      toast.warning('Please select an image file.');
       return;
     }
 
     if (file.size > 10 * 1024 * 1024) {
-      showModal('warning', 'File Too Large', 'Image size must be less than 10MB.');
+      toast.warning('Image size must be less than 10MB.');
       return;
     }
 
@@ -157,16 +211,17 @@ const EditQuiz = () => {
           'Content-Type': 'multipart/form-data',
         },
       });
+console.log(response.data,"image");
 
       if (response.data.success && response.data.imageUrl) {
         setImageUrl(response.data.imageUrl);
         toast.success('Quiz image uploaded successfully!');
       } else {
-        showModal('error', 'Upload Failed', 'Failed to upload image. Please try again.');
+        toast.error('Failed to upload image. Please try again.');
       }
     } catch (err) {
       console.error('Error uploading quiz image:', err);
-      showModal('error', 'Upload Failed', err.response?.data?.error || err.message || 'Failed to upload image. Please try again.');
+      toast.error(err.response?.data?.error || err.message || 'Failed to upload image. Please try again.');
     } finally {
       setUploadingQuizImage(false);
       // Reset file input
@@ -180,12 +235,12 @@ const EditQuiz = () => {
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
-      showModal('warning', 'Invalid File Type', 'Please select an image file.');
+      toast.warning('Please select an image file.');
       return;
     }
 
     if (file.size > 10 * 1024 * 1024) {
-      showModal('warning', 'File Too Large', 'Image size must be less than 10MB.');
+      toast.warning('Image size must be less than 10MB.');
       return;
     }
 
@@ -195,21 +250,70 @@ const EditQuiz = () => {
       formData.append('imageFile', file);
       formData.append('questionId', questions[qIndex]._id || '');
 
+      console.log('Uploading question image:', formData);
+
       const response = await axios.post(CONTENTMANAGER.UPLOAD_QUESTION_IMAGE, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
 
-      if (response.data.success && response.data.imageUrl) {
-        handleQuestionChange(qIndex, 'imageUrl', response.data.imageUrl);
+      const data = response.data;
+      
+      // Log ONLY the upload response
+      console.log('========== UPLOAD QUESTION IMAGE RESPONSE ==========');
+      console.log('Question Index:', qIndex);
+      console.log('Response Data:', JSON.stringify(data, null, 2));
+      console.log('imageUrl:', data.imageUrl || 'NOT PROVIDED');
+      console.log('imagePublicId:', data.imagePublicId || 'NOT PROVIDED');
+      console.log('success:', data.success);
+      console.log('width:', data.width);
+      console.log('height:', data.height);
+      console.log('format:', data.format);
+      console.log('bytes:', data.bytes);
+      console.log('====================================================');
+
+      if (data.success && data.imageUrl) {
+        // CRITICAL: Use functional update to ensure we're working with latest state
+        setQuestions(prevQuestions => {
+          const updatedQuestions = prevQuestions.map((q, idx) => {
+            if (idx === qIndex) {
+              // Create new object with all existing fields + new image data
+              const updated = {
+                ...q, // Preserve ALL existing fields (questionText, options, answer, passage, marks, _id, etc.)
+                imageUrl: data.imageUrl, // Set from upload response
+                imagePublicId: data.imagePublicId || null, // Set from upload response
+                imageWidth: data.width || null,
+                imageHeight: data.height || null,
+                imageFormat: data.format || null,
+                imageBytes: data.bytes || null
+              };
+              
+              // Log immediately after creating updated object
+              console.log('========== AFTER STATE UPDATE ==========');
+              console.log('Question Index:', qIndex);
+              console.log('Upload response imageUrl:', data.imageUrl);
+              console.log('Upload response imagePublicId:', data.imagePublicId);
+              console.log('Updated question imageUrl:', updated.imageUrl);
+              console.log('Updated question imagePublicId:', updated.imagePublicId);
+              console.log('Full updated question:', JSON.stringify(updated, null, 2));
+              console.log('=========================================');
+              
+              return updated;
+            }
+            return q; // Return unchanged questions
+          });
+          
+          return updatedQuestions;
+        });
+
         toast.success('Question image uploaded successfully!');
       } else {
-        showModal('error', 'Upload Failed', 'Failed to upload image. Please try again.');
+        toast.error('Failed to upload image. Please try again.');
       }
     } catch (err) {
       console.error('Error uploading question image:', err);
-      showModal('error', 'Upload Failed', err.response?.data?.error || err.message || 'Failed to upload image. Please try again.');
+      toast.error(err.response?.data?.error || err.message || 'Failed to upload image. Please try again.');
     } finally {
       setUploadingQuestionImages({ ...uploadingQuestionImages, [qIndex]: false });
       // Reset file input
@@ -228,7 +332,14 @@ const EditQuiz = () => {
   // Delete question image
   const handleDeleteQuestionImage = (qIndex) => {
     showConfirm('Are you sure you want to remove this image?', () => {
+      // Clear both imageUrl and imagePublicId when deleting
       handleQuestionChange(qIndex, 'imageUrl', '');
+      handleQuestionChange(qIndex, 'imagePublicId', null);
+      // Also clear metadata fields
+      handleQuestionChange(qIndex, 'imageWidth', null);
+      handleQuestionChange(qIndex, 'imageHeight', null);
+      handleQuestionChange(qIndex, 'imageFormat', null);
+      handleQuestionChange(qIndex, 'imageBytes', null);
       setConfirmModal({ isOpen: false, message: '', onConfirm: null });
     });
   };
@@ -237,43 +348,219 @@ const EditQuiz = () => {
     e.preventDefault();
     setSaving(true);
     try {
-      // Normalize question image fields to imageUrl and preserve passage formatting
-      const normalizedQuestions = questions.map(q => {
-        const question = { ...q };
-        // If image or imageURL exists, use it as imageUrl
-        if (question.image && !question.imageUrl) {
-          question.imageUrl = question.image;
-          delete question.image;
+      // CRITICAL: Use ref to get the latest questions state (avoid closure issues)
+      const currentQuestions = questionsRef.current || questions;
+      
+      console.log('========== HANDLE SUBMIT - IMAGE DATA LOG ==========');
+      console.log('Using questionsRef.current (latest state):');
+      console.log('Total questions:', currentQuestions.length);
+      currentQuestions.forEach((q, idx) => {
+        console.log(`Question ${idx + 1} RAW STATE:`, {
+          _id: q._id,
+          'q.imageUrl': q.imageUrl,
+          'q.imagePublicId': q.imagePublicId,
+          'q.imageUrl type': typeof q.imageUrl,
+          'q.imagePublicId type': typeof q.imagePublicId,
+          'q.imageUrl truthy': !!q.imageUrl,
+          'q.imagePublicId truthy': !!q.imagePublicId,
+          'q.imageUrl length': q.imageUrl ? q.imageUrl.length : 0,
+          'q.imagePublicId length': q.imagePublicId ? q.imagePublicId.length : 0,
+          'All question keys': Object.keys(q),
+          'Full question object': JSON.stringify(q, null, 2)
+        });
+      });
+
+      // CRITICAL CHECK: Verify questions state has image data before normalization
+      console.log('========== BEFORE NORMALIZATION - STATE CHECK ==========');
+      console.log('Using questionsRef.current (latest state)');
+      currentQuestions.forEach((q, idx) => {
+        console.log(`Question ${idx + 1} STATE CHECK:`, {
+          'q.imageUrl exists': 'imageUrl' in q,
+          'q.imageUrl value': q.imageUrl,
+          'q.imagePublicId exists': 'imagePublicId' in q,
+          'q.imagePublicId value': q.imagePublicId,
+          'All keys in q': Object.keys(q)
+        });
+      });
+      console.log('======================================================');
+
+      // Normalize and sanitize questions for backend - USE currentQuestions from ref
+      const normalizedQuestions = currentQuestions.map((q, index) => {
+        // Preserve _id if it exists (needed for Mongoose to update existing questions)
+        const question = {
+          ...(q._id && { _id: q._id }), // Only include _id if it exists
+        };
+
+        // Normalize imageUrl - DIRECTLY use q.imageUrl from state
+        // Don't use fallbacks that might mask the real value
+        let imageUrlValue = '';
+        if (q.imageUrl !== null && q.imageUrl !== undefined && q.imageUrl !== '') {
+          imageUrlValue = String(q.imageUrl).trim();
         }
-        if (question.imageURL && !question.imageUrl) {
-          question.imageUrl = question.imageURL;
-          delete question.imageURL;
+
+        // Normalize imagePublicId - DIRECTLY use q.imagePublicId from state
+        let imagePublicIdValue = null;
+        if (q.imagePublicId !== null && q.imagePublicId !== undefined && q.imagePublicId !== '') {
+          if (typeof q.imagePublicId === 'string') {
+            imagePublicIdValue = q.imagePublicId.trim() || null;
+          } else {
+            imagePublicIdValue = String(q.imagePublicId).trim() || null;
+          }
         }
-        // Clean up empty imageUrl
-        if (question.imageUrl && !question.imageUrl.trim()) {
-          delete question.imageUrl;
-        }
-        // Ensure passage is included (preserve formatting, don't trim)
-        if (!question.passage) {
-          question.passage = '';
-        }
+
+        // Log for debugging - FOCUSED ON IMAGE URL AND PUBLIC ID
+        console.log(`[Submit] Question ${index + 1} IMAGE DATA PROCESSING:`, {
+          'RAW q.imageUrl': q.imageUrl,
+          'RAW q.imagePublicId': q.imagePublicId,
+          'RAW q.imageUrl type': typeof q.imageUrl,
+          'RAW q.imagePublicId type': typeof q.imagePublicId,
+          'NORMALIZED imageUrlValue': imageUrlValue || 'EMPTY',
+          'NORMALIZED imagePublicIdValue': imagePublicIdValue || 'NULL',
+          'imageUrlValue length': imageUrlValue.length,
+          'imagePublicIdValue length': imagePublicIdValue ? imagePublicIdValue.length : 0,
+          'Will send imageUrl': imageUrlValue ? 'YES' : 'NO',
+          'Will send imagePublicId': imagePublicIdValue ? 'YES' : 'NO'
+        });
+
+        // Build optional image metadata from upload response (width, height, format, bytes)
+        const imageWidth = typeof q.imageWidth === 'number' ? q.imageWidth : q.imageWidth || null;
+        const imageHeight = typeof q.imageHeight === 'number' ? q.imageHeight : q.imageHeight || null;
+        const imageFormat = q.imageFormat || null;
+        const imageBytes = typeof q.imageBytes === 'number' ? q.imageBytes : q.imageBytes || null;
+
+        // Normalize options - ensure they're strings and filter empty ones
+        const validOptions = (q.options || [])
+          .map(opt => String(opt).trim())
+          .filter(opt => opt !== '');
+
+        // Build the question object with all required fields
+        question.questionText = String(q.questionText || '').trim();
+        question.passage = (q.passage !== null && q.passage !== undefined) ? String(q.passage) : '';
+        question.options = validOptions;
+        question.answer = String(q.answer || '').trim();
+        
+        // CRITICAL: ALWAYS include imageUrl and imagePublicId in the question object
+        // These MUST be included for backend to save them correctly
+        // Backend expects these fields to be present for each question
+        question.imageUrl = imageUrlValue || ''; // Always string (empty if none)
+        question.imagePublicId = imagePublicIdValue || null; // Always null or string
+        
+        // Ensure these fields are explicitly set and not undefined
+        if (question.imageUrl === undefined) question.imageUrl = '';
+        if (question.imagePublicId === undefined) question.imagePublicId = null;
+        
+        // Final check - log what we're actually assigning to question object
+        console.log(`[Submit] Question ${index + 1} FINAL ASSIGNMENT:`, {
+          'question.imageUrl': question.imageUrl || 'EMPTY STRING',
+          'question.imagePublicId': question.imagePublicId || 'NULL',
+          'question.imageUrl type': typeof question.imageUrl,
+          'question.imagePublicId type': typeof question.imagePublicId,
+          'question.imageUrl length': question.imageUrl ? question.imageUrl.length : 0,
+          'question.imagePublicId length': question.imagePublicId ? question.imagePublicId.length : 0
+        });
+
+        // Log AFTER assigning to question object
+        console.log(`[Submit] Question ${index + 1} AFTER ASSIGNMENT:`, {
+          'question.imageUrl': question.imageUrl || 'EMPTY',
+          'question.imagePublicId': question.imagePublicId || 'NULL',
+          'question object keys': Object.keys(question),
+          'question object': JSON.stringify(question, null, 2)
+        });
+
+        // Attach image metadata so backend receives all uploadQuestionImage fields
+        if (imageWidth !== null) question.imageWidth = imageWidth;
+        if (imageHeight !== null) question.imageHeight = imageHeight;
+        if (imageFormat) question.imageFormat = imageFormat;
+        if (imageBytes !== null) question.imageBytes = imageBytes;
+
+        question.marks = (q.marks && !isNaN(parseInt(q.marks))) ? parseInt(q.marks) : 1;
+
         return question;
       });
 
-      await axios.put(`${CONTENTMANAGER.UPDATE_QUIZ}/${id}`, {
-        title,
-        duration,
-        imageUrl: imageUrl.trim() || undefined,
-        questions: normalizedQuestions,
+      // Prepare the update payload
+      const updatePayload = {
+        title: title.trim(),
+        duration: duration ? parseInt(duration) : undefined,
+        questions: normalizedQuestions
+      };
+      
+      // Final verification: Check imageUrl and imagePublicId in payload
+      console.log('========== FINAL PAYLOAD VERIFICATION ==========');
+      updatePayload.questions.forEach((q, idx) => {
+        console.log(`Question ${idx + 1} FINAL PAYLOAD:`, {
+          '_id': q._id || 'NEW',
+          'imageUrl FIELD EXISTS': 'imageUrl' in q,
+          'imageUrl VALUE': q.imageUrl || 'EMPTY',
+          'imageUrl TYPE': typeof q.imageUrl,
+          'imageUrl LENGTH': q.imageUrl ? q.imageUrl.length : 0,
+          'imagePublicId FIELD EXISTS': 'imagePublicId' in q,
+          'imagePublicId VALUE': q.imagePublicId || 'NULL',
+          'imagePublicId TYPE': typeof q.imagePublicId,
+          'imagePublicId LENGTH': q.imagePublicId ? q.imagePublicId.length : 0,
+          'ALL FIELDS': Object.keys(q),
+          'FULL QUESTION JSON': JSON.stringify(q, null, 2)
+        });
       });
+      
+      // Extract just imageUrl and imagePublicId for quick verification
+      const imageDataSummary = normalizedQuestions.map((q, idx) => ({
+        question: idx + 1,
+        _id: q._id || 'NEW',
+        imageUrl: q.imageUrl || 'EMPTY',
+        imagePublicId: q.imagePublicId || 'NULL'
+      }));
+      console.log('IMAGE DATA SUMMARY (what will be sent to backend):', JSON.stringify(imageDataSummary, null, 2));
+      console.log('================================================');
+
+      // Debug: Log image data for each question - FOCUSED ON IMAGE URL AND PUBLIC ID
+      console.log('========== FINAL PAYLOAD - IMAGE URL & PUBLIC ID CHECK ==========');
+      normalizedQuestions.forEach((q, idx) => {
+        console.log(`Question ${idx + 1} FINAL CHECK:`, {
+          '_id': q._id || 'NEW',
+          'imageUrl EXISTS': 'imageUrl' in q,
+          'imageUrl VALUE': q.imageUrl || 'EMPTY',
+          'imageUrl TYPE': typeof q.imageUrl,
+          'imageUrl LENGTH': q.imageUrl ? q.imageUrl.length : 0,
+          'imagePublicId EXISTS': 'imagePublicId' in q,
+          'imagePublicId VALUE': q.imagePublicId || 'NULL',
+          'imagePublicId TYPE': typeof q.imagePublicId,
+          'ALL KEYS': Object.keys(q),
+          'FULL QUESTION': JSON.stringify(q, null, 2)
+        });
+      });
+      
+      // Extract just imageUrl and imagePublicId from all questions for quick check
+      const imageDataCheck = normalizedQuestions.map((q, idx) => ({
+        question: idx + 1,
+        imageUrl: q.imageUrl,
+        imagePublicId: q.imagePublicId
+      }));
+      console.log('IMAGE DATA SUMMARY:', JSON.stringify(imageDataCheck, null, 2));
+      
+      console.log('Full payload (first 2000 chars):', JSON.stringify(updatePayload, null, 2).substring(0, 2000));
+      console.log('==========================================');
+
+      const response = await axios.put(`${CONTENTMANAGER.UPDATE_QUIZ}/${id}`, updatePayload);
+      
+      console.log('Update response:', response.data);
       toast.success('Quiz updated successfully!');
+      
       // Navigate after a short delay to allow toast to be visible
       setTimeout(() => {
         navigate('/content/quizzes');
       }, 1000);
     } catch (err) {
-      console.error(err);
-      showModal('error', 'Update Failed', err.response?.data?.error || err.message || 'Failed to update quiz. Please try again.');
+      console.error('Update error:', err);
+      console.error('Error response:', err.response?.data);
+      
+      // Show detailed error message
+      const errorMessage = err.response?.data?.error || 
+                          err.response?.data?.details?.join?.('\n') || 
+                          err.message || 
+                          'Failed to update quiz. Please try again.';
+      
+      toast.error(typeof errorMessage === 'string' ? errorMessage : 'Failed to update quiz. Please check the console for details.');
     } finally {
       setSaving(false);
     }
@@ -470,7 +757,20 @@ const EditQuiz = () => {
                     placeholder="Or enter image URL"
                     className="flex-1 px-3 py-2 bg-slate-800/60 border border-slate-600/30 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 text-sm"
                     value={q.imageUrl || ''}
-                    onChange={(e) => handleQuestionChange(i, 'imageUrl', e.target.value)}
+                    onChange={(e) => {
+                      const newUrl = e.target.value;
+                      // Update imageUrl - preserve imagePublicId if it exists
+                      // Only clear imagePublicId if URL is completely cleared
+                      if (!newUrl.trim()) {
+                        // URL cleared - clear both
+                        handleQuestionChange(i, 'imageUrl', '');
+                        handleQuestionChange(i, 'imagePublicId', null);
+                      } else {
+                        // URL entered - update imageUrl but preserve imagePublicId if it exists
+                        // (Don't clear imagePublicId - it might be from upload)
+                        handleQuestionChange(i, 'imageUrl', newUrl);
+                      }
+                    }}
                   />
                 </div>
                 {q.imageUrl && q.imageUrl.trim() && (
