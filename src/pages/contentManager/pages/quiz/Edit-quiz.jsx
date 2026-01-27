@@ -349,7 +349,7 @@ console.log(response.data,"image");
   const handleSavePassage = async (qIndex) => {
     console.log(`[Save Passage] Button clicked for Question ${qIndex + 1}`);
     
-    // Use ref to get the latest questions state
+    // Use latest questions state
     const currentQuestions = questionsRef.current || questions;
     const question = currentQuestions[qIndex];
     
@@ -375,82 +375,17 @@ console.log(response.data,"image");
       
       console.log(`[Save Passage] Preparing to save passage for Question ${qIndex + 1}`);
       console.log(`[Save Passage] Passage to save:`, passageValue);
-      
-      // Build normalized questions array - update only the passage for this question
-      const normalizedQuestions = currentQuestions.map((q, index) => {
-        // Preserve _id if it exists
-        const questionData = {
-          ...(q._id && { _id: q._id }),
-        };
 
-        // Normalize imageUrl
-        let imageUrlValue = '';
-        if (q.imageUrl !== null && q.imageUrl !== undefined && q.imageUrl !== '') {
-          imageUrlValue = String(q.imageUrl).trim();
-        }
+      const endpoint = `${CONTENTMANAGER.UPDATE_QUESTION_PASSAGE}/${id}/question/${question._id}/passage`;
+      console.log(`[Save Passage] Calling PATCH endpoint:`, endpoint);
 
-        // Normalize imagePublicId
-        let imagePublicIdValue = null;
-        if (q.imagePublicId !== null && q.imagePublicId !== undefined && q.imagePublicId !== '') {
-          if (typeof q.imagePublicId === 'string') {
-            imagePublicIdValue = q.imagePublicId.trim() || null;
-          } else {
-            imagePublicIdValue = String(q.imagePublicId).trim() || null;
-          }
-        }
+      // Send minimal payload to backend: only the passage for this question
+      const response = await axios.patch(endpoint, { passage: passageValue });
 
-        // Normalize options
-        const validOptions = (q.options || [])
-          .map(opt => String(opt).trim())
-          .filter(opt => opt !== '');
-
-        // Build the question object
-        questionData.questionText = String(q.questionText || '').trim();
-        // Use updated passage for this question, original for others
-        questionData.passage = index === qIndex 
-          ? (passageValue !== null && passageValue !== undefined ? String(passageValue) : '')
-          : ((q.passage !== null && q.passage !== undefined) ? String(q.passage) : '');
-        questionData.options = validOptions;
-        questionData.answer = String(q.answer || '').trim();
-        questionData.imageUrl = imageUrlValue || '';
-        questionData.imagePublicId = imagePublicIdValue || null;
-        
-        if (questionData.imageUrl === undefined) questionData.imageUrl = '';
-        if (questionData.imagePublicId === undefined) questionData.imagePublicId = null;
-
-        // Include image metadata if available
-        if (q.imageWidth !== null && q.imageWidth !== undefined) questionData.imageWidth = q.imageWidth;
-        if (q.imageHeight !== null && q.imageHeight !== undefined) questionData.imageHeight = q.imageHeight;
-        if (q.imageFormat) questionData.imageFormat = q.imageFormat;
-        if (q.imageBytes !== null && q.imageBytes !== undefined) questionData.imageBytes = q.imageBytes;
-
-        questionData.marks = (q.marks && !isNaN(parseInt(q.marks))) ? parseInt(q.marks) : 1;
-
-        return questionData;
-      });
-
-      // Prepare the update payload
-      const updatePayload = {
-        title: title.trim(),
-        duration: duration ? parseInt(duration) : undefined,
-        questions: normalizedQuestions
-      };
-
-      console.log(`[Save Passage] ========== CALLING BACKEND ==========`);
-      console.log(`[Save Passage] Quiz ID: ${id}`);
-      console.log(`[Save Passage] Question Index: ${qIndex + 1}`);
-      console.log(`[Save Passage] Question _id: ${question._id}`);
-      console.log(`[Save Passage] Passage being saved:`, passageValue);
-      console.log(`[Save Passage] API Endpoint: ${CONTENTMANAGER.UPDATE_QUIZ}/${id}`);
-      console.log(`[Save Passage] Payload (first 500 chars):`, JSON.stringify(updatePayload, null, 2).substring(0, 500));
-      
-      // Send update to backend
-      const response = await axios.put(`${CONTENTMANAGER.UPDATE_QUIZ}/${id}`, updatePayload);
-      
-      console.log(`[Save Passage] ========== BACKEND RESPONSE ==========`);
+      console.log(`[Save Passage] ========== BACKEND RESPONSE ==========`); 
       console.log(`[Save Passage] Response status:`, response.status);
       console.log(`[Save Passage] Response data:`, response.data);
-      console.log(`[Save Passage] ======================================`);
+      console.log(`[Save Passage] ======================================`); 
       
       // Update local state to reflect the saved passage
       setQuestions(prevQuestions => {

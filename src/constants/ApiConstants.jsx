@@ -111,6 +111,9 @@ export const CONTENTMANAGER = {
   CONTENT_SIGNIN:`${API_BASE_URL}/auth/content-manager-signin`,
   ADD_QUIZ:`${API_BASE_URL}/content/add-quiz`,
   UPDATE_QUIZ:`${API_BASE_URL}/content/update-quiz`,
+  // Base URL for updating a single quiz question's passage:
+  // usage: `${UPDATE_QUESTION_PASSAGE}/${quizId}/question/${questionId}/passage`
+  UPDATE_QUESTION_PASSAGE:`${API_BASE_URL}/content/quiz`,
   DELETE_QUIZ:`${API_BASE_URL}/content/delete-quiz`,
   GET_QUIZ:`${API_BASE_URL}/content/get-quiz`,
   GET_TESTS:`${API_BASE_URL}/content/get-tests`,
