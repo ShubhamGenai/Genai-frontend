@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { AlertCircle, CheckCircle, XCircle, Info, X } from 'lucide-react';
 
 const AlertPopup = ({ 
@@ -129,7 +130,7 @@ const AlertPopup = ({
     ? 'flex-1 px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors border border-gray-300'
     : 'flex-1 px-4 py-2 bg-slate-700/40 text-white text-sm font-medium rounded-lg hover:bg-slate-700/60 transition-colors border border-slate-600/30';
 
-  return (
+  return createPortal(
     <div className={overlayClass}>
       <div className={modalClass}>
         {/* Close button */}
@@ -179,7 +180,8 @@ const AlertPopup = ({
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 

@@ -13,6 +13,7 @@ const TestView = () => {
   const [error, setError] = useState(null);
   const [expandedQuizzes, setExpandedQuizzes] = useState({});
   const [expandedQuestions, setExpandedQuestions] = useState({});
+  const [expandedPassages, setExpandedPassages] = useState({});
 
   useEffect(() => {
     const fetchTest = async () => {
@@ -53,6 +54,13 @@ const TestView = () => {
 
   const toggleQuestion = (questionKey) => {
     setExpandedQuestions(prev => ({
+      ...prev,
+      [questionKey]: !prev[questionKey]
+    }));
+  };
+
+  const togglePassage = (questionKey) => {
+    setExpandedPassages(prev => ({
       ...prev,
       [questionKey]: !prev[questionKey]
     }));
@@ -299,6 +307,7 @@ const TestView = () => {
                         {questions.map((question, qIndex) => {
                           const questionKey = `${quizId}-${qIndex}`;
                           const isQuestionExpanded = expandedQuestions[questionKey];
+                          const isPassageExpanded = expandedPassages[questionKey];
                           const options = Array.isArray(question.options) ? question.options : [];
                           const answer = question.answer || "";
 
@@ -332,6 +341,28 @@ const TestView = () => {
                                           e.target.style.display = 'none';
                                         }}
                                       />
+                                    </div>
+                                  )}
+
+                                  {/* Passage (if available) */}
+                                  {question.passage && question.passage.trim() !== "" && (
+                                    <div className="ml-8 mt-2">
+                                      <button
+                                        onClick={() => togglePassage(questionKey)}
+                                        className="flex items-center gap-2 text-xs text-slate-300 hover:text-white px-3 py-1 rounded-lg bg-slate-800/60 border border-slate-600/40 transition-colors"
+                                      >
+                                        {isPassageExpanded ? (
+                                          <ChevronUpIcon className="h-4 w-4" />
+                                        ) : (
+                                          <ChevronDownIcon className="h-4 w-4" />
+                                        )}
+                                        <span>{isPassageExpanded ? "Hide Passage" : "Show Passage"}</span>
+                                      </button>
+                                      {isPassageExpanded && (
+                                        <div className="mt-2 p-3 rounded-lg bg-slate-800/70 border border-slate-600/40 text-xs text-slate-200 whitespace-pre-wrap leading-relaxed">
+                                          {question.passage}
+                                        </div>
+                                      )}
                                     </div>
                                   )}
                                 </div>

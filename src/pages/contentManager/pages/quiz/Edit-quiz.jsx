@@ -13,6 +13,7 @@ const EditQuiz = () => {
   const [duration, setDuration] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [questions, setQuestions] = useState([]);
+  const initialQuizRef = useRef(null); // Track original quiz to detect changes
   const questionsRef = useRef(questions); // Ref to track latest questions state
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -71,6 +72,12 @@ const EditQuiz = () => {
             return normalized;
           });
           setQuestions(normalizedQuestions);
+          // Save initial snapshot for change detection
+          initialQuizRef.current = {
+            title: found.title || '',
+            duration: found.duration || '',
+            questions: normalizedQuestions
+          };
           // Show passage input for questions that already have a passage
           const initialPassageState = {};
           normalizedQuestions.forEach((q, index) => {
@@ -422,6 +429,7 @@ console.log(response.data,"image");
     try {
       // CRITICAL: Use ref to get the latest questions state (avoid closure issues)
       const currentQuestions = questionsRef.current || questions;
+      const initialQuiz = initialQuizRef.current;
       
       console.log('========== HANDLE SUBMIT - IMAGE DATA LOG ==========');
       console.log('Using questionsRef.current (latest state):');
@@ -550,12 +558,33 @@ console.log(response.data,"image");
         return question;
       });
 
-      // Prepare the update payload
-      const updatePayload = {
-        title: title.trim(),
-        duration: duration ? parseInt(duration) : undefined,
-        questions: normalizedQuestions
-      };
+      // Prepare the update payload - send only changed fields to backend
+      const updatePayload = {};
+
+      const trimmedTitle = title.trim();
+      const initialTitle = initialQuiz ? String(initialQuiz.title || '').trim() : null;
+      if (!initialQuiz || trimmedTitle !== initialTitle) {
+        updatePayload.title = trimmedTitle;
+      }
+
+      const durationNum = duration ? parseInt(duration) : undefined;
+      const initialDurationNum = initialQuiz && initialQuiz.duration ? parseInt(initialQuiz.duration) : undefined;
+      if (!initialQuiz || durationNum !== initialDurationNum) {
+        if (durationNum !== undefined) {
+          updatePayload.duration = durationNum;
+        }
+      }
+
+      // Compare questions deeply; if changed (or initial unknown), send full questions array
+      const initialQuestions = initialQuiz ? initialQuiz.questions || [] : [];
+      const questionsChanged =
+        !initialQuiz ||
+        initialQuestions.length !== currentQuestions.length ||
+        JSON.stringify(initialQuestions) !== JSON.stringify(currentQuestions);
+
+      if (questionsChanged) {
+        updatePayload.questions = normalizedQuestions;
+      }
       
       // Final verification: Check imageUrl and imagePublicId in payload
       console.log('========== FINAL PAYLOAD VERIFICATION ==========');
