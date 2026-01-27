@@ -19,6 +19,7 @@ const EditQuiz = () => {
   const [uploadingQuizImage, setUploadingQuizImage] = useState(false);
   const [uploadingQuestionImages, setUploadingQuestionImages] = useState({});
   const [showPassageInput, setShowPassageInput] = useState({}); // Track which questions have passage input visible
+  const [savingPassage, setSavingPassage] = useState({}); // Track which question's passage is being saved
   
   // Modal state
   const [modal, setModal] = useState({
@@ -342,6 +343,142 @@ console.log(response.data,"image");
       handleQuestionChange(qIndex, 'imageBytes', null);
       setConfirmModal({ isOpen: false, message: '', onConfirm: null });
     });
+  };
+
+  // Save passage for a specific question
+  const handleSavePassage = async (qIndex) => {
+    console.log(`[Save Passage] Button clicked for Question ${qIndex + 1}`);
+    
+    // Use ref to get the latest questions state
+    const currentQuestions = questionsRef.current || questions;
+    const question = currentQuestions[qIndex];
+    
+    if (!question) {
+      toast.error('Question not found.');
+      return;
+    }
+
+    // Validate that question has an _id (must be an existing question)
+    if (!question._id) {
+      toast.warning('Please save the quiz first before updating individual passages.');
+      return;
+    }
+
+    console.log(`[Save Passage] Question ${qIndex + 1} has _id: ${question._id}`);
+    console.log(`[Save Passage] Current passage value:`, question.passage);
+
+    setSavingPassage({ ...savingPassage, [qIndex]: true });
+    
+    try {
+      // Get the current passage value from state
+      const passageValue = question.passage || '';
+      
+      console.log(`[Save Passage] Preparing to save passage for Question ${qIndex + 1}`);
+      console.log(`[Save Passage] Passage to save:`, passageValue);
+      
+      // Build normalized questions array - update only the passage for this question
+      const normalizedQuestions = currentQuestions.map((q, index) => {
+        // Preserve _id if it exists
+        const questionData = {
+          ...(q._id && { _id: q._id }),
+        };
+
+        // Normalize imageUrl
+        let imageUrlValue = '';
+        if (q.imageUrl !== null && q.imageUrl !== undefined && q.imageUrl !== '') {
+          imageUrlValue = String(q.imageUrl).trim();
+        }
+
+        // Normalize imagePublicId
+        let imagePublicIdValue = null;
+        if (q.imagePublicId !== null && q.imagePublicId !== undefined && q.imagePublicId !== '') {
+          if (typeof q.imagePublicId === 'string') {
+            imagePublicIdValue = q.imagePublicId.trim() || null;
+          } else {
+            imagePublicIdValue = String(q.imagePublicId).trim() || null;
+          }
+        }
+
+        // Normalize options
+        const validOptions = (q.options || [])
+          .map(opt => String(opt).trim())
+          .filter(opt => opt !== '');
+
+        // Build the question object
+        questionData.questionText = String(q.questionText || '').trim();
+        // Use updated passage for this question, original for others
+        questionData.passage = index === qIndex 
+          ? (passageValue !== null && passageValue !== undefined ? String(passageValue) : '')
+          : ((q.passage !== null && q.passage !== undefined) ? String(q.passage) : '');
+        questionData.options = validOptions;
+        questionData.answer = String(q.answer || '').trim();
+        questionData.imageUrl = imageUrlValue || '';
+        questionData.imagePublicId = imagePublicIdValue || null;
+        
+        if (questionData.imageUrl === undefined) questionData.imageUrl = '';
+        if (questionData.imagePublicId === undefined) questionData.imagePublicId = null;
+
+        // Include image metadata if available
+        if (q.imageWidth !== null && q.imageWidth !== undefined) questionData.imageWidth = q.imageWidth;
+        if (q.imageHeight !== null && q.imageHeight !== undefined) questionData.imageHeight = q.imageHeight;
+        if (q.imageFormat) questionData.imageFormat = q.imageFormat;
+        if (q.imageBytes !== null && q.imageBytes !== undefined) questionData.imageBytes = q.imageBytes;
+
+        questionData.marks = (q.marks && !isNaN(parseInt(q.marks))) ? parseInt(q.marks) : 1;
+
+        return questionData;
+      });
+
+      // Prepare the update payload
+      const updatePayload = {
+        title: title.trim(),
+        duration: duration ? parseInt(duration) : undefined,
+        questions: normalizedQuestions
+      };
+
+      console.log(`[Save Passage] ========== CALLING BACKEND ==========`);
+      console.log(`[Save Passage] Quiz ID: ${id}`);
+      console.log(`[Save Passage] Question Index: ${qIndex + 1}`);
+      console.log(`[Save Passage] Question _id: ${question._id}`);
+      console.log(`[Save Passage] Passage being saved:`, passageValue);
+      console.log(`[Save Passage] API Endpoint: ${CONTENTMANAGER.UPDATE_QUIZ}/${id}`);
+      console.log(`[Save Passage] Payload (first 500 chars):`, JSON.stringify(updatePayload, null, 2).substring(0, 500));
+      
+      // Send update to backend
+      const response = await axios.put(`${CONTENTMANAGER.UPDATE_QUIZ}/${id}`, updatePayload);
+      
+      console.log(`[Save Passage] ========== BACKEND RESPONSE ==========`);
+      console.log(`[Save Passage] Response status:`, response.status);
+      console.log(`[Save Passage] Response data:`, response.data);
+      console.log(`[Save Passage] ======================================`);
+      
+      // Update local state to reflect the saved passage
+      setQuestions(prevQuestions => {
+        return prevQuestions.map((q, idx) => {
+          if (idx === qIndex) {
+            return { ...q, passage: passageValue };
+          }
+          return q;
+        });
+      });
+
+      toast.success(`Passage saved successfully for Question ${qIndex + 1}!`);
+    } catch (err) {
+      console.error(`[Save Passage] ========== BACKEND ERROR ==========`);
+      console.error(`[Save Passage] Question Index: ${qIndex + 1}`);
+      console.error(`[Save Passage] Error:`, err);
+      console.error(`[Save Passage] Error response:`, err.response?.data);
+      console.error(`[Save Passage] Error status:`, err.response?.status);
+      console.error(`[Save Passage] ===================================`);
+      
+      const errorMessage = err.response?.data?.error || 
+                          err.response?.data?.details?.join?.('\n') || 
+                          err.message || 
+                          'Failed to save passage. Please try again.';
+      toast.error(typeof errorMessage === 'string' ? errorMessage : 'Failed to save passage. Please check the console for details.');
+    } finally {
+      setSavingPassage({ ...savingPassage, [qIndex]: false });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -709,15 +846,42 @@ console.log(response.data,"image");
                     Passage (Optional)
                     <span className="text-xs text-slate-400 font-normal ml-1">- For reading comprehension questions</span>
                   </label>
-                  {(!q.passage || q.passage.trim() === '') && (
-                    <button
-                      type="button"
-                      onClick={() => togglePassageInput(i)}
-                      className="text-xs text-slate-400 hover:text-slate-300 transition-colors"
-                    >
-                      Remove
-                    </button>
-                  )}
+                  <div className="flex items-center gap-2">
+                    {q._id && (
+                      <button
+                        type="button"
+                        onClick={() => handleSavePassage(i)}
+                        disabled={savingPassage[i]}
+                        className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+                      >
+                        {savingPassage[i] ? (
+                          <>
+                            <svg className="animate-spin h-3 w-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Saving...
+                          </>
+                        ) : (
+                          <>
+                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                            Save Passage
+                          </>
+                        )}
+                      </button>
+                    )}
+                    {(!q.passage || q.passage.trim() === '') && (
+                      <button
+                        type="button"
+                        onClick={() => togglePassageInput(i)}
+                        className="text-xs text-slate-400 hover:text-slate-300 transition-colors"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
                 </div>
                 <textarea
                   rows={6}
