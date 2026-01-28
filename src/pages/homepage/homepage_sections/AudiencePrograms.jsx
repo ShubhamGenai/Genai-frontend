@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { GraduationCap, Award, Briefcase, ArrowRight, BookOpen } from 'lucide-react';
 
 const items = [
@@ -20,6 +21,12 @@ const items = [
 ];
 
 export default function AudiencePrograms() {
+  const navigate = useNavigate();
+
+  const handleExplorePrograms = () => {
+    navigate('/tests');
+  };
+
   return (
     <section className="relative overflow-hidden py-12 sm:py-16 lg:py-20">
       {/* soft gradient background */}
@@ -62,7 +69,10 @@ export default function AudiencePrograms() {
               </div>
             ))}
 
-            <button className="mt-2 inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 hover:scale-105 hover:shadow-lg active:scale-95 transition-all duration-300 group">
+            <button
+              onClick={handleExplorePrograms}
+              className="mt-2 inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 hover:scale-105 hover:shadow-lg active:scale-95 transition-all duration-300 group"
+            >
               Explore All Programs 
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
             </button>

@@ -102,7 +102,9 @@ const TopTabs = ({ tabs: initialTabs, activeTabId, onTabClick, fetchRealData = t
     <div className="bg-white border-b">
       <div className="w-full mx-auto px-4">
         <div className="flex items-center gap-6 h-12">
-          {tabs.map((tab) => (
+          {tabs
+            .filter((tab) => tab.id?.toLowerCase() !== 'jobs')
+            .map((tab) => (
             <button
               key={tab.id}
               onClick={() => handleTabClick(tab.id, tab.path)}

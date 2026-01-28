@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { useNavigate } from 'react-router-dom';
 import { Check } from 'lucide-react';
 
 const plans = [
@@ -53,6 +53,12 @@ const plans = [
 ];
 
 export default function PricingPlans() {
+  const navigate = useNavigate();
+
+  const handleGetStartedClick = () => {
+    navigate('/learn');
+  };
+
   return (
     <section className="py-12 sm:py-16 lg:py-20 bg-white">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -115,7 +121,10 @@ export default function PricingPlans() {
               </div>
 
               {/* CTA Button */}
-              <button className={`w-full py-3 px-4 rounded-lg font-medium transition-all duration-300 group-hover:scale-105 active:scale-95 ${plan.buttonStyle}`}>
+              <button
+                onClick={handleGetStartedClick}
+                className={`w-full py-3 px-4 rounded-lg font-medium transition-all duration-300 group-hover:scale-105 active:scale-95 ${plan.buttonStyle}`}
+              >
                 {plan.buttonText}
               </button>
 

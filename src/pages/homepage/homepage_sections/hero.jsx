@@ -1,6 +1,6 @@
 // HeroSection.jsx
 import '@fontsource/inter'; // Import the Inter font
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Play, Sparkles } from 'lucide-react';
 import { mainContext } from '../../../context/MainContext';
@@ -9,13 +9,18 @@ import { mainContext } from '../../../context/MainContext';
 const HeroSection = () => {
   const {user, token} = useContext(mainContext);
   const navigate = useNavigate();
+  const [showDemo, setShowDemo] = useState(false);
 
   const handleGetStarted = () => {
-    if (token) {
-      navigate("/learn"); // user is logged in
-    } else {
-      navigate("/login-landing"); // not logged in
-    }
+    navigate("/learn");
+  };
+
+  const handleWatchDemo = () => {
+    setShowDemo(true);
+  };
+
+  const handleCloseDemo = () => {
+    setShowDemo(false);
   };
 
   return (
@@ -63,6 +68,7 @@ const HeroSection = () => {
           
           <button
             type="button"
+            onClick={handleWatchDemo}
             className="w-full sm:w-auto bg-white/90 backdrop-blur-sm border border-gray-200 text-gray-800 px-6 sm:px-8 py-3 sm:py-3.5 rounded-lg font-medium 
                      inline-flex items-center justify-center gap-2 
                      hover:bg-white hover:border-gray-300 hover:scale-105 hover:shadow-lg
@@ -96,6 +102,36 @@ const HeroSection = () => {
           ))}
         </div>
       </div>
+
+      {/* Demo Video Modal */}
+      {showDemo && (
+        <div className="fixed inset-0 z-20 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-2xl max-w-3xl w-full mx-4 overflow-hidden">
+            <div className="flex items-center justify-between px-4 py-3 border-b">
+              <h3 className="text-lg font-semibold text-gray-900">
+                How GenAI Tests Work
+              </h3>
+              <button
+                onClick={handleCloseDemo}
+                className="text-gray-500 hover:text-gray-800 text-xl leading-none px-2"
+                aria-label="Close demo video"
+              >
+                ×
+              </button>
+            </div>
+            <div className="relative w-full pb-[56.25%] bg-black">
+              <iframe
+                className="absolute inset-0 w-full h-full"
+                src="https://www.youtube.com/embed/Iwc61rgNMCU?autoplay=1&mute=1&vq=hd1080"
+                title="How the test works"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
