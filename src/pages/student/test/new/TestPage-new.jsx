@@ -17,6 +17,8 @@ const TestPlatform = () => {
   const [categoryStructure, setCategoryStructure] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const testsPerPage = 8;
 
   // Determine if we're in student routes or public routes
   const isStudentRoute = location.pathname.startsWith('/student');
@@ -183,6 +185,7 @@ const TestPlatform = () => {
       toggleCategory(item.id);
     } else if (item.type === 'category') {
       setSelectedCategory(item.id);
+      setCurrentPage(1);
     }
   };
 
@@ -279,6 +282,10 @@ const TestPlatform = () => {
         
         return false;
       });
+
+  const totalPages = Math.max(1, Math.ceil(filteredTests.length / testsPerPage));
+  const startIndex = (currentPage - 1) * testsPerPage;
+  const paginatedTests = filteredTests.slice(startIndex, startIndex + testsPerPage);
 
    if (loading) {
     return (
@@ -385,8 +392,9 @@ const TestPlatform = () => {
                 <p className="text-gray-500 text-lg">No tests found in this category.</p>
               </div>
             ) : (
+              <>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 gap-6">
-                {filteredTests.map(test => {
+                {paginatedTests.map(test => {
                   // Ensure test data has all required fields for details page
                   const testWithDefaults = {
                     ...test,
@@ -470,6 +478,38 @@ const TestPlatform = () => {
                   );
                 })}
               </div>
+
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="mt-6 flex items-center justify-center gap-3">
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                    disabled={currentPage === 1}
+                    className={`px-3 py-1 text-xs rounded-md border ${
+                      currentPage === 1
+                        ? 'text-gray-400 border-gray-200 cursor-not-allowed'
+                        : 'text-gray-700 border-gray-300 hover:bg-gray-50'
+                    }`}
+                  >
+                    Previous
+                  </button>
+                  <span className="text-xs text-gray-600">
+                    Page {currentPage} of {totalPages}
+                  </span>
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                    disabled={currentPage === totalPages}
+                    className={`px-3 py-1 text-xs rounded-md border ${
+                      currentPage === totalPages
+                        ? 'text-gray-400 border-gray-200 cursor-not-allowed'
+                        : 'text-gray-700 border-gray-300 hover:bg-gray-50'
+                    }`}
+                  >
+                    Next
+                  </button>
+                </div>
+              )}
+              </>
             )}
           </div>
         </div>

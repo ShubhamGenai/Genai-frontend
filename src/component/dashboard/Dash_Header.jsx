@@ -1,8 +1,9 @@
-import { BellIcon, UserCircleIcon, ChevronDownIcon, LogOutIcon, SettingsIcon, UserIcon, SearchIcon } from "lucide-react";
+import { UserCircleIcon, ChevronDownIcon, LogOutIcon, SettingsIcon, UserIcon, SearchIcon } from "lucide-react";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import { useContext, useState, useRef, useEffect } from "react";
 import { mainContext } from "../../context/MainContext";
 import { useNavigate } from "react-router-dom";
+import DashboardNotifications from "./DashboardNotifications";
 
 export const Header = () => {
   const { user, signOut } = useContext(mainContext);
@@ -72,10 +73,7 @@ export const Header = () => {
           </button>
           
           {/* Notifications */}
-          <button className="relative p-1.5 text-gray-700 hover:text-gray-900 rounded-md hover:bg-gray-100">
-            <BellIcon className="w-4 h-4 md:w-5 md:h-5" />
-            <span className="absolute top-0.5 right-0.5 w-1.5 h-1.5 bg-red-500 rounded-full text-xxs flex items-center justify-center"></span>
-          </button>
+          <DashboardNotifications />
           
           {/* Profile Dropdown */}
           <div className="relative" ref={dropdownRef}>
