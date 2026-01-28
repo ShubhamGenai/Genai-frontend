@@ -10,10 +10,7 @@ const SearchResults = () => {
   const navigate = useNavigate();
   const { token } = useContext(mainContext);
 
-  const params = new URLSearchParams(location.search);
-  const initialQuery = params.get("q") || "";
-
-  const [query] = useState(initialQuery);
+  const query = new URLSearchParams(location.search).get("q") || "";
   const [loading, setLoading] = useState(true);
   const [results, setResults] = useState({ tests: [], courses: [], library: [] });
   const [error, setError] = useState(null);
@@ -115,13 +112,22 @@ const SearchResults = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="w-full bg-white border-b">
-        <div className="max-w-6xl mx-auto px-4 py-4">
-          <h1 className="text-lg font-semibold text-gray-900">
-            Search results for <span className="text-blue-600">“{query}”</span>
-          </h1>
-          <p className="mt-1 text-xs text-gray-500">
-            {tests.length} tests · {courses.length} courses · {library.length} library documents
-          </p>
+        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between gap-3">
+          <div>
+            <h1 className="text-lg font-semibold text-gray-900">
+              Search results for <span className="text-blue-600">“{query}”</span>
+            </h1>
+            <p className="mt-1 text-xs text-gray-500">
+              {tests.length} tests · {courses.length} courses · {library.length} library documents
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            className="text-[11px] px-3 py-1.5 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50"
+          >
+            Go back
+          </button>
         </div>
       </div>
 

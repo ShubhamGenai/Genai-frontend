@@ -174,11 +174,6 @@ export const Header = () => {
               placeholder="Search courses, tests, library..."
               value={searchQuery}
               onChange={handleSearchChange}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  goToFullResults();
-                }
-              }}
               onFocus={() => searchQuery && setShowSearchDropdown(true)}
               className="pl-10 pr-4 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent w-64 text-xs"
             />
