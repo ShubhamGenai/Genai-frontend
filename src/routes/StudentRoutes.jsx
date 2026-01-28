@@ -27,6 +27,7 @@ import CompanyCommunityPage from "../pages/student/community/CompanyCommunityPag
 import ExamPrepCommunityPage from "../pages/student/community/ExamPrepCommunityPage";
 import SkillsCommunityPage from "../pages/student/community/SkillsCommunityPage";
 import LibraryPage from "../pages/student/library/LibraryPage";
+import SearchResults from "../pages/student/search/SearchResults";
 import AIChatPage from "../pages/student/ai-chat/AIChatPage";
 import CommunityPage from "../pages/student/community/CommunityPage";
 
@@ -90,6 +91,7 @@ const StudentRoutes = () => {
         <Route path="settings" element={<div className="p-6"><h1 className="text-2xl font-bold">Settings</h1><p>Settings functionality coming soon...</p></div>} />
         
         <Route path="library" element={<LibraryPage />} />
+        <Route path="search" element={<SearchResults />} />
         <Route path="ai-chat" element={<AIChatPage />} />
         <Route path="*" element={<Navigate to="/student" replace />} />
       </Route>

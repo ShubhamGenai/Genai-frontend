@@ -1,16 +1,23 @@
 import { UserCircleIcon, ChevronDownIcon, LogOutIcon, SettingsIcon, UserIcon, SearchIcon } from "lucide-react";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import { useContext, useState, useRef, useEffect } from "react";
+import axios from "axios";
 import { mainContext } from "../../context/MainContext";
 import { useNavigate } from "react-router-dom";
 import DashboardNotifications from "./DashboardNotifications";
+import { USERENDPOINTS } from "../../constants/ApiConstants";
 
 export const Header = () => {
-  const { user, signOut } = useContext(mainContext);
+  const { user, signOut, token } = useContext(mainContext);
   const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState({ tests: [], courses: [], library: [] });
+  const [isSearching, setIsSearching] = useState(false);
+  const [showSearchDropdown, setShowSearchDropdown] = useState(false);
+  const searchTimeoutRef = useRef(null);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -25,6 +32,111 @@ export const Header = () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+  // Debounced search
+  useEffect(() => {
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    if (!searchQuery || searchQuery.trim().length < 2) {
+      setSearchResults({ tests: [], courses: [], library: [] });
+      setIsSearching(false);
+      setShowSearchDropdown(false);
+      return;
+    }
+
+    searchTimeoutRef.current = setTimeout(() => {
+      performSearch(searchQuery.trim());
+    }, 400);
+
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery]);
+
+  const performSearch = async (query) => {
+    try {
+      setIsSearching(true);
+      setShowSearchDropdown(true);
+
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+      const [testsRes, coursesRes, libraryRes] = await Promise.all([
+        axios.get(USERENDPOINTS.GETTESTS, { headers }),
+        axios.get(USERENDPOINTS.GETCOURSES, { headers }),
+        axios.get(USERENDPOINTS.GET_LIBRARY_DOCUMENTS, { headers }),
+      ]);
+
+      const tests = (Array.isArray(testsRes.data) ? testsRes.data : testsRes.data?.tests || [])
+        .filter((t) =>
+          String(t.title || t.name || "")
+            .toLowerCase()
+            .includes(query.toLowerCase())
+        )
+        .slice(0, 5);
+
+      const courses = (Array.isArray(coursesRes.data) ? coursesRes.data : coursesRes.data?.courses || [])
+        .filter((c) =>
+          String(c.title || c.name || "")
+            .toLowerCase()
+            .includes(query.toLowerCase())
+        )
+        .slice(0, 5);
+
+      const libraryDocs = (Array.isArray(libraryRes.data) ? libraryRes.data : libraryRes.data?.documents || [])
+        .filter((d) =>
+          String(d.title || d.name || "")
+            .toLowerCase()
+            .includes(query.toLowerCase())
+        )
+        .slice(0, 5);
+
+      setSearchResults({ tests, courses, library: libraryDocs });
+    } catch (error) {
+      console.error("Search error:", error);
+      setSearchResults({ tests: [], courses: [], library: [] });
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const handleSearchResultClick = (item, type) => {
+    setShowSearchDropdown(false);
+    if (type === "test") {
+      const id = item._id || item.id;
+      if (id) {
+        navigate(`/student/test-details?id=${id}`, { state: { testId: id } });
+      }
+    } else if (type === "course") {
+      const id = item._id || item.id;
+      if (id) {
+        navigate(`/student/learn/details/${id}`);
+      }
+    } else if (type === "library") {
+      navigate("/student/library", {
+        state: { search: searchQuery },
+      });
+    }
+  };
+
+  const hasResults =
+    searchResults.tests.length > 0 ||
+    searchResults.courses.length > 0 ||
+    searchResults.library.length > 0;
+
+  const goToFullResults = () => {
+    if (!searchQuery.trim()) return;
+    setShowSearchDropdown(false);
+    navigate(`/student/search?q=${encodeURIComponent(searchQuery.trim())}`);
+  };
 
   const handleLogout = () => {
     signOut();
@@ -56,12 +168,117 @@ export const Header = () => {
         <div className="flex items-center space-x-1.5 md:space-x-2">
           {/* Desktop Search */}
           <div className="hidden md:block relative">
-            <FaMagnifyingGlass className="w-4 h-4 text-gray-700 absolute left-3 top-1/2 transform -translate-y-1/2" />
+            <FaMagnifyingGlass className="w-4 h-4 text-gray-700 absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
-              placeholder="Search courses, jobs..."
+              placeholder="Search courses, tests, library..."
+              value={searchQuery}
+              onChange={handleSearchChange}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  goToFullResults();
+                }
+              }}
+              onFocus={() => searchQuery && setShowSearchDropdown(true)}
               className="pl-10 pr-4 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent w-64 text-xs"
             />
+
+            {/* Search dropdown */}
+            {showSearchDropdown && (
+              <div className="absolute mt-1 w-full bg-white rounded-lg shadow-lg border border-gray-200 z-40 max-h-80 overflow-y-auto">
+                {isSearching && (
+                  <div className="px-3 py-2 text-[11px] text-gray-500">
+                    Searching...
+                  </div>
+                )}
+                {!isSearching && !hasResults && (
+                  <div className="px-3 py-2 text-[11px] text-gray-500">
+                    No results found.
+                  </div>
+                )}
+
+                {!isSearching && hasResults && (
+                  <div className="py-1">
+                    {searchResults.tests.length > 0 && (
+                      <div>
+                        <div className="px-3 py-1 text-[10px] font-semibold text-gray-400 uppercase">
+                          Tests
+                        </div>
+                        {searchResults.tests.map((t) => (
+                          <button
+                            key={t._id || t.id}
+                            type="button"
+                            onClick={() => handleSearchResultClick(t, "test")}
+                            className="w-full text-left px-3 py-1.5 text-[11px] hover:bg-gray-50"
+                          >
+                            <div className="text-gray-900 truncate">
+                              {t.title}
+                            </div>
+                            <div className="text-[10px] text-gray-500 truncate">
+                              {t.description}
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+
+                    {searchResults.courses.length > 0 && (
+                      <div className="mt-1 border-t border-gray-100">
+                        <div className="px-3 py-1 text-[10px] font-semibold text-gray-400 uppercase">
+                          Courses
+                        </div>
+                        {searchResults.courses.map((c) => (
+                          <button
+                            key={c._id || c.id}
+                            type="button"
+                            onClick={() => handleSearchResultClick(c, "course")}
+                            className="w-full text-left px-3 py-1.5 text-[11px] hover:bg-gray-50"
+                          >
+                            <div className="text-gray-900 truncate">
+                              {c.title}
+                            </div>
+                            <div className="text-[10px] text-gray-500 truncate">
+                              {c.instructor || c.subject}
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+
+                    {searchResults.library.length > 0 && (
+                      <div className="mt-1 border-t border-gray-100">
+                        <div className="px-3 py-1 text-[10px] font-semibold text-gray-400 uppercase">
+                          Library
+                        </div>
+                        {searchResults.library.map((d) => (
+                          <button
+                            key={d._id || d.id}
+                            type="button"
+                            onClick={() => handleSearchResultClick(d, "library")}
+                            className="w-full text-left px-3 py-1.5 text-[11px] hover:bg-gray-50"
+                          >
+                            <div className="text-gray-900 truncate">
+                              {d.title || d.name}
+                            </div>
+                            <div className="text-[10px] text-gray-500 truncate">
+                              {d.category || d.type}
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+
+                    <button
+                      type="button"
+                      onClick={goToFullResults}
+                      className="w-full mt-1 border-t border-gray-100 px-3 py-1.5 text-[11px] text-blue-600 hover:bg-gray-50 text-left"
+                    >
+                      View all results
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Mobile Search Button */}
@@ -158,10 +375,122 @@ export const Header = () => {
             <FaMagnifyingGlass className="w-4 h-4 text-gray-700 absolute left-3 top-1/2 transform -translate-y-1/2" />
             <input
               type="text"
-              placeholder="Search courses, jobs..."
+              placeholder="Search courses, tests, library..."
+              value={searchQuery}
+              onChange={handleSearchChange}
+              onFocus={() => searchQuery && setShowSearchDropdown(true)}
               className="w-full pl-10 pr-4 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-xs"
               autoFocus
             />
+
+            {/* Mobile search dropdown */}
+            {showSearchDropdown && (
+              <div className="absolute mt-1 w-full bg-white rounded-lg shadow-lg border border-gray-200 z-40 max-h-80 overflow-y-auto">
+                {isSearching && (
+                  <div className="px-3 py-2 text-[11px] text-gray-500">
+                    Searching...
+                  </div>
+                )}
+                {!isSearching && !hasResults && (
+                  <div className="px-3 py-2 text-[11px] text-gray-500">
+                    No results found.
+                  </div>
+                )}
+
+                {!isSearching && hasResults && (
+                  <div className="py-1">
+                    {searchResults.tests.length > 0 && (
+                      <div>
+                        <div className="px-3 py-1 text-[10px] font-semibold text-gray-400 uppercase">
+                          Tests
+                        </div>
+                        {searchResults.tests.map((t) => (
+                          <button
+                            key={t._id || t.id}
+                            type="button"
+                            onClick={() => {
+                              handleSearchResultClick(t, "test");
+                              setIsMobileSearchOpen(false);
+                            }}
+                            className="w-full text-left px-3 py-1.5 text-[11px] hover:bg-gray-50"
+                          >
+                            <div className="text-gray-900 truncate">
+                              {t.title}
+                            </div>
+                            <div className="text-[10px] text-gray-500 truncate">
+                              {t.description}
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+
+                    {searchResults.courses.length > 0 && (
+                      <div className="mt-1 border-t border-gray-100">
+                        <div className="px-3 py-1 text-[10px] font-semibold text-gray-400 uppercase">
+                          Courses
+                        </div>
+                        {searchResults.courses.map((c) => (
+                          <button
+                            key={c._id || c.id}
+                            type="button"
+                            onClick={() => {
+                              handleSearchResultClick(c, "course");
+                              setIsMobileSearchOpen(false);
+                            }}
+                            className="w-full text-left px-3 py-1.5 text-[11px] hover:bg-gray-50"
+                          >
+                            <div className="text-gray-900 truncate">
+                              {c.title}
+                            </div>
+                            <div className="text-[10px] text-gray-500 truncate">
+                              {c.instructor || c.subject}
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+
+                    {searchResults.library.length > 0 && (
+                      <div className="mt-1 border-t border-gray-100">
+                        <div className="px-3 py-1 text-[10px] font-semibold text-gray-400 uppercase">
+                          Library
+                        </div>
+                        {searchResults.library.map((d) => (
+                          <button
+                            key={d._id || d.id}
+                            type="button"
+                            onClick={() => {
+                              handleSearchResultClick(d, "library");
+                              setIsMobileSearchOpen(false);
+                            }}
+                            className="w-full text-left px-3 py-1.5 text-[11px] hover:bg-gray-50"
+                          >
+                            <div className="text-gray-900 truncate">
+                              {d.title || d.name}
+                            </div>
+                            <div className="text-[10px] text-gray-500 truncate">
+                              {d.category || d.type}
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        goToFullResults();
+                        setIsMobileSearchOpen(false);
+                      }}
+                      className="w-full mt-1 border-t border-gray-100 px-3 py-1.5 text-[11px] text-blue-600 hover:bg-gray-50 text-left"
+                    >
+                      View all results
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       )}
