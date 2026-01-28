@@ -66,8 +66,14 @@ const Sidebar = ({ activeItem, setActiveItem }) => {
       id: 'tests', 
       name: 'Tests', 
       icon: FileTextIcon, 
-      path: '/student/tests',
-      hasSubmenu: false 
+      path: null,
+      hasSubmenu: true,
+      submenu: [
+        { id: 'tests-main', name: 'All Tests', path: '/student/tests', icon: FileTextIcon },
+        { id: 'tests-practice', name: 'Practice Tests', path: '/student/tests/practice', icon: ClipboardCheckIcon },
+        { id: 'tests-mock', name: 'Mock Tests', path: '/student/tests/mock', icon: ClipboardList },
+        { id: 'tests-series', name: 'Test Series', path: '/student/tests/series', icon: TrophyIcon }
+      ]
     },
     // { 
     //   id: 'jobs', 
@@ -81,8 +87,12 @@ const Sidebar = ({ activeItem, setActiveItem }) => {
       id: 'library', 
       name: 'Library', 
       icon: LibrarySquareIcon, 
-      path: '/student/library',
-      hasSubmenu: false 
+      path: null,
+      hasSubmenu: true,
+      submenu: [
+        { id: 'library-main', name: 'Library', path: '/student/library', icon: LibrarySquareIcon },
+        { id: 'library-question-bank', name: 'Question Bank', path: '/student/library/question-bank', icon: BookIcon }
+      ]
     },
     { 
       id: 'ai-chat', 
@@ -293,8 +303,14 @@ const Sidebar = ({ activeItem, setActiveItem }) => {
           <div className="space-y-1">
             {menuItems.map((item) => {
               const Icon = item.icon;
-              const isMainActive = activeItem === item.id;
-              const isSubmenuActive = item.hasSubmenu && item.submenu.some(subItem => activeItem === subItem.id);
+              const isMainActive = activeItem === item.id || location.pathname === item.path;
+              const isSubmenuActive =
+                item.hasSubmenu &&
+                item.submenu?.some(
+                  (subItem) =>
+                    activeItem === subItem.id ||
+                    location.pathname === subItem.path
+                );
               const isExpanded = expandedMenus[item.id];
               
               return (
@@ -322,11 +338,13 @@ const Sidebar = ({ activeItem, setActiveItem }) => {
                   {item.hasSubmenu && !isCollapsed && (
                     <div
                       className={`ml-3 mt-0.5 overflow-hidden transition-[max-height] duration-300 ease-in-out ${isExpanded ? 'space-y-1 rounded-md bg-gray-50' : ''}`}
-                      style={{ maxHeight: isExpanded ? `${(item.submenu?.length || 0) * 24}px` : '0px' }}
+                      style={{ maxHeight: isExpanded ? '999px' : '0px' }}
                     >
                       {item.submenu.map((subItem) => {
                         const SubIcon = subItem.icon;
-                        const isSubActive = activeItem === subItem.id;
+                        const isSubActive =
+                          activeItem === subItem.id ||
+                          location.pathname === subItem.path;
                         return (
                           <button
                             key={subItem.id}
@@ -335,10 +353,26 @@ const Sidebar = ({ activeItem, setActiveItem }) => {
                               navigate(subItem.path);
                               if (isMobile) setIsMobileOpen(false);
                             }}
-                            className={`w-full flex items-center space-x-2.5 px-2.5 py-1 rounded-md text-left transition-colors duration-200 ${isSubActive ? 'bg-gray-100 text-black' : 'text-black hover:bg-gray-50'}`}
+                            className={`w-full flex items-center space-x-2.5 px-2.5 py-1.5 rounded-md text-left transition-colors duration-200 border-l-2 ${
+                              isSubActive
+                                ? 'bg-white text-blue-600 border-blue-500 shadow-sm'
+                                : 'text-gray-700 border-transparent hover:bg-gray-50 hover:border-gray-200'
+                            }`}
                           >
-                            <SubIcon className={`w-3.5 h-3.5 text-black`} />
-                            <span className={isSubActive ? 'font-normal text-xs text-black' : 'font-normal text-xs text-black'}>{subItem.name}</span>
+                            <SubIcon
+                              className={`w-3.5 h-3.5 ${
+                                isSubActive ? 'text-blue-600' : 'text-gray-600'
+                              }`}
+                            />
+                            <span
+                              className={
+                                isSubActive
+                                  ? 'font-medium text-xs'
+                                  : 'font-normal text-xs'
+                              }
+                            >
+                              {subItem.name}
+                            </span>
                           </button>
                         );
                       })}

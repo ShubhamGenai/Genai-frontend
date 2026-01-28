@@ -30,6 +30,7 @@ import LibraryPage from "../pages/student/library/LibraryPage";
 import SearchResults from "../pages/student/search/SearchResults";
 import AIChatPage from "../pages/student/ai-chat/AIChatPage";
 import CommunityPage from "../pages/student/community/CommunityPage";
+import ComingSoon from "../component/common/ComingSoon";
 
 const StudentRoutes = () => {
   return (
@@ -66,6 +67,18 @@ const StudentRoutes = () => {
         <Route path="course-player" element={<CoursePlayer />} />
         {/* <Route path="course-taking/:id" element={<CourseTakingPage />} /> */}
         <Route path="tests" element={<TestPlatform />} />
+        <Route
+          path="tests/practice"
+          element={<ComingSoon title="Practice Tests" />}
+        />
+        <Route
+          path="tests/mock"
+          element={<ComingSoon title="Mock Tests" />}
+        />
+        <Route
+          path="tests/series"
+          element={<ComingSoon title="Test Series" />}
+        />
         <Route path="test-details" element={<TestDetailsPage />} />
         <Route path="test-results" element={<TestResultsPage />} />
         {/* <Route path="test-player" element={<TestPlayer />} /> */}
@@ -91,6 +104,10 @@ const StudentRoutes = () => {
         <Route path="settings" element={<div className="p-6"><h1 className="text-2xl font-bold">Settings</h1><p>Settings functionality coming soon...</p></div>} />
         
         <Route path="library" element={<LibraryPage />} />
+        <Route
+          path="library/question-bank"
+          element={<ComingSoon title="Question Bank" />}
+        />
         <Route path="search" element={<SearchResults />} />
         <Route path="ai-chat" element={<AIChatPage />} />
         <Route path="*" element={<Navigate to="/student" replace />} />
