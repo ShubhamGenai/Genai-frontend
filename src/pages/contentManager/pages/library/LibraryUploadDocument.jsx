@@ -26,6 +26,7 @@ const LibraryUploadDocument = () => {
   const [support, setSupport] = useState("");
   const [isFree, setIsFree] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [isLoadingClasses, setIsLoadingClasses] = useState(true);
   const [isLoadingCategories, setIsLoadingCategories] = useState(true);
   const [message, setMessage] = useState(null);
@@ -174,8 +175,11 @@ const LibraryUploadDocument = () => {
         newErrors.priceDiscounted = "Discounted price is required and must be greater than 0";
       }
     }
+    const maxPdfBytes = 10 * 1024 * 1024; // 10 MB - Cloudinary free-tier limit
     if (!selectedFile) {
       newErrors.pdfFile = "Please select a PDF file to upload.";
+    } else if (selectedFile.size > maxPdfBytes) {
+      newErrors.pdfFile = `File is too large (max 10 MB). Your file is ${(selectedFile.size / (1024 * 1024)).toFixed(1)} MB.`;
     }
     if (!selectedClass) {
       newErrors.selectedClass = "Please select a class.";
@@ -190,6 +194,7 @@ const LibraryUploadDocument = () => {
     }
 
     setIsUploading(true);
+    setUploadProgress(0);
     try {
       // Create FormData for file upload
       const formData = new FormData();
@@ -229,6 +234,13 @@ const LibraryUploadDocument = () => {
       const res = await axios.post(CONTENTMANAGER.UPLOAD_LIBRARY_DOCUMENT, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
+        },
+        timeout: 300000, // 5 min - large PDFs take time to upload to Cloudinary
+        onUploadProgress: (progressEvent) => {
+          const pct = progressEvent.total
+            ? Math.round((progressEvent.loaded * 100) / progressEvent.total)
+            : 0;
+          setUploadProgress(pct);
         },
       });
 
@@ -280,6 +292,7 @@ const LibraryUploadDocument = () => {
       });
     } finally {
       setIsUploading(false);
+      setUploadProgress(0);
     }
   };
 
@@ -486,7 +499,7 @@ const LibraryUploadDocument = () => {
                     {filePreviewName || "Click to browse and select a PDF"}
                   </p>
                   <p className="text-slate-400 text-xs mt-1">
-                    Only PDF files are allowed (max 50MB).
+                    Only PDF files are allowed (max 10 MB).
                   </p>
                 </div>
                 {errors.pdfFile && (
@@ -659,11 +672,11 @@ const LibraryUploadDocument = () => {
                 >
                   {isUploading ? (
                     <>
-                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
-                      Uploading...
+                      Uploading... {uploadProgress}%
                     </>
                   ) : (
                     "Upload PDF"
