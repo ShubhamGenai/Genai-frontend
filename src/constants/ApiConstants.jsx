@@ -2,7 +2,7 @@
 // export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://genai-backend-three.vercel.app/api'
 // export const API_BASE_URL = 'http://localhost:8080/api' 
 
-VITE_API_BASE_URL='https://api.genailearning.in/api'
+const BASE_URL =(import.meta.env.VITE_API_BASE_URL || "https://api.genailearning.in") + "/api";
 
 export const EMPLOYERENDPOINTS = {
 VERIFY_EMPLOYER : `${API_BASE_URL}/employer/verify-employer`,
