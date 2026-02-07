@@ -940,8 +940,8 @@ const TestTakingPage = () => {
                         src={currentQuestion.imageUrl}
                         alt={`Question ${currentQuestionIndex + 1} diagram`}
                         className="max-w-full max-h-full w-auto object-contain rounded"
-                        crossOrigin="anonymous"
                         loading="lazy"
+                        referrerPolicy="no-referrer"
                         onError={(e) => {
                           console.error('Image failed to load:', currentQuestion.imageUrl);
                           e.target.style.display = 'none';

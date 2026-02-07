@@ -908,6 +908,7 @@ console.log(response.data,"image");
                         src={q.imageUrl}
                         alt={`Question ${i + 1} preview`}
                         className="max-w-full max-h-32 w-auto object-contain rounded mx-auto block"
+                        referrerPolicy="no-referrer"
                         onError={(e) => {
                           e.target.style.display = 'none';
                         }}

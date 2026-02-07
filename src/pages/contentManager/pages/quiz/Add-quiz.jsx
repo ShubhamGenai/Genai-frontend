@@ -496,8 +496,8 @@ export default function AddQuiz() {
                               src={q.imageUrl}
                               alt="Question diagram"
                               className="max-w-full max-h-64 object-contain rounded"
-                              crossOrigin="anonymous"
                               loading="lazy"
+                              referrerPolicy="no-referrer"
                               onLoad={() => {
                                 console.log('Image loaded successfully:', q.imageUrl);
                               }}

@@ -141,6 +141,7 @@ const ParsedQuestionPreview = ({ questions, onQuestionsChange, onRemoveQuestion 
                   src={question.imageUrl}
                   alt="Question diagram"
                   className="max-w-full h-auto max-h-48 rounded-lg border border-slate-600/30"
+                  referrerPolicy="no-referrer"
                 />
               </div>
             )}

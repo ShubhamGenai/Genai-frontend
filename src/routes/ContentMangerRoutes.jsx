@@ -25,6 +25,8 @@ import TestPDFUpload from "../pages/contentManager/pages/test/Test-PDFUpload";
 import PlaceholderPage from "../pages/contentManager/pages/PlaceholderPage";
 import LibraryAllFiles from "../pages/contentManager/pages/library/LibraryAllFiles";
 import LibraryUploadDocument from "../pages/contentManager/pages/library/LibraryUploadDocument";
+import LibraryDocumentView from "../pages/contentManager/pages/library/LibraryDocumentView";
+import LibraryDocumentEdit from "../pages/contentManager/pages/library/LibraryDocumentEdit";
 
 // Component that wraps our content and responds to sidebar state
 const ContentWrapper = ({ children }) => {
@@ -279,6 +281,22 @@ const ContentManagerRoutes = () => {
               element={
                 <ProtectedRoute allowedRoles={["content"]}>
                   <LibraryUploadDocument />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="library/document/:id"
+              element={
+                <ProtectedRoute allowedRoles={["content"]}>
+                  <LibraryDocumentView />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="library/document/:id/edit"
+              element={
+                <ProtectedRoute allowedRoles={["content"]}>
+                  <LibraryDocumentEdit />
                 </ProtectedRoute>
               }
             />

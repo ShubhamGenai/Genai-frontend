@@ -228,6 +228,7 @@ const TestView = () => {
                   src={test.image}
                   alt={test.title}
                   className="w-full h-40 object-cover"
+                  referrerPolicy="no-referrer"
                 />
               </div>
             )}
@@ -334,8 +335,8 @@ const TestView = () => {
                                         src={question.imageUrl}
                                         alt={`Question ${qIndex + 1} diagram`}
                                         className="max-w-full max-h-48 object-contain rounded mx-auto"
-                                        crossOrigin="anonymous"
                                         loading="lazy"
+                                        referrerPolicy="no-referrer"
                                         onError={(e) => {
                                           console.error('Image failed to load:', question.imageUrl);
                                           e.target.style.display = 'none';

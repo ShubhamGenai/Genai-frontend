@@ -177,8 +177,8 @@ const QuestionImageUpload = ({ questionId, onImageUploaded, onClose, existingIma
                     src={preview}
                     alt={selectedFile ? "New image preview" : "Current image"}
                     className="max-w-full max-h-96 object-contain rounded"
-                    crossOrigin="anonymous"
                     loading="lazy"
+                    referrerPolicy="no-referrer"
                     onLoad={() => {
                       console.log('Preview image loaded successfully');
                     }}

@@ -802,6 +802,7 @@ const QuizBulkUpload = () => {
               src={question.imageUrl}
               alt="Question"
               className="max-w-full max-h-64 rounded-lg border border-slate-600/30"
+              referrerPolicy="no-referrer"
             />
             <button
               onClick={onRemoveImage}
@@ -1016,6 +1017,7 @@ const QuizBulkUpload = () => {
               src={editedQuestion.imageUrl}
               alt="Question"
               className="max-w-full max-h-48 rounded-lg border border-slate-600/30"
+              referrerPolicy="no-referrer"
             />
             <button
               onClick={onRemoveImage}

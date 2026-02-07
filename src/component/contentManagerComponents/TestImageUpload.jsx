@@ -26,17 +26,29 @@ const TestImageUpload = ({ testId, onImageUploaded, onClose, existingImageUrl })
       setLoadingExisting(true);
       setExistingError(null);
       try {
-        const res = await axios.get(CONTENTMANAGER.GET_TEST_IMAGES);
+        const res = await axios.get(CONTENTMANAGER.GET_TEST_IMAGES, {
+          withCredentials: true,
+        });
         if (!isMounted) return;
-        if (res.data?.success && Array.isArray(res.data.images)) {
-          setExistingImages(res.data.images);
-        } else {
-          setExistingError('Failed to load existing images');
+        const data = res.data;
+        const rawList = Array.isArray(data?.images) ? data.images : Array.isArray(data) ? data : [];
+        const list = rawList
+          .map((img) => ({
+            imageUrl: (img?.imageUrl || img?.image || "").trim(),
+            imagePublicId: img?.imagePublicId ?? null,
+            title: img?.title || "Test image",
+            createdAt: img?.createdAt,
+          }))
+          .filter((item) => item.imageUrl && /^https?:\/\//i.test(item.imageUrl));
+        setExistingImages(list);
+        if (list.length === 0 && rawList.length > 0) {
+          setExistingError("No valid image URLs found");
         }
       } catch (err) {
         if (!isMounted) return;
-        console.error('Error fetching existing test images:', err);
-        setExistingError('Could not load existing images');
+        console.error("Error fetching existing test images:", err);
+        const msg = err.response?.data?.error || err.message || "Could not load existing images";
+        setExistingError(msg);
       } finally {
         if (isMounted) {
           setLoadingExisting(false);
@@ -157,21 +169,22 @@ const TestImageUpload = ({ testId, onImageUploaded, onClose, existingImageUrl })
   };
 
   return (
-    <div className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-slate-800 rounded-xl shadow-2xl w-full max-w-2xl mx-4 border border-slate-600/30">
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 overflow-y-auto">
+      <div className="bg-slate-800 rounded-xl shadow-2xl w-full max-w-2xl my-auto flex flex-col max-h-[calc(100vh-2rem)] sm:max-h-[90vh] border border-slate-600/30">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-slate-600/30">
-          <h2 className="text-xl font-bold text-white">Upload Test Image</h2>
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-slate-600/30 shrink-0">
+          <h2 className="text-lg sm:text-xl font-bold text-white truncate pr-2">Upload Test Image</h2>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-white transition-colors"
+            className="text-slate-400 hover:text-white transition-colors p-1 rounded-lg hover:bg-slate-700/50 shrink-0"
+            aria-label="Close"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Content */}
-        <div className="p-6 space-y-4">
+        {/* Content - scrollable */}
+        <div className="p-4 sm:p-6 space-y-4 overflow-y-auto min-h-0">
           {error && (
             <div className="bg-red-500/10 border border-red-500/40 rounded-lg p-3 text-sm text-red-200">
               {error}
@@ -183,7 +196,7 @@ const TestImageUpload = ({ testId, onImageUploaded, onClose, existingImageUrl })
             <div
               onDragOver={handleDragOver}
               onDrop={handleDrop}
-              className="border-2 border-dashed border-slate-600/60 rounded-xl p-12 bg-slate-700/40 flex flex-col items-center justify-center text-center cursor-pointer hover:border-indigo-500/70 hover:bg-slate-700/60 transition-colors"
+              className="border-2 border-dashed border-slate-600/60 rounded-xl p-6 sm:p-12 bg-slate-700/40 flex flex-col items-center justify-center text-center cursor-pointer hover:border-indigo-500/70 hover:bg-slate-700/60 transition-colors min-h-[140px]"
               onClick={() => document.getElementById('test-image-input').click()}
             >
               <input
@@ -203,13 +216,13 @@ const TestImageUpload = ({ testId, onImageUploaded, onClose, existingImageUrl })
             </div>
           ) : (
             <div className="space-y-4">
-              <div className="relative rounded-xl overflow-hidden border border-slate-600/30 bg-slate-700/40">
+              <div className="relative rounded-xl overflow-hidden border border-slate-600/30 bg-slate-700/40 max-h-[40vh] sm:max-h-[50vh] flex items-center justify-center">
                 <img
                   src={preview}
                   alt="Test preview"
-                  className="w-full h-auto max-h-96 object-contain"
-                  crossOrigin="anonymous"
+                  className="w-full h-auto max-h-[40vh] sm:max-h-[50vh] object-contain"
                   loading="lazy"
+                  referrerPolicy="no-referrer"
                   onError={(e) => {
                     console.error("Failed to load test image:", preview);
                     e.target.style.display = "none";
@@ -245,13 +258,13 @@ const TestImageUpload = ({ testId, onImageUploaded, onClose, existingImageUrl })
 
           {/* Existing images gallery */}
           <div className="space-y-2">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-2 flex-wrap">
               <p className="text-sm font-semibold text-slate-200">
                 Or choose from existing test images
               </p>
               {loadingExisting && (
                 <span className="text-xs text-slate-400 flex items-center gap-1">
-                  <Loader className="w-3 h-3 animate-spin" /> Loading...
+                  <Loader className="w-3 h-3 animate-spin shrink-0" /> Loading...
                 </span>
               )}
             </div>
@@ -259,10 +272,10 @@ const TestImageUpload = ({ testId, onImageUploaded, onClose, existingImageUrl })
               <p className="text-xs text-red-300">{existingError}</p>
             )}
             {existingImages.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 max-h-64 overflow-y-auto">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3 max-h-48 sm:max-h-64 overflow-y-auto overscroll-contain">
                 {existingImages.map((img, idx) => (
                   <button
-                    key={`${img.imageUrl}-${idx}`}
+                    key={img.imageUrl ? `${img.imageUrl}-${idx}` : `img-${idx}`}
                     type="button"
                     onClick={() => {
                       onImageUploaded({
@@ -271,18 +284,23 @@ const TestImageUpload = ({ testId, onImageUploaded, onClose, existingImageUrl })
                       });
                       onClose();
                     }}
-                    className="group bg-slate-700/40 border border-slate-600/40 rounded-lg overflow-hidden hover:border-indigo-500/70 hover:bg-slate-700/70 transition-colors flex flex-col"
+                    className="group bg-slate-700/40 border border-slate-600/40 rounded-lg overflow-hidden hover:border-indigo-500/70 hover:bg-slate-700/70 transition-colors flex flex-col text-left min-w-0"
                   >
-                    <div className="relative w-full pt-[75%] bg-slate-800/60 overflow-hidden">
+                    <div className="relative w-full pt-[75%] bg-slate-800/60 overflow-hidden shrink-0">
                       <img
                         src={img.imageUrl}
                         alt={img.title || 'Test image'}
                         className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform"
                         loading="lazy"
-                        crossOrigin="anonymous"
+                        referrerPolicy="no-referrer"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = '';
+                          e.target.classList.add('opacity-0');
+                        }}
                       />
                     </div>
-                    <div className="px-2 py-1.5">
+                    <div className="px-2 py-1.5 min-w-0">
                       <p className="text-xs text-slate-200 truncate">
                         {img.title || 'Test image'}
                       </p>

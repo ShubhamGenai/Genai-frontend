@@ -553,8 +553,8 @@ const TestCreate = () => {
                     src={testImageUrl}
                     alt="Test preview"
                     className="h-20 w-20 object-cover rounded-lg border border-slate-600/30"
-                    crossOrigin="anonymous"
                     loading="lazy"
+                    referrerPolicy="no-referrer"
                     onError={(e) => {
                       console.error("Failed to load test image:", testImageUrl);
                       e.target.style.display = "none";

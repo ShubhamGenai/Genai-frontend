@@ -27,6 +27,7 @@ const LibraryUploadDocument = () => {
   const [isFree, setIsFree] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadStage, setUploadStage] = useState("");
   const [isLoadingClasses, setIsLoadingClasses] = useState(true);
   const [isLoadingCategories, setIsLoadingCategories] = useState(true);
   const [message, setMessage] = useState(null);
@@ -175,11 +176,11 @@ const LibraryUploadDocument = () => {
         newErrors.priceDiscounted = "Discounted price is required and must be greater than 0";
       }
     }
-    const maxPdfBytes = 10 * 1024 * 1024; // 10 MB - Cloudinary free-tier limit
+    const maxPdfBytes = 100 * 1024 * 1024; // 100 MB max (fast multipart upload for 50MB+)
     if (!selectedFile) {
       newErrors.pdfFile = "Please select a PDF file to upload.";
     } else if (selectedFile.size > maxPdfBytes) {
-      newErrors.pdfFile = `File is too large (max 10 MB). Your file is ${(selectedFile.size / (1024 * 1024)).toFixed(1)} MB.`;
+      newErrors.pdfFile = `File is too large (max 100 MB). Your file is ${(selectedFile.size / (1024 * 1024)).toFixed(1)} MB.`;
     }
     if (!selectedClass) {
       newErrors.selectedClass = "Please select a class.";
@@ -195,13 +196,31 @@ const LibraryUploadDocument = () => {
 
     setIsUploading(true);
     setUploadProgress(0);
+
+    const uploadId = typeof crypto !== "undefined" && crypto.randomUUID
+      ? crypto.randomUUID()
+      : `upload-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+
+    const progressUrl = `${CONTENTMANAGER.UPLOAD_PROGRESS}?uploadId=${encodeURIComponent(uploadId)}`;
+    let eventSource = null;
     try {
-      // Create FormData for file upload
+      eventSource = new EventSource(progressUrl);
+    } catch (_) {}
+
+    eventSource.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          if (typeof data.percent === "number") setUploadProgress(data.percent);
+          if (data.stage) setUploadStage(data.stage);
+        } catch (_) {}
+    };
+    eventSource.onerror = () => eventSource.close();
+
+    try {
       const formData = new FormData();
       formData.append('pdfFile', selectedFile);
       formData.append('name', name.trim());
       
-      // Handle free vs paid
       const finalPriceActual = isFree ? 0 : priceActual;
       const finalPriceDiscounted = isFree ? 0 : priceDiscounted;
       formData.append('priceActual', finalPriceActual);
@@ -210,39 +229,27 @@ const LibraryUploadDocument = () => {
       formData.append('class', selectedClass);
       formData.append('category', selectedCategory);
       
-      // Add optional fields
-      if (description) {
-        formData.append('description', description.trim());
-      }
+      if (description) formData.append('description', description.trim());
       if (whatsIncludedText) {
-        // Split by newline and create JSON array
         const whatsIncludedArray = whatsIncludedText.split('\n').filter(item => item.trim());
         formData.append('whatsIncluded', JSON.stringify(whatsIncludedArray));
       }
-      if (bestFor) {
-        formData.append('bestFor', bestFor.trim());
-      }
-      if (prerequisites) {
-        formData.append('prerequisites', prerequisites.trim());
-      }
-      if (support) {
-        formData.append('support', support.trim());
-      }
-      formData.append('icon', 'FileText'); // Default icon
-      formData.append('format', 'PDF'); // Default format
+      if (bestFor) formData.append('bestFor', bestFor.trim());
+      if (prerequisites) formData.append('prerequisites', prerequisites.trim());
+      if (support) formData.append('support', support.trim());
+      formData.append('icon', 'FileText');
+      formData.append('format', 'PDF');
 
       const res = await axios.post(CONTENTMANAGER.UPLOAD_LIBRARY_DOCUMENT, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
+          'X-Upload-ID': uploadId,
         },
-        timeout: 300000, // 5 min - large PDFs take time to upload to Cloudinary
-        onUploadProgress: (progressEvent) => {
-          const pct = progressEvent.total
-            ? Math.round((progressEvent.loaded * 100) / progressEvent.total)
-            : 0;
-          setUploadProgress(pct);
-        },
+        timeout: 300000,
       });
+
+      if (eventSource) eventSource.close();
+      setUploadProgress(100);
 
       setMessage({
         type: "success",
@@ -282,6 +289,7 @@ const LibraryUploadDocument = () => {
       }
     } catch (err) {
       console.error("Upload error:", err);
+      if (eventSource) eventSource.close();
       const errorMsg =
         err.response?.data?.error ||
         err.message ||
@@ -291,8 +299,10 @@ const LibraryUploadDocument = () => {
         text: errorMsg,
       });
     } finally {
+      if (eventSource) eventSource.close();
       setIsUploading(false);
       setUploadProgress(0);
+      setUploadStage("");
     }
   };
 
@@ -499,7 +509,7 @@ const LibraryUploadDocument = () => {
                     {filePreviewName || "Click to browse and select a PDF"}
                   </p>
                   <p className="text-slate-400 text-xs mt-1">
-                    Only PDF files are allowed (max 10 MB).
+                    Only PDF files are allowed (max 100 MB). 50MB+ use fast multipart upload.
                   </p>
                 </div>
                 {errors.pdfFile && (
@@ -676,7 +686,7 @@ const LibraryUploadDocument = () => {
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
-                      Uploading... {uploadProgress}%
+                      {uploadStage ? `${uploadStage} – ` : ""}{uploadProgress}%
                     </>
                   ) : (
                     "Upload PDF"

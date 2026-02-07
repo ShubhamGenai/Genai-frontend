@@ -1,6 +1,7 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { EyeIcon, PencilIcon, TrashIcon, DocumentTextIcon } from "@heroicons/react/outline";
 import { CONTENTMANAGER } from "../../../../constants/ApiConstants";
 
 const defaultClasses = ["All", "Class 11", "Class 12", "Common"];
@@ -10,6 +11,7 @@ const LibraryAllFiles = () => {
   const [files, setFiles] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
   const [classes] = useState(defaultClasses);
   const [classFilter, setClassFilter] = useState("All");
   const [categoryFilter, setCategoryFilter] = useState("All");
@@ -80,6 +82,20 @@ const LibraryAllFiles = () => {
 
   const totalCount = files.length;
 
+  const handleDelete = async (file) => {
+    if (!window.confirm(`Delete "${file.name || file.fileName || "this document"}"? This cannot be undone.`)) return;
+    setDeletingId(file._id);
+    try {
+      await axios.delete(CONTENTMANAGER.DELETE_LIBRARY_DOCUMENT(file._id));
+      setFiles((prev) => prev.filter((f) => f._id !== file._id));
+    } catch (err) {
+      console.error("Delete failed:", err);
+      setError(err.response?.data?.error || "Failed to delete document.");
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="w-full min-h-full pb-8 flex items-center justify-center">
@@ -111,7 +127,7 @@ const LibraryAllFiles = () => {
           </p>
         </div>
         <button
-          onClick={() => navigate("/content/library/upload")}
+          onClick={() => navigate("/content/library/documents")}
           className="mt-4 md:mt-0 inline-flex items-center justify-center px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition-all"
         >
           + Upload New Document
@@ -237,16 +253,41 @@ const LibraryAllFiles = () => {
                       {formatDate(file.createdAt)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      {file.fileUrl && (
-                        <a
-                          href={file.fileUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-indigo-400 hover:text-indigo-300 font-semibold transition-colors"
+                      <div className="flex justify-end items-center gap-2">
+                        <button
+                          onClick={() => navigate(`/content/library/document/${file._id}`)}
+                          className="inline-flex items-center justify-center px-2 py-1 rounded-lg bg-slate-800/70 border border-slate-600/40 text-slate-100 hover:bg-slate-700/80 transition-colors"
+                          title="View details"
                         >
-                          View PDF
-                        </a>
-                      )}
+                          <EyeIcon className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => navigate(`/content/library/document/${file._id}/edit`)}
+                          className="inline-flex items-center justify-center px-2 py-1 rounded-lg bg-indigo-600/20 border border-indigo-500/40 text-indigo-400 hover:bg-indigo-600/30 transition-colors"
+                          title="Edit document"
+                        >
+                          <PencilIcon className="h-4 w-4" />
+                        </button>
+                        {file.fileUrl && (
+                          <a
+                            href={file.fileUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center justify-center px-2 py-1 rounded-lg bg-emerald-600/20 border border-emerald-500/40 text-emerald-400 hover:bg-emerald-600/30 transition-colors"
+                            title="Open PDF"
+                          >
+                            <DocumentTextIcon className="h-4 w-4" />
+                          </a>
+                        )}
+                        <button
+                          onClick={() => handleDelete(file)}
+                          disabled={deletingId === file._id}
+                          className="inline-flex items-center justify-center px-2 py-1 rounded-lg bg-red-600/20 border border-red-500/40 text-red-400 hover:bg-red-600/30 transition-colors disabled:opacity-50"
+                          title="Delete document"
+                        >
+                          <TrashIcon className="h-4 w-4" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 );
