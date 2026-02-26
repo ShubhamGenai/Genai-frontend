@@ -1,71 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Star, Users, Clock, ChevronRight, ChevronDown, Check, Loader, Folder, FolderOpen, Book, Award, ArrowRight, FileText } from 'lucide-react';
+import { Star, Users, Clock, ChevronRight, Check, Loader, Search, Award, ArrowRight } from 'lucide-react';
 
-const LearningPlatform = () => {
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const navigate = useNavigate();
-  const [expandedCategories, setExpandedCategories] = useState({
-    allCategories: true
-  });
-  const [courses, setCourses] = useState([]);
-  const [categoryStructure, setCategoryStructure] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  // Simulate API fetch
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
-    setLoading(true);
-    setError(null);
-    
-    try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Simplified category structure - only 2 levels (folders and categories)
-      const mockCategoryStructure = [
-        {
-          id: 'academic',
-          label: 'NCERT & School',
-          type: 'folder',
-          children: [
-            { id: 'class-11', label: 'Class 11', type: 'category', parent: 'academic' },
-            { id: 'class-12', label: 'Class 12', type: 'category', parent: 'academic' },
-            { id: 'class-10', label: 'Class 10', type: 'category', parent: 'academic' },
-            { id: 'class-9', label: 'Class 9', type: 'category', parent: 'academic' }
-          ]
-        },
-        {
-          id: 'competitive',
-          label: 'Competitive Exams',
-          type: 'folder',
-          children: [
-            { id: 'neet', label: 'NEET', type: 'category', parent: 'competitive' },
-            { id: 'jee-main', label: 'JEE Main', type: 'category', parent: 'competitive' },
-            { id: 'jee-advanced', label: 'JEE Advanced', type: 'category', parent: 'competitive' },
-            { id: 'upsc', label: 'UPSC', type: 'category', parent: 'competitive' }
-          ]
-        },
-        {
-          id: 'professional',
-          label: 'Professional Skills',
-          type: 'folder',
-          children: [
-            { id: 'web-development', label: 'Web Development', type: 'category', parent: 'professional' },
-            { id: 'data-science', label: 'Data Science', type: 'category', parent: 'professional' },
-            { id: 'digital-marketing', label: 'Digital Marketing', type: 'category', parent: 'professional' },
-            { id: 'graphic-design', label: 'Graphic Design', type: 'category', parent: 'professional' },
-            { id: 'ui-ux', label: 'UI/UX Design', type: 'category', parent: 'professional' },
-            { id: 'stock-market', label: 'Stock Market', type: 'category', parent: 'professional' }
-          ]
-        }
-      ];
-
-      // Mock courses data
-      const mockCourses = [
+const mockCourses = [
         {
           id: 1,
           title: "NEET 2025 Complete Preparation",
@@ -263,29 +200,63 @@ const LearningPlatform = () => {
         }
       ];
 
-      setCourses(mockCourses);
-      setCategoryStructure(mockCategoryStructure);
-      setLoading(false);
-    } catch (err) {
-      setError('Failed to load courses. Please try again later.');
-      setLoading(false);
-    }
-  };
+const categoryFilterOptions = [
+  { id: 'All', label: 'All Courses' },
+  { id: 'neet', label: 'NEET Preparation' },
+  { id: 'jee-main', label: 'JEE Main' },
+  { id: 'jee-advanced', label: 'JEE Advanced' },
+  { id: 'upsc', label: 'UPSC' },
+  { id: 'web-development', label: 'Web Development' },
+  { id: 'data-science', label: 'Data Science' },
+  { id: 'digital-marketing', label: 'Digital Marketing' },
+  { id: 'graphic-design', label: 'Graphic Design' },
+  { id: 'stock-market', label: 'Stock Market' },
+  { id: 'ui-ux', label: 'UI/UX Design' },
+  { id: 'class-10', label: 'Class 10' },
+  { id: 'class-12', label: 'Class 12' },
+];
 
-  const toggleCategory = (categoryId) => {
-    setExpandedCategories(prev => ({
-      ...prev,
-      [categoryId]: !prev[categoryId]
-    }));
-  };
+const featuredCategories = [
+  { id: 'neet', label: 'NEET Preparation' },
+  { id: 'jee-main', label: 'JEE Main' },
+  { id: 'jee-advanced', label: 'JEE Advanced' },
+  { id: 'upsc', label: 'UPSC' },
+  { id: 'web-development', label: 'Web Development' },
+  { id: 'data-science', label: 'Data Science' },
+];
 
-  const handleCategoryClick = (item) => {
-    if (item.type === 'folder') {
-      toggleCategory(item.id);
-    } else if (item.type === 'category') {
-      setSelectedCategory(item.id);
-    }
-  };
+const LearningPlatform = () => {
+  const navigate = useNavigate();
+
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedLevel, setSelectedLevel] = useState('All Levels');
+  const [selectedPrice, setSelectedPrice] = useState('All');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const coursesPerPage = 10;
+  const [showCategorySections, setShowCategorySections] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        setCourses(mockCourses);
+      } catch (err) {
+        setError('Failed to load courses. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const formatStudents = (count) => {
     if (count >= 1000) {
@@ -294,63 +265,59 @@ const LearningPlatform = () => {
     return count.toString();
   };
 
-  const formatDuration = (hours) => {
-    return `${hours} hours`;
-  };
+  const formatDuration = (hours) => `${hours} hours`;
 
-  const renderCategoryTree = (items, level = 0) => {
-    return items.map((item) => {
-      const isExpanded = expandedCategories[item.id];
-      const isSelected = selectedCategory === item.id;
-      const hasChildren = item.children && item.children.length > 0;
+  const filteredCourses = courses.filter((course) => {
+    // Category
+    if (selectedCategory !== 'All' && course.category !== selectedCategory) {
+      return false;
+    }
 
-      return (
-        <div key={item.id} className="select-none">
-          <button
-            onClick={() => handleCategoryClick(item)}
-            className={`flex items-center gap-2 w-full text-left py-2 px-2 rounded-md transition-all group ${
-              isSelected
-                ? 'bg-blue-50 text-blue-700 font-light'
-                : 'text-black hover:bg-gray-50'
-            }`}
-            style={{ paddingLeft: `${level * 16 + 8}px` }}
-          >
-            {hasChildren && (
-              <>
-                {isExpanded ? (
-                  <ChevronDown className="w-4 h-4 flex-shrink-0 text-black" />
-                ) : (
-                  <ChevronRight className="w-4 h-4 flex-shrink-0 text-black" />
-                )}
-                {isExpanded ? (
-                  <FolderOpen className="w-4 h-4 flex-shrink-0 text-black" />
-                ) : (
-                  <Folder className="w-4 h-4 flex-shrink-0 text-black" />
-                )}
-              </>
-            )}
-            {!hasChildren && (
-              <Book className="w-4 h-4 flex-shrink-0 text-gray-500" />
-            )}
-            <span className="text-xs">{item.label}</span>
-          </button>
-          {hasChildren && isExpanded && (
-            <div className="mt-0.5">
-              {renderCategoryTree(item.children, level + 1)}
-            </div>
-          )}
-        </div>
-      );
-    });
-  };
+    // Level
+    if (selectedLevel !== 'All Levels' && course.level !== selectedLevel) {
+      return false;
+    }
 
-  const filteredCourses = selectedCategory === 'all'
-    ? courses
-    : courses.filter(course => course.category === selectedCategory);
+    // Price
+    if (selectedPrice !== 'All') {
+      const isFree = course.price === 0;
+      if (selectedPrice === 'Free' && !isFree) return false;
+      if (selectedPrice === 'Paid' && isFree) return false;
+    }
+
+    // Search
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      const inTitle = course.title.toLowerCase().includes(query);
+      const inInstructor = course.instructor.toLowerCase().includes(query);
+      if (!inTitle && !inInstructor) return false;
+    }
+
+    return true;
+  });
+
+  const totalPages = Math.max(1, Math.ceil(filteredCourses.length / coursesPerPage));
+  const startIndex = (currentPage - 1) * coursesPerPage;
+  const paginatedCourses = filteredCourses.slice(startIndex, startIndex + coursesPerPage);
+
+  const isDefaultView =
+    selectedCategory === 'All' &&
+    selectedLevel === 'All Levels' &&
+    selectedPrice === 'All' &&
+    !searchQuery.trim();
+
+  const isCategorySectionView = isDefaultView && showCategorySections;
+
+  const coursesByCategory = courses.reduce((acc, course) => {
+    const cat = course.category || 'others';
+    if (!acc[cat]) acc[cat] = [];
+    acc[cat].push(course);
+    return acc;
+  }, {});
 
   if (loading) {
     return (
-      <div className="min-h-screen  flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <Loader className="w-12 h-12 text-blue-600 animate-spin mx-auto mb-4" />
           <p className="text-gray-600 text-lg">Loading courses...</p>
@@ -365,7 +332,7 @@ const LearningPlatform = () => {
         <div className="text-center bg-white p-8 rounded-lg shadow-md max-w-md">
           <p className="text-red-600 text-lg mb-4">{error}</p>
           <button
-            onClick={fetchData}
+            onClick={() => window.location.reload()}
             className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
           >
             Retry
@@ -376,139 +343,287 @@ const LearningPlatform = () => {
   }
 
   return (
-    <div className="min-h-screen ">
-      {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white py-8 px-4">
-        <div className="w-full">
-          <h1 className="text-xl sm:text-xl lg:text-md font-medium mb-1">Learn From The Best</h1>
-          <p className="text-xs sm:text-md text-blue-100 font-light max-w-3xl">
-            Access world-class courses taught by industry experts. Start learning today and achieve your goals.
-          </p>
-        </div>
-      </div>
+    <div className="min-h-screen bg-gray-50">
+      <div className="w-full px-4 py-8 lg:py-10">
+        <div className="max-w-7xl mx-auto space-y-6">
+          {/* Header */}
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+            <div>
+              <h1 className="text-2xl md:text-3xl font-semibold text-gray-900">
+                Continue Learning
+              </h1>
+              <p className="text-sm text-gray-500">
+                Pick up from where you left off or explore new topics.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedCategory('All');
+                setSelectedLevel('All Levels');
+                setSelectedPrice('All');
+                setSearchQuery('');
+                setCurrentPage(1);
+                setShowCategorySections(false);
+              }}
+              className="self-start md:self-auto inline-flex items-center text-xs md:text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
+            >
+              View all
+              <ChevronRight className="w-4 h-4 ml-1" />
+            </button>
+          </div>
 
-      {/* Main Content */}
-      <div className="w-full px-4 py-8 lg:py-12">
-        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
-          {/* Sidebar */}
-          <div className="w-full lg:w-56 flex-shrink-0">
-            <div className="bg-white rounded-lg shadow- border border-gray-200 p-4 sticky top-6">
-              <h2 className="text-base font-light mb-4 text-black">Categories</h2>
+          {/* Filters row */}
+          <div className="bg-white border border-gray-200 rounded-xl px-4 py-3 flex flex-col lg:flex-row lg:items-center gap-3 lg:gap-4">
+            {/* Category */}
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 whitespace-nowrap">
+                Find Courses:
+              </span>
+              <select
+                className="h-9 rounded-md border border-gray-200 bg-white px-3 text-xs text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                value={selectedCategory}
+                onChange={(e) => {
+                  setSelectedCategory(e.target.value);
+                  setCurrentPage(1);
+                }}
+              >
+                {categoryFilterOptions.map((opt) => (
+                  <option key={opt.id} value={opt.id}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-              <div className="space-y-0.5">
-                {/* All Categories Folder */}
-                <div className="border-b border-gray-200 pb-2 mb-2">
-                  <button
-                    onClick={() => toggleCategory('allCategories')}
-                    className="flex items-center justify-between w-full text-left text-sm font-medium text-black hover:text-blue-600 transition-colors py-1.5"
-                  >
-                    <div className="flex items-center gap-2">
-                      {expandedCategories.allCategories ? (
-                        <ChevronDown className="w-4 h-4 text-black" />
-                      ) : (
-                        <ChevronRight className="w-4 h-4 text-black" />
-                      )}
-                      {expandedCategories.allCategories ? (
-                        <FolderOpen className="w-4 h-4 text-black" />
-                      ) : (
-                        <Folder className="w-4 h-4 text-black" />
-                      )}
-                      <span className="text-xs">All Categories</span>
-                    </div>
-                  </button>
+            {/* Level */}
+            <select
+              className="h-9 rounded-md border border-gray-200 bg-white px-3 text-xs text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              value={selectedLevel}
+              onChange={(e) => {
+                setSelectedLevel(e.target.value);
+                setCurrentPage(1);
+              }}
+            >
+              <option>All Levels</option>
+              <option>Beginner</option>
+              <option>Intermediate</option>
+              <option>Advanced</option>
+            </select>
 
-                  {expandedCategories.allCategories && (
-                    <div className="mt-1 space-y-0.5 ">
-                      {renderCategoryTree(categoryStructure)}
-                    </div>
-                  )}
-                </div>
+            {/* Price */}
+            <select
+              className="h-9 rounded-md border border-gray-200 bg-white px-3 text-xs text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              value={selectedPrice}
+              onChange={(e) => {
+                setSelectedPrice(e.target.value);
+                setCurrentPage(1);
+              }}
+            >
+              <option value="All">All Prices</option>
+              <option value="Free">Free</option>
+              <option value="Paid">Paid</option>
+            </select>
 
-                {/* All Courses Button */}
-                <button
-                  onClick={() => setSelectedCategory('all')}
-                  className={`flex items-center gap-2 w-full text-left py-2 px-2 rounded-md transition-all ${
-                    selectedCategory === 'all'
-                      ? 'bg-blue-50 text-blue-700 font-light'
-                      : 'text-black hover:bg-gray-50'
-                  }`}
-                >
-                  <Book className="w-4 h-4 flex-shrink-0 text-black" />
-                  <span className="text-xs">All Courses</span>
-                </button>
+            {/* Search */}
+            <div className="flex-1 flex items-center gap-2">
+              <div className="relative flex-1">
+                <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  placeholder="Search your courses..."
+                  className="w-full h-9 rounded-md border border-gray-200 bg-white pl-9 pr-3 text-xs text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
               </div>
+              <button
+                type="button"
+                className="px-4 h-9 rounded-md bg-blue-600 text-white text-xs font-medium hover:bg-blue-700 transition-colors whitespace-nowrap"
+              >
+                Search
+              </button>
             </div>
           </div>
 
-          {/* Course Grid */}
-          <div className="flex-1 min-w-0">
-            <div className="mb-6">
-              <h2 className="text-sm sm:text-sm font-light text-gray-600">
-                Showing {filteredCourses.length} courses
-              </h2>
-            </div>
+          {/* Count */}
+          <div className="flex items-center justify-between text-xs text-gray-600">
+            <p>
+              {isCategorySectionView ? (
+                <>Showing {courses.length} courses across categories.</>
+              ) : (
+                <>
+                  Showing {filteredCourses.length} course
+                  {filteredCourses.length !== 1 ? 's' : ''}.
+                </>
+              )}
+            </p>
+          </div>
 
-            {filteredCourses.length === 0 ? (
-              <div className="text-center py-12 bg-white rounded-lg shadow-sm">
-                <p className="text-gray-500 text-lg">No courses found in this category.</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 gap-6">
-                {filteredCourses.map(course => (
-                  <div
+          {/* Courses grid */}
+          {isCategorySectionView ? (
+            <>
+              {featuredCategories.map((cat) => {
+                const categoryCourses = (coursesByCategory[cat.id] || []).slice(0, 5);
+                if (!categoryCourses.length) return null;
+
+                return (
+                  <section key={cat.id} className="mb-8">
+                    <div className="flex items-center justify-between mb-3">
+                      <h2 className="text-sm sm:text-base font-semibold text-gray-900">
+                        {cat.label}
+                      </h2>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedCategory(cat.id);
+                          setCurrentPage(1);
+                        }}
+                        className="inline-flex items-center text-[11px] font-medium text-blue-600 hover:text-blue-700"
+                      >
+                        Show all
+                        <ChevronRight className="w-3 h-3 ml-0.5" />
+                      </button>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5 gap-6">
+                      {categoryCourses.map((course) => (
+                        <button
+                          key={course.id}
+                          type="button"
+                          onClick={() => navigate(`/learn/details/${course.id}`)}
+                          className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-xl transition-all duration-300 group cursor-pointer flex flex-col fade-in-up text-left"
+                        >
+                          <div className="relative overflow-hidden">
+                            <img
+                              src={course.image}
+                              alt={course.title}
+                              className="w-full h-32 object-cover group-hover:scale-110 transition-transform duration-300"
+                              loading="lazy"
+                            />
+
+                            {course.price === 0 ? (
+                              <span className="absolute top-2 left-2 bg-emerald-500 text-white px-2 py-0.5 rounded-full text-xs font-light shadow-md flex items-center gap-1">
+                                <Award className="w-3 h-3" />
+                                FREE
+                              </span>
+                            ) : course.bestseller ? (
+                              <span className="absolute top-2 left-2 bg-yellow-400 text-yellow-900 px-2 py-0.5 rounded-full text-xs font-light shadow-md flex items-center gap-1">
+                                <Award className="w-3 h-3" />
+                                Bestseller
+                              </span>
+                            ) : null}
+
+                            {course.enrolled && (
+                              <span className="absolute top-2 right-2 bg-blue-500 text-white px-2 py-0.5 rounded-full text-xs font-light shadow-md flex items-center gap-1">
+                                <Check className="w-3 h-3" />
+                                Enrolled
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="p-3 flex flex-col flex-grow">
+                            <div className="flex-grow">
+                              <h3 className="text-base font-light text-black mb-1.5 line-clamp-2 group-hover:text-blue-600 transition-colors leading-snug">
+                                {course.title}
+                              </h3>
+                              <p className="text-xs text-gray-600 mb-3 line-clamp-2">
+                                {course.instructor}
+                              </p>
+                            </div>
+
+                            <div className="flex items-center flex-wrap gap-x-3 gap-y-1.5 mb-3 text-xs text-black">
+                              <div className="flex items-center gap-1">
+                                <Users className="w-3 h-3" />
+                                <span className="font-light">
+                                  {formatStudents(course.students)}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <Clock className="w-3 h-3" />
+                                <span>{formatDuration(course.duration)}</span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                                <span className="font-light">{course.rating}</span>
+                              </div>
+                            </div>
+
+                            <div className="w-full mt-2 bg-gradient-to-r from-blue-600 to-blue-500 group-hover:from-blue-700 group-hover:to-blue-600 text-white px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 flex items-center justify-center gap-1.5 shadow-sm group-hover:shadow-md transform group-hover:scale-[1.02]">
+                              <span className="tracking-wide">Continue Learning</span>
+                              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform duration-200" strokeWidth={2.5} />
+                            </div>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </section>
+                );
+              })}
+            </>
+          ) : filteredCourses.length === 0 ? (
+            <div className="text-center py-12 bg-white rounded-lg shadow-sm">
+              <p className="text-gray-500 text-sm sm:text-base">
+                No courses match your filters yet.
+              </p>
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5 gap-6">
+                {paginatedCourses.map((course) => (
+                  <button
                     key={course.id}
+                    type="button"
                     onClick={() => navigate(`/learn/details/${course.id}`)}
-                    className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-xl transition-all duration-300 group cursor-pointer flex flex-col block"
+                    className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-xl transition-all duration-300 group cursor-pointer flex flex-col fade-in-up text-left"
                   >
-                    {/* Course Image */}
-                    <div className="relative overflow-hidden ">
+                    <div className="relative overflow-hidden">
                       <img
                         src={course.image}
                         alt={course.title}
                         className="w-full h-32 object-cover group-hover:scale-110 transition-transform duration-300"
                         loading="lazy"
                       />
-                      {/* Badges */}
+
                       {course.price === 0 ? (
-                        <div className="absolute top-2 left-2">
-                          <span className="bg-emerald-500 text-white px-2 py-0.5 rounded-full text-xs font-light shadow-md flex items-center gap-1">
-                            <Award className="w-3 h-3" />
-                            FREE
-                          </span>
-                        </div>
-                      ) : course.bestseller && (
-                        <div className="absolute top-2 left-2">
-                          <span className="bg-yellow-400 text-yellow-900 px-2 py-0.5 rounded-full text-xs font-light shadow-md flex items-center gap-1">
-                            <Award className="w-3 h-3" />
-                            Bestseller
-                          </span>
-                        </div>
-                      )}
+                        <span className="absolute top-2 left-2 bg-emerald-500 text-white px-2 py-0.5 rounded-full text-xs font-light shadow-md flex items-center gap-1">
+                          <Award className="w-3 h-3" />
+                          FREE
+                        </span>
+                      ) : course.bestseller ? (
+                        <span className="absolute top-2 left-2 bg-yellow-400 text-yellow-900 px-2 py-0.5 rounded-full text-xs font-light shadow-md flex items-center gap-1">
+                          <Award className="w-3 h-3" />
+                          Bestseller
+                        </span>
+                      ) : null}
+
                       {course.enrolled && (
-                        <div className="absolute top-2 right-2">
-                          <span className="bg-blue-500 text-white px-2 py-0.5 rounded-full text-xs font-light shadow-md flex items-center gap-1">
-                            <Check className="w-3 h-3" />
-                            Enrolled
-                          </span>
-                        </div>
+                        <span className="absolute top-2 right-2 bg-blue-500 text-white px-2 py-0.5 rounded-full text-xs font-light shadow-md flex items-center gap-1">
+                          <Check className="w-3 h-3" />
+                          Enrolled
+                        </span>
                       )}
                     </div>
 
-                    {/* Course Content */}
                     <div className="p-3 flex flex-col flex-grow">
-                      {/* Title & Instructor */}
                       <div className="flex-grow">
                         <h3 className="text-base font-light text-black mb-1.5 line-clamp-2 group-hover:text-blue-600 transition-colors leading-snug">
                           {course.title}
                         </h3>
-                        <p className="text-xs text-gray-600 mb-3 line-clamp-2">{course.instructor}</p>
+                        <p className="text-xs text-gray-600 mb-3 line-clamp-2">
+                          {course.instructor}
+                        </p>
                       </div>
 
-                      {/* Course Stats */}
                       <div className="flex items-center flex-wrap gap-x-3 gap-y-1.5 mb-3 text-xs text-black">
                         <div className="flex items-center gap-1">
                           <Users className="w-3 h-3" />
-                          <span className="font-light">{formatStudents(course.students)}</span>
+                          <span className="font-light">
+                            {formatStudents(course.students)}
+                          </span>
                         </div>
                         <div className="flex items-center gap-1">
                           <Clock className="w-3 h-3" />
@@ -520,17 +635,47 @@ const LearningPlatform = () => {
                         </div>
                       </div>
 
-                      {/* View Details Button */}
-                      <div className="w-full mt-2 bg-gradient-to-r from-blue-600 to-blue-500 group-hover:from-blue-700 group-hover:to-blue-600 text-white px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 flex items-center justify-center gap-1.5 shadow-sm group-hover:shadow-md cursor-pointer transform group-hover:scale-[1.02]">
-                        <span className="tracking-wide">View Details</span>
+                      <div className="w-full mt-2 bg-gradient-to-r from-blue-600 to-blue-500 group-hover:from-blue-700 group-hover:to-blue-600 text-white px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 flex items-center justify-center gap-1.5 shadow-sm group-hover:shadow-md transform group-hover:scale-[1.02]">
+                        <span className="tracking-wide">Continue Learning</span>
                         <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform duration-200" strokeWidth={2.5} />
                       </div>
                     </div>
-                  </div>
+                  </button>
                 ))}
               </div>
-            )}
-          </div>
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="mt-6 flex items-center justify-center gap-3">
+                  <button
+                    onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                    disabled={currentPage === 1}
+                    className={`px-3 py-1 text-xs rounded-md border ${
+                      currentPage === 1
+                        ? 'text-gray-400 border-gray-200 cursor-not-allowed'
+                        : 'text-gray-700 border-gray-300 hover:bg-gray-50'
+                    }`}
+                  >
+                    Previous
+                  </button>
+                  <span className="text-xs text-gray-600">
+                    Page {currentPage} of {totalPages}
+                  </span>
+                  <button
+                    onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+                    disabled={currentPage === totalPages}
+                    className={`px-3 py-1 text-xs rounded-md border ${
+                      currentPage === totalPages
+                        ? 'text-gray-400 border-gray-200 cursor-not-allowed'
+                        : 'text-gray-700 border-gray-300 hover:bg-gray-50'
+                    }`}
+                  >
+                    Next
+                  </button>
+                </div>
+              )}
+            </>
+          )}
         </div>
       </div>
     </div>

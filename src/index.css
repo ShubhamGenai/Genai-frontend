@@ -203,4 +203,18 @@ html {
 }
 
 
+/* Simple fade-in-up animation for grids/cards */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
+.fade-in-up {
+  animation: fade-in-up 0.25s ease-out;
+}

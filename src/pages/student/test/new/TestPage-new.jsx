@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Star, Users, Clock, ChevronRight, ChevronDown, Award, FileText, Timer, Folder, FolderOpen, BookOpen, Loader, ArrowRight } from 'lucide-react';
+import { Star, Clock, ChevronRight, Award, FileText, Loader, ArrowRight, Search } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { mainContext } from '../../../../context/MainContext';
@@ -10,15 +10,17 @@ const TestPlatform = () => {
   const location = useLocation();
   const { token, user } = useContext(mainContext);
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [expandedCategories, setExpandedCategories] = useState({
-    allCategories: true
-  });
   const [tests, setTests] = useState([]);
   const [categoryStructure, setCategoryStructure] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const testsPerPage = 8;
+  const testsPerPage = 10;
+  const [selectedSubject, setSelectedSubject] = useState('All Subjects');
+  const [selectedLevelFilter, setSelectedLevelFilter] = useState('All Levels');
+  const [selectedPriceFilter, setSelectedPriceFilter] = useState('All');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showCategorySections, setShowCategorySections] = useState(true);
 
   // Determine if we're in student routes or public routes
   const isStudentRoute = location.pathname.startsWith('/student');
@@ -53,6 +55,14 @@ const TestPlatform = () => {
     'ml-tests': ['machine learning', 'Machine Learning', 'ml', 'ML', 'ml-tests'],
     'statistics-tests': ['statistics', 'Statistics', 'statistics-tests'],
   };
+
+  const featuredCategories = [
+    { id: 'neet-tests', label: 'NEET Preparation' },
+    { id: 'jee-main-tests', label: 'JEE Main' },
+    { id: 'jee-advanced-tests', label: 'JEE Advanced' },
+    { id: 'upsc-tests', label: 'UPSC' },
+    { id: 'banking-tests', label: 'Banking Exams' },
+  ];
 
   // Normalize category: Convert backend category to category ID
   const normalizeCategory = (backendCategory) => {
@@ -173,22 +183,6 @@ const TestPlatform = () => {
     }
   };
 
-  const toggleCategory = (categoryId) => {
-    setExpandedCategories(prev => ({
-      ...prev,
-      [categoryId]: !prev[categoryId]
-    }));
-  };
-
-  const handleCategoryClick = (item) => {
-    if (item.type === 'folder') {
-      toggleCategory(item.id);
-    } else if (item.type === 'category') {
-      setSelectedCategory(item.id);
-      setCurrentPage(1);
-    }
-  };
-
   const formatAttempts = (count) => {
     if (count >= 1000) {
       return `${(count / 1000).toFixed(1)}k`;
@@ -205,87 +199,98 @@ const TestPlatform = () => {
     return `${minutes} minutes`;
   };
 
-  const renderCategoryTree = (items, level = 0) => {
-    return items.map((item) => {
-      const isExpanded = expandedCategories[item.id];
-      const isSelected = selectedCategory === item.id;
-      const hasChildren = item.children && item.children.length > 0;
-
-      return (
-        <div key={item.id} className="select-none">
-          <button
-            onClick={() => handleCategoryClick(item)}
-            className={`flex items-center gap-2 w-full text-left py-2 px-2 rounded-md transition-all group ${
-              isSelected
-                ? 'bg-blue-50 text-blue-700 font-light'
-                : 'text-black hover:bg-gray-50'
-            }`}
-            style={{ paddingLeft: `${level * 16 + 8}px` }}
-          >
-            {hasChildren && (
-              <>
-                {isExpanded ? (
-                  <ChevronDown className="w-4 h-4 flex-shrink-0 text-black" />
-                ) : (
-                  <ChevronRight className="w-4 h-4 flex-shrink-0" />
-                )}
-                {isExpanded ? (
-                  <FolderOpen className="w-4 h-4 flex-shrink-0 text-blue-500" />
-                ) : (
-                  <Folder className="w-4 h-4 flex-shrink-0 text-black group-hover:text-blue-500" />
-                )}
-              </>
-            )}
-            {!hasChildren && (
-              <>
-                <ChevronRight className="w-4 h-4 flex-shrink-0 opacity-50" />
-                <FileText className="w-4 h-4 flex-shrink-0 text-blue-500" />
-              </>
-            )}
-            <span className="text-xs">{item.label}</span>
-          </button>
-          {hasChildren && isExpanded && (
-            <div className="mt-0.5">
-              {renderCategoryTree(item.children, level + 1)}
-            </div>
-          )}
-        </div>
-      );
-    });
-  };
-
-  const filteredTests = selectedCategory === 'all'
-    ? tests
-    : tests.filter(test => {
-        // Exact match first
-        if (test.category === selectedCategory) {
-          return true;
-        }
-        
-        // Also check original category for variations
+  const filteredTests = tests.filter(test => {
+    // Category filter
+    if (selectedCategory !== 'all') {
+      // Exact match first
+      if (test.category !== selectedCategory) {
+        let matchesCategory = false;
+ 
         if (test.originalCategory) {
           const originalLower = String(test.originalCategory).toLowerCase().trim();
           const selectedLower = String(selectedCategory).toLowerCase().trim();
-          
-          // Check if selected category matches any variation
+ 
           const categoryVariations = categoryMapping[selectedCategory] || [];
           if (categoryVariations.some(v => v.toLowerCase() === originalLower)) {
-            return true;
+            matchesCategory = true;
           }
-          
-          // Partial match check
-          if (originalLower.includes(selectedLower.replace('-tests', '').replace('-', ' ')) || 
-              selectedLower.replace('-tests', '').replace('-', ' ').includes(originalLower)) {
-            return true;
+ 
+          if (
+            !matchesCategory &&
+            (originalLower.includes(selectedLower.replace('-tests', '').replace('-', ' ')) ||
+              selectedLower.replace('-tests', '').replace('-', ' ').includes(originalLower))
+          ) {
+            matchesCategory = true;
           }
         }
-        
+ 
+        if (!matchesCategory) {
+          return false;
+        }
+      }
+    }
+ 
+    // Subject filter
+    if (
+      selectedSubject !== 'All Subjects' &&
+      String(test.subject || '').toLowerCase() !== selectedSubject.toLowerCase()
+    ) {
+      return false;
+    }
+ 
+    // Level filter
+    if (
+      selectedLevelFilter !== 'All Levels' &&
+      String(test.level || '').toLowerCase() !== selectedLevelFilter.toLowerCase()
+    ) {
+      return false;
+    }
+ 
+    // Price filter
+    if (selectedPriceFilter !== 'All') {
+      const isFree =
+        test.isFree === true ||
+        (test.price?.actual === 0 && test.price?.discounted === 0) ||
+        (!test.price?.actual && !test.price?.discounted);
+ 
+      if (selectedPriceFilter === 'Free' && !isFree) return false;
+      if (selectedPriceFilter === 'Paid' && isFree) return false;
+    }
+ 
+    // Search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      const inTitle = String(test.title || '').toLowerCase().includes(query);
+      const inDescription = String(test.description || '').toLowerCase().includes(query);
+      const inSubject = String(test.subject || '').toLowerCase().includes(query);
+ 
+      if (!inTitle && !inDescription && !inSubject) {
         return false;
-      });
+      }
+    }
+ 
+    return true;
+  });
 
   const totalPages = Math.max(1, Math.ceil(filteredTests.length / testsPerPage));
   const startIndex = (currentPage - 1) * testsPerPage;
   const paginatedTests = filteredTests.slice(startIndex, startIndex + testsPerPage);
+
+  const isDefaultView =
+    selectedCategory === 'all' &&
+    selectedSubject === 'All Subjects' &&
+    selectedLevelFilter === 'All Levels' &&
+    selectedPriceFilter === 'All' &&
+    !searchQuery.trim();
+
+  const isCategorySectionView = isDefaultView && showCategorySections;
+
+  const testsByCategory = tests.reduce((acc, test) => {
+    const cat = test.category || 'others';
+    if (!acc[cat]) acc[cat] = [];
+    acc[cat].push(test);
+    return acc;
+  }, {});
 
    if (loading) {
     return (
@@ -317,83 +322,261 @@ const TestPlatform = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
-      
-        <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white py-8 px-4">
-        <div className="w-full">
-          <h1 className="text-xl sm:text-xl lg:text-md font-medium mb-1">Test Your Skills</h1>
-          <p className="text-xs sm:text-md text-blue-100 font-light max-w-3xl">
-          Take practice tests and mock exams to evaluate your knowledge and track your progress..
-          </p>
-        </div>
-      </div>
-
       {/* Main Content */}
-      <div className="w-full px-4 py-8 lg:py-12">
-        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
-          {/* Sidebar */}
-          <div className="w-full lg:w-56 flex-shrink-0">
-            <div className="bg-white rounded-lg shadow- border border-gray-200 p-4 sticky top-6">
-              <h2 className="text-base font-light mb-4 text-black">Categories</h2>
-
-              <div className="space-y-0.5">
-                {/* All Categories Folder */}
-                <div className="border-b border-gray-200 pb-2 mb-2">
-                  <button
-                    onClick={() => toggleCategory('allCategories')}
-                    className="flex items-center justify-between w-full text-left text-sm font-light text-black hover:text-blue-600 transition-colors py-1.5"
-                  >
-                    <div className="flex items-center gap-2">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                      </svg>
-                      <span className="text-xs">All Categories</span>
-                    </div>
-                    {expandedCategories.allCategories ? (
-                      <ChevronDown className="w-4 h-4 text-black" />
-                    ) : (
-                      <ChevronRight className="w-4 h-4 text-black" />
-                    )}
-                  </button>
-
-                  {expandedCategories.allCategories && (
-                    <div className="mt-1 space-y-0.5">
-                      {renderCategoryTree(categoryStructure)}
-                    </div>
-                  )}
-                </div>
-
-                {/* All Tests Button */}
-                <button
-                  onClick={() => setSelectedCategory('all')}
-                  className={`flex items-center gap-2 w-full text-left py-2 px-2 rounded-md transition-all ${
-                    selectedCategory === 'all'
-                      ? 'bg-blue-50 text-blue-700 font-light'
-                      : 'text-black hover:bg-gray-50'
-                  }`}
-                >
-                  <BookOpen className="w-4 h-4 text-black" />
-                  <span className="text-xs">All Tests</span>
-                </button>
-              </div>
+      <div className="w-full px-4 py-8 lg:py-10">
+        <div className="max-w-7xl mx-auto space-y-6">
+          {/* Header */}
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+            <div>
+              <h1 className="text-2xl md:text-3xl font-semibold text-gray-900">
+                Explore Tests
+              </h1>
+              <p className="text-sm text-gray-500">
+                Practice with mock exams and chapter-wise tests.
+              </p>
             </div>
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedCategory('all');
+                setSelectedSubject('All Subjects');
+                setSelectedLevelFilter('All Levels');
+                setSelectedPriceFilter('All');
+                setSearchQuery('');
+                setCurrentPage(1);
+                setShowCategorySections(false);
+              }}
+              className="self-start md:self-auto inline-flex items-center text-xs md:text-sm font-medium text-blue-600 hover:text-blue-700"
+            >
+              View all
+              <ChevronRight className="w-4 h-4 ml-1" />
+            </button>
           </div>
 
-          {/* Tests Grid */}
-          <div className="flex-1 min-w-0">
-            <div className="mb-6">
-              <h2 className="text-sm sm:text-sm font-light text-gray-600">
-                Showing {filteredTests.length} test{filteredTests.length !== 1 ? 's' : ''}
-              </h2>
+          {/* Filters row */}
+          <div className="bg-white border border-gray-200 rounded-xl px-4 py-3 flex flex-col lg:flex-row lg:items-center gap-3 lg:gap-4">
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 whitespace-nowrap">
+                Find Tests:
+              </span>
+              <select
+                className="h-9 rounded-md border border-gray-200 bg-white px-3 text-xs text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                value={selectedCategory}
+                onChange={(e) => {
+                  setSelectedCategory(e.target.value);
+                  setCurrentPage(1);
+                }}
+              >
+                <option value="all">All Tests</option>
+                <option value="neet-tests">NEET Preparation</option>
+                <option value="jee-main-tests">JEE Main</option>
+                <option value="jee-advanced-tests">JEE Advanced</option>
+                <option value="upsc-tests">UPSC</option>
+                <option value="banking-tests">Banking</option>
+                <option value="python-tests">Python</option>
+                <option value="ml-tests">Data Science</option>
+              </select>
             </div>
-
-            {filteredTests.length === 0 ? (
-              <div className="text-center py-12 bg-white rounded-lg shadow-sm">
-                <p className="text-gray-500 text-lg">No tests found in this category.</p>
+ 
+            <select
+              className="h-9 rounded-md border border-gray-200 bg-white px-3 text-xs text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              value={selectedSubject}
+              onChange={(e) => {
+                setSelectedSubject(e.target.value);
+                setCurrentPage(1);
+              }}
+            >
+              <option>All Subjects</option>
+              <option>Physics</option>
+              <option>Biology</option>
+              <option>Mathematics</option>
+              <option>Reasoning</option>
+              <option>Programming</option>
+              <option>Data Science</option>
+              <option>General Studies</option>
+            </select>
+ 
+            <select
+              className="h-9 rounded-md border border-gray-200 bg-white px-3 text-xs text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              value={selectedLevelFilter}
+              onChange={(e) => {
+                setSelectedLevelFilter(e.target.value);
+                setCurrentPage(1);
+              }}
+            >
+              <option>All Levels</option>
+              <option>Beginner</option>
+              <option>Intermediate</option>
+              <option>Advanced</option>
+            </select>
+ 
+            <select
+              className="h-9 rounded-md border border-gray-200 bg-white px-3 text-xs text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              value={selectedPriceFilter}
+              onChange={(e) => {
+                setSelectedPriceFilter(e.target.value);
+                setCurrentPage(1);
+              }}
+            >
+              <option value="All">All Prices</option>
+              <option value="Free">Free</option>
+              <option value="Paid">Paid</option>
+            </select>
+ 
+            <div className="flex-1 flex items-center gap-2">
+              <div className="relative flex-1">
+                <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  placeholder="Search tests..."
+                  className="w-full h-9 rounded-md border border-gray-200 bg-white pl-9 pr-3 text-xs text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
               </div>
-            ) : (
-              <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 gap-6">
+              <button
+                type="button"
+                className="px-4 h-9 rounded-md bg-blue-600 text-white text-xs font-medium hover:bg-blue-700 transition-colors whitespace-nowrap"
+              >
+                Search
+              </button>
+            </div>
+          </div>
+ 
+          {/* Count */}
+          <div className="flex items-center justify-between text-xs text-gray-600">
+            <p>
+              {isCategorySectionView ? (
+                <>Showing {tests.length} tests across categories.</>
+              ) : (
+                <>
+                  Showing {filteredTests.length} test
+                  {filteredTests.length !== 1 ? 's' : ''}.
+                </>
+              )}
+            </p>
+          </div>
+ 
+          {/* Tests Grid */}
+          {isCategorySectionView ? (
+            <>
+              {featuredCategories.map((cat) => {
+                const categoryTests = (testsByCategory[cat.id] || []).slice(0, 5);
+                if (!categoryTests.length) return null;
+
+                return (
+                  <section key={cat.id} className="mb-8">
+                    <div className="flex items-center justify-between mb-3">
+                      <h2 className="text-sm sm:text-base font-semibold text-gray-900">
+                        {cat.label}
+                      </h2>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedCategory(cat.id);
+                          setCurrentPage(1);
+                        }}
+                        className="inline-flex items-center text-[11px] font-medium text-blue-600 hover:text-blue-700"
+                      >
+                        Show all
+                        <ChevronRight className="w-3 h-3 ml-0.5" />
+                      </button>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5 gap-6">
+                      {categoryTests.map((test) => {
+                        const testWithDefaults = {
+                          ...test,
+                          price: test.price || { actual: 999, discounted: 499 },
+                          features: test.features || [],
+                          skills: test.skills || [],
+                          includes: test.includes || [],
+                        };
+
+                        return (
+                          <Link
+                            key={test.id}
+                            to={`${testDetailsPath}?id=${test.id}`}
+                            state={{ test: testWithDefaults }}
+                            className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-xl transition-all duration-300 group cursor-pointer flex flex-col block fade-in-up"
+                          >
+                            <div className="relative overflow-hidden ">
+                              <img
+                                src={test.image}
+                                alt={test.title}
+                                className="w-full h-32 object-cover group-hover:scale-110 transition-transform duration-300"
+                                loading="lazy"
+                              />
+                              {test.isFree ? (
+                                <div className="absolute top-2 left-2">
+                                  <span className="bg-emerald-500 text-white px-2 py-0.5 rounded-full text-xs font-light shadow-md flex items-center gap-1">
+                                    <Award className="w-3 h-3" />
+                                    FREE
+                                  </span>
+                                </div>
+                              ) : test.isPremium && (
+                                <div className="absolute top-2 left-2">
+                                  <span className="bg-yellow-400 text-yellow-900 px-2 py-0.5 rounded-full text-xs font-light shadow-md flex items-center gap-1">
+                                    <Award className="w-3 h-3" />
+                                    Premium
+                                  </span>
+                                </div>
+                              )}
+                              <div className="absolute top-2 right-2">
+                                <span className="bg-blue-500 text-white px-2 py-0.5 rounded-full text-xs font-light shadow-md">
+                                  {test.type}
+                                </span>
+                              </div>
+                            </div>
+
+                            <div className="p-3 flex flex-col flex-grow">
+                              <div className="flex-grow">
+                                <h3 className="text-base font-light text-black mb-1.5 line-clamp-2 group-hover:text-blue-600 transition-colors leading-snug">
+                                  {test.title}
+                                </h3>
+                                <p className="text-xs text-gray-600 mb-3 line-clamp-2">{test.description}</p>
+                              </div>
+
+                              <div className="flex items-center flex-wrap gap-x-3 gap-y-1.5 mb-3 text-xs text-black">
+                                <div className="flex items-center gap-1">
+                                  <FileText className="w-3 h-3" />
+                                  <span className="font-light">{test.questions}</span>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                  <Clock className="w-3 h-3" />
+                                  <span>{formatDuration(test.duration)}</span>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                  <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                                  <span className="font-light">{test.rating}</span>
+                                </div>
+                              </div>
+
+                              <div className="w-full mt-2 bg-gradient-to-r from-blue-600 to-blue-500 group-hover:from-blue-700 group-hover:to-blue-600 text-white px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 flex items-center justify-center gap-1.5 shadow-sm group-hover:shadow-md cursor-pointer transform group-hover:scale-[1.02]">
+                                <span className="tracking-wide">View Details</span>
+                                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform duration-200" strokeWidth={2.5} />
+                              </div>
+                            </div>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </section>
+                );
+              })}
+            </>
+          ) : filteredTests.length === 0 ? (
+            <div className="text-center py-12 bg-white rounded-lg shadow-sm">
+              <p className="text-gray-500 text-sm sm:text-base">
+                No tests found with the selected filters.
+              </p>
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5 gap-6">
                 {paginatedTests.map(test => {
                   // Ensure test data has all required fields for details page
                   const testWithDefaults = {
@@ -409,7 +592,7 @@ const TestPlatform = () => {
                       key={test.id}
                       to={`${testDetailsPath}?id=${test.id}`}
                       state={{ test: testWithDefaults }}
-                      className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-xl transition-all duration-300 group cursor-pointer flex flex-col block"
+                      className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-xl transition-all duration-300 group cursor-pointer flex flex-col block fade-in-up"
                     >
                       {/* Test Image */}
                       <div className="relative overflow-hidden ">
@@ -478,7 +661,7 @@ const TestPlatform = () => {
                   );
                 })}
               </div>
-
+ 
               {/* Pagination Controls */}
               {totalPages > 1 && (
                 <div className="mt-6 flex items-center justify-center gap-3">
@@ -509,9 +692,8 @@ const TestPlatform = () => {
                   </button>
                 </div>
               )}
-              </>
-            )}
-          </div>
+            </>
+          )}
         </div>
       </div>
     </div>

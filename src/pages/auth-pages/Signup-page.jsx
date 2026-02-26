@@ -310,12 +310,14 @@ const handleVerifyMobileOtp = async (e) => {
       otp: mobileOtp.trim()
     });
 
-    if (response.data?.token) {
+    if (response.data?.token && response.data?.user) {
+      const backendUser = response.data.user;
+
       setToken(response.data.token);
-      setUser(response.data.user);
+      setUser(backendUser);
       
       localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.user || {}));
+      localStorage.setItem('user', JSON.stringify(backendUser || {}));
 
       toast.success(response.data.message || 'Signup successful!');
       
@@ -323,7 +325,7 @@ const handleVerifyMobileOtp = async (e) => {
       const pendingTestId = localStorage.getItem('pendingTestId');
       if (pendingTestId) {
         // Redirect back to test details page
-        const isStudentRoute = user?.role === 'student';
+        const isStudentRoute = backendUser?.role === 'student';
         const testPath = isStudentRoute 
           ? `/student/test-details?id=${pendingTestId}`
           : `/test-details?id=${pendingTestId}`;
